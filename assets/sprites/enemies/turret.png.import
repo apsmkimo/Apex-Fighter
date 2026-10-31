@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://de2ma7ac4lvuk"
-path="res://.godot/imported/boss_01.png-b749b6ed8c6d79f389afe18005b92554.ctex"
+uid="uid://bddn2ky56it11"
+path="res://.godot/imported/turret.png-d5a301f9907ff7fe81d1f83a8220adea.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/enemies/boss_01.png"
-dest_files=["res://.godot/imported/boss_01.png-b749b6ed8c6d79f389afe18005b92554.ctex"]
+source_file="res://assets/sprites/enemies/turret.png"
+dest_files=["res://.godot/imported/turret.png-d5a301f9907ff7fe81d1f83a8220adea.ctex"]
 
 [params]
 

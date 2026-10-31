@@ -4,7 +4,7 @@
 [ext_resource type="Resource" path="res://data/items/power.tres" id="2_4at78"]
 [ext_resource type="Resource" path="res://data/patterns/move_straight_fast.tres" id="3_u1ejc"]
 [ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="4_j7t27"]
-[ext_resource type="Texture2D" path="res://assets/sprites/enemies/zako_a.png" id="5_m51hs"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/dart_power.png" id="5_m51hs"]
 
 [resource]
 script = ExtResource("4_j7t27")

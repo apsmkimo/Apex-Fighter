@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cf7pgxo6v3glh"
-path="res://.godot/imported/tank_a.png-e9bdeabf486abadc84ea367885738d5e.ctex"
+uid="uid://xqfojyyla3t5"
+path="res://.godot/imported/enemy_carrier.png-4d2e20b22338560d5c17fe427836a4c6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/enemies/tank_a.png"
-dest_files=["res://.godot/imported/tank_a.png-e9bdeabf486abadc84ea367885738d5e.ctex"]
+source_file="res://docs/concept/enemy_carrier.png"
+dest_files=["res://.godot/imported/enemy_carrier.png-4d2e20b22338560d5c17fe427836a4c6.ctex"]
 
 [params]
 

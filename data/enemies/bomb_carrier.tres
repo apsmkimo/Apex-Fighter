@@ -4,7 +4,7 @@
 [ext_resource type="Resource" path="res://data/items/bomb.tres" id="2_h5xfi"]
 [ext_resource type="Resource" path="res://data/patterns/move_stop_and_go.tres" id="3_xareu"]
 [ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="4_ealeg"]
-[ext_resource type="Texture2D" path="res://assets/sprites/enemies/tank_a.png" id="5_dqyku"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/carrier.png" id="5_dqyku"]
 
 [resource]
 script = ExtResource("4_ealeg")

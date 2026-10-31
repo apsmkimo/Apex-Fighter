@@ -10,7 +10,7 @@
 [ext_resource type="Resource" path="res://data/patterns/ring_20.tres" id="8_8torj"]
 [ext_resource type="Resource" path="res://data/patterns/spread_7.tres" id="9_w8ylt"]
 [ext_resource type="Script" path="res://src/entities/bosses/boss_data.gd" id="10_qy4f1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_01.png" id="11_61wsg"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_violet_fortress.png" id="11_61wsg"]
 
 [sub_resource type="Resource" id="Resource_o2v1i"]
 script = ExtResource("2_b0vpg")
@@ -38,7 +38,7 @@ phases = Array[ExtResource("2_b0vpg")]([SubResource("Resource_o2v1i"), SubResour
 id = &"violet_fortress"
 texture = ExtResource("11_61wsg")
 max_hp = 900
-hit_radius = 75.0
+hit_radius = 85.0
 score = 30000
 explosion_scale = 4.0
 movement = ExtResource("1_h0pm8")

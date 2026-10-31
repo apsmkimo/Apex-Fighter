@@ -4,7 +4,7 @@
 [ext_resource type="Resource" path="res://data/items/power.tres" id="2_wcw60"]
 [ext_resource type="Resource" path="res://data/patterns/move_stop_and_go.tres" id="3_v7ibq"]
 [ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="4_68v6c"]
-[ext_resource type="Texture2D" path="res://assets/sprites/enemies/tank_a.png" id="5_gri2r"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/turret.png" id="5_gri2r"]
 
 [resource]
 script = ExtResource("4_68v6c")
