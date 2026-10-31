@@ -8,3 +8,4 @@
 *.jks
 export_credentials.cfg
 .DS_Store
+build/
