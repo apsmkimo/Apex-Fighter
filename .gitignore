@@ -1,0 +1,10 @@
+# Godot 4 cache
+.godot/
+/android/
+# Exports and signing keys (never commit keystores)
+*.apk
+*.aab
+*.keystore
+*.jks
+export_credentials.cfg
+.DS_Store

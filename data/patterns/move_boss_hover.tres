@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MoveHover" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/patterns/movement/move_hover.gd" id="1_p4anh"]
+
+[resource]
+script = ExtResource("1_p4anh")
+stop_distance = 360.0
+enter_time = 3.0
+amplitude = 170.0
+period = 6.0

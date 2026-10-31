@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="RingPattern" load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/enemy_orb.png" id="1_sjeqx"]
+[ext_resource type="Script" path="res://src/patterns/bullet/ring_pattern.gd" id="2_kpbrd"]
+
+[resource]
+script = ExtResource("2_kpbrd")
+count = 20
+rotation_per_shot_deg = 7.0
+bullet_texture = ExtResource("1_sjeqx")
+bullet_speed = 170.0
+bullet_radius = 7.0
+damage = 1
+burst_count = 1
+burst_interval = 0.12

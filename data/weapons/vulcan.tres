@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/player_vulcan.png" id="1_r1knn"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="2_p2wtm"]
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_xbl2r"]
+
+[sub_resource type="Resource" id="Resource_4pwmd"]
+script = ExtResource("2_p2wtm")
+fire_interval = 0.09
+offsets = PackedVector2Array(-8, -30, 8, -30)
+angles_deg = PackedFloat32Array(0, 0)
+
+[sub_resource type="Resource" id="Resource_ohem3"]
+script = ExtResource("2_p2wtm")
+fire_interval = 0.09
+offsets = PackedVector2Array(-14, -26, 0, -34, 14, -26)
+angles_deg = PackedFloat32Array(-3, 0, 3)
+
+[sub_resource type="Resource" id="Resource_m7p5l"]
+script = ExtResource("2_p2wtm")
+fire_interval = 0.085
+offsets = PackedVector2Array(-18, -22, -6, -32, 6, -32, 18, -22)
+angles_deg = PackedFloat32Array(-8, -2, 2, 8)
+
+[sub_resource type="Resource" id="Resource_0qw0y"]
+script = ExtResource("2_p2wtm")
+fire_interval = 0.08
+offsets = PackedVector2Array(-24, -16, -14, -26, -5, -34, 5, -34, 14, -26, 24, -16)
+angles_deg = PackedFloat32Array(-16, -7, -1.5, 1.5, 7, 16)
+
+[resource]
+script = ExtResource("3_xbl2r")
+id = &"vulcan"
+display_name = "Vulcan"
+bullet_texture = ExtResource("1_r1knn")
+bullet_speed = 1500.0
+bullet_radius = 8.0
+damage = 1
+levels = Array[ExtResource("2_p2wtm")]([SubResource("Resource_4pwmd"), SubResource("Resource_ohem3"), SubResource("Resource_m7p5l"), SubResource("Resource_0qw0y")])

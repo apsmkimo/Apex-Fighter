@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/entities/player/player.gd" id="1_script"]
+[ext_resource type="Script" path="res://src/weapons/weapon.gd" id="2_weapon"]
+
+[node name="Player" type="Area2D"]
+collision_layer = 1
+collision_mask = 12
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[node name="PickupArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 16
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PickupArea"]
+
+[node name="Weapon" type="Node2D" parent="."]
+script = ExtResource("2_weapon")

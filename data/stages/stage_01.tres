@@ -1,0 +1,178 @@
+[gd_resource type="Resource" script_class="StageData" load_steps=25 format=3]
+
+[ext_resource type="Resource" path="res://data/enemies/boss_violet_fortress.tres" id="1_5ox8f"]
+[ext_resource type="Script" path="res://src/stages/stage_data.gd" id="2_a154h"]
+[ext_resource type="Script" path="res://src/stages/wave_data.gd" id="3_u1kn1"]
+[ext_resource type="Resource" path="res://data/enemies/dart.tres" id="4_lstpg"]
+[ext_resource type="Resource" path="res://data/patterns/move_sine.tres" id="5_dk08l"]
+[ext_resource type="Resource" path="res://data/enemies/dart_power.tres" id="6_t4dgm"]
+[ext_resource type="Resource" path="res://data/enemies/turret.tres" id="7_xac5c"]
+[ext_resource type="Resource" path="res://data/patterns/move_diagonal.tres" id="8_gmauv"]
+[ext_resource type="Resource" path="res://data/enemies/bomb_carrier.tres" id="9_ecfjx"]
+
+[sub_resource type="Resource" id="Resource_x7s4n"]
+script = ExtResource("3_u1kn1")
+time = 2.0
+enemy = ExtResource("4_lstpg")
+count = 5
+interval = 0.4
+start_x = 0.25
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="Resource_j807p"]
+script = ExtResource("3_u1kn1")
+time = 5.0
+enemy = ExtResource("4_lstpg")
+count = 5
+interval = 0.4
+start_x = 0.75
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="Resource_yqygw"]
+script = ExtResource("3_u1kn1")
+time = 8.0
+enemy = ExtResource("4_lstpg")
+count = 6
+interval = 0.35
+start_x = 0.5
+step_x = 0.0
+movement_override = ExtResource("5_dk08l")
+mirror = false
+
+[sub_resource type="Resource" id="Resource_ua71i"]
+script = ExtResource("3_u1kn1")
+time = 11.0
+enemy = ExtResource("6_t4dgm")
+count = 1
+interval = 0.0
+start_x = 0.5
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="Resource_avtj5"]
+script = ExtResource("3_u1kn1")
+time = 12.5
+enemy = ExtResource("7_xac5c")
+count = 1
+interval = 0.0
+start_x = 0.5
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="Resource_hpgot"]
+script = ExtResource("3_u1kn1")
+time = 15.0
+enemy = ExtResource("4_lstpg")
+count = 4
+interval = 0.3
+start_x = 0.1
+step_x = 0.0
+movement_override = ExtResource("8_gmauv")
+mirror = true
+
+[sub_resource type="Resource" id="Resource_eq3ib"]
+script = ExtResource("3_u1kn1")
+time = 19.0
+enemy = ExtResource("7_xac5c")
+count = 2
+interval = 0.0
+start_x = 0.25
+step_x = 0.5
+mirror = false
+
+[sub_resource type="Resource" id="Resource_w2n56"]
+script = ExtResource("3_u1kn1")
+time = 22.5
+enemy = ExtResource("4_lstpg")
+count = 8
+interval = 0.3
+start_x = 0.3
+step_x = 0.0
+movement_override = ExtResource("5_dk08l")
+mirror = true
+
+[sub_resource type="Resource" id="Resource_t5pdp"]
+script = ExtResource("3_u1kn1")
+time = 27.0
+enemy = ExtResource("9_ecfjx")
+count = 1
+interval = 0.0
+start_x = 0.5
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="Resource_fkv7t"]
+script = ExtResource("3_u1kn1")
+time = 30.0
+enemy = ExtResource("4_lstpg")
+count = 6
+interval = 0.25
+start_x = 0.1
+step_x = 0.16
+mirror = false
+
+[sub_resource type="Resource" id="Resource_8r5s2"]
+script = ExtResource("3_u1kn1")
+time = 33.0
+enemy = ExtResource("6_t4dgm")
+count = 1
+interval = 0.0
+start_x = 0.3
+step_x = 0.0
+mirror = true
+
+[sub_resource type="Resource" id="Resource_gmegb"]
+script = ExtResource("3_u1kn1")
+time = 34.0
+enemy = ExtResource("7_xac5c")
+count = 3
+interval = 0.6
+start_x = 0.2
+step_x = 0.3
+mirror = false
+
+[sub_resource type="Resource" id="Resource_vg135"]
+script = ExtResource("3_u1kn1")
+time = 39.0
+enemy = ExtResource("4_lstpg")
+count = 10
+interval = 0.25
+start_x = 0.35
+step_x = 0.0
+movement_override = ExtResource("5_dk08l")
+mirror = true
+
+[sub_resource type="Resource" id="Resource_88gao"]
+script = ExtResource("3_u1kn1")
+time = 44.0
+enemy = ExtResource("7_xac5c")
+count = 2
+interval = 0.0
+start_x = 0.3
+step_x = 0.4
+mirror = false
+
+[sub_resource type="Resource" id="Resource_n35ka"]
+script = ExtResource("3_u1kn1")
+time = 45.0
+enemy = ExtResource("4_lstpg")
+count = 6
+interval = 0.3
+start_x = 0.1
+step_x = 0.0
+movement_override = ExtResource("8_gmauv")
+mirror = true
+
+[resource]
+script = ExtResource("2_a154h")
+id = &"stage_01"
+display_name = "STAGE 1"
+sort_order = 0
+scroll_speed = 160.0
+bg_top_color = Color(0.04, 0.06, 0.16, 1)
+bg_bottom_color = Color(0.1, 0.14, 0.3, 1)
+waves = Array[ExtResource("3_u1kn1")]([SubResource("Resource_x7s4n"), SubResource("Resource_j807p"), SubResource("Resource_yqygw"), SubResource("Resource_ua71i"), SubResource("Resource_avtj5"), SubResource("Resource_hpgot"), SubResource("Resource_eq3ib"), SubResource("Resource_w2n56"), SubResource("Resource_t5pdp"), SubResource("Resource_fkv7t"), SubResource("Resource_8r5s2"), SubResource("Resource_gmegb"), SubResource("Resource_vg135"), SubResource("Resource_88gao"), SubResource("Resource_n35ka")])
+boss = ExtResource("1_5ox8f")
+boss_warning_time = 2.5

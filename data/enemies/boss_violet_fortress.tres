@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="BossData" load_steps=15 format=3]
+
+[ext_resource type="Resource" path="res://data/patterns/move_boss_hover.tres" id="1_h0pm8"]
+[ext_resource type="Script" path="res://src/entities/bosses/boss_phase.gd" id="2_b0vpg"]
+[ext_resource type="Script" path="res://src/patterns/bullet/bullet_pattern.gd" id="3_rqvyv"]
+[ext_resource type="Resource" path="res://data/patterns/aimed_3way_burst.tres" id="4_0k7jb"]
+[ext_resource type="Resource" path="res://data/patterns/ring_12.tres" id="5_7r52y"]
+[ext_resource type="Resource" path="res://data/patterns/spiral_6.tres" id="6_l40hb"]
+[ext_resource type="Resource" path="res://data/patterns/aimed_single.tres" id="7_uiu2w"]
+[ext_resource type="Resource" path="res://data/patterns/ring_20.tres" id="8_8torj"]
+[ext_resource type="Resource" path="res://data/patterns/spread_7.tres" id="9_w8ylt"]
+[ext_resource type="Script" path="res://src/entities/bosses/boss_data.gd" id="10_qy4f1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_01.png" id="11_61wsg"]
+
+[sub_resource type="Resource" id="Resource_o2v1i"]
+script = ExtResource("2_b0vpg")
+hp_ratio_end = 0.6
+patterns = Array[ExtResource("3_rqvyv")]([ExtResource("4_0k7jb"), ExtResource("5_7r52y")])
+intervals = PackedFloat32Array(1.4, 1.8)
+
+[sub_resource type="Resource" id="Resource_2vf2q"]
+script = ExtResource("2_b0vpg")
+hp_ratio_end = 0.25
+patterns = Array[ExtResource("3_rqvyv")]([ExtResource("6_l40hb"), ExtResource("7_uiu2w")])
+intervals = PackedFloat32Array(0.16, 0.9)
+
+[sub_resource type="Resource" id="Resource_a0cfv"]
+script = ExtResource("2_b0vpg")
+hp_ratio_end = 0.0
+patterns = Array[ExtResource("3_rqvyv")]([ExtResource("8_8torj"), ExtResource("9_w8ylt"), ExtResource("4_0k7jb")])
+intervals = PackedFloat32Array(0.55, 1.3, 2)
+
+[resource]
+script = ExtResource("10_qy4f1")
+boss_name = "VIOLET FORTRESS"
+entry_time = 3.0
+phases = Array[ExtResource("2_b0vpg")]([SubResource("Resource_o2v1i"), SubResource("Resource_2vf2q"), SubResource("Resource_a0cfv")])
+id = &"violet_fortress"
+texture = ExtResource("11_61wsg")
+max_hp = 900
+hit_radius = 75.0
+score = 30000
+explosion_scale = 4.0
+movement = ExtResource("1_h0pm8")
+fire_interval = 1.5
+first_fire_delay = 0.8
+drop_chance = 0.0

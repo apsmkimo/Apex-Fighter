@@ -1,0 +1,34 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://src/stages/stage.gd" id="1_stage"]
+[ext_resource type="Script" path="res://src/stages/scroll_background.gd" id="2_bg"]
+[ext_resource type="Script" path="res://src/entities/bullets/bullet_pool.gd" id="3_pool"]
+[ext_resource type="PackedScene" path="res://src/entities/bullets/bullet.tscn" id="4_bullet"]
+[ext_resource type="Script" path="res://src/effects/shake_camera.gd" id="5_cam"]
+[ext_resource type="Script" path="res://src/stages/wave_spawner.gd" id="6_spawner"]
+[ext_resource type="Script" path="res://src/ui/hud/hud.gd" id="7_hud"]
+
+[node name="Stage" type="Node2D"]
+script = ExtResource("1_stage")
+
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("2_bg")
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="Actors" type="Node2D" parent="."]
+
+[node name="Bullets" type="Node2D" parent="."]
+script = ExtResource("3_pool")
+bullet_scene = ExtResource("4_bullet")
+
+[node name="Effects" type="Node2D" parent="."]
+
+[node name="Camera" type="Camera2D" parent="."]
+script = ExtResource("5_cam")
+
+[node name="WaveSpawner" type="Node" parent="."]
+script = ExtResource("6_spawner")
+
+[node name="Hud" type="CanvasLayer" parent="."]
+script = ExtResource("7_hud")

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=6 format=3]
+
+[ext_resource type="Resource" path="res://data/patterns/aimed_3way_burst.tres" id="1_j64pa"]
+[ext_resource type="Resource" path="res://data/items/bomb.tres" id="2_h5xfi"]
+[ext_resource type="Resource" path="res://data/patterns/move_stop_and_go.tres" id="3_xareu"]
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="4_ealeg"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/tank_a.png" id="5_dqyku"]
+
+[resource]
+script = ExtResource("4_ealeg")
+id = &"bomb_carrier"
+texture = ExtResource("5_dqyku")
+max_hp = 40
+hit_radius = 30.0
+score = 1000
+explosion_scale = 1.6
+movement = ExtResource("3_xareu")
+bullet_pattern = ExtResource("1_j64pa")
+fire_interval = 1.8
+first_fire_delay = 1.3
+drop_item = ExtResource("2_h5xfi")
+drop_chance = 1.0

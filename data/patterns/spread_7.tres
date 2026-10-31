@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="SpreadPattern" load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/enemy_orb.png" id="1_t2t3c"]
+[ext_resource type="Script" path="res://src/patterns/bullet/spread_pattern.gd" id="2_o1s41"]
+
+[resource]
+script = ExtResource("2_o1s41")
+count = 7
+spread_deg = 80.0
+direction_deg = 0.0
+bullet_texture = ExtResource("1_t2t3c")
+bullet_speed = 240.0
+bullet_radius = 7.0
+damage = 1
+burst_count = 1
+burst_interval = 0.12

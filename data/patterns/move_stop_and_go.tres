@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="MoveStopAndGo" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/patterns/movement/move_stop_and_go.gd" id="1_miqsl"]
+
+[resource]
+script = ExtResource("1_miqsl")
+stop_distance = 300.0
+enter_time = 1.2
+wait_time = 3.5
+exit_velocity = Vector2(0, 160)
