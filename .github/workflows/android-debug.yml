@@ -9,6 +9,9 @@ on:
 env:
   GODOT_VERSION: 4.4.1
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -83,3 +86,15 @@ jobs:
           name: apex-fighter-debug-apk
           path: build/apex-fighter-debug.apk
           if-no-files-found: error
+
+      # main 分支每次推送都更新「debug-latest」預先發行版，手機可以直接下載 APK
+      - name: Publish to debug-latest pre-release
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: debug-latest
+          name: Debug build (latest main)
+          prerelease: true
+          make_latest: false
+          body: "自動建置的 debug APK，commit ${{ github.sha }}。手機直接下載 apex-fighter-debug.apk 安裝。"
+          files: build/apex-fighter-debug.apk
