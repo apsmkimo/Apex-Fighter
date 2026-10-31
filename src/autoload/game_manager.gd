@@ -11,9 +11,12 @@ const SCENE_RESULT := "res://src/ui/menus/result_screen.tscn"
 
 var selected_ship: ShipData
 var current_stage: StageData
+var difficulty: DifficultyData
 
 var score := 0
 var hi_score := 0
+## 每個難度各自的最高分 { 難度 id: 分數 }
+var hi_scores := {}
 var lives := 0
 var bombs := 0
 var power_level := 0
@@ -23,6 +26,14 @@ var last_run_cleared := false
 func _ready() -> void:
 	_setup_input_map()
 	_load_save()
+
+
+func set_difficulty(d: DifficultyData) -> void:
+	if d == null:
+		return
+	difficulty = d
+	hi_score = int(hi_scores.get(String(d.id), 0))
+	Events.hi_score_changed.emit(hi_score)
 
 
 # ---------- 一局遊戲 ----------
@@ -56,6 +67,8 @@ func add_score(value: int) -> void:
 	Events.score_changed.emit(score)
 	if score > hi_score:
 		hi_score = score
+		if difficulty:
+			hi_scores[String(difficulty.id)] = hi_score
 		Events.hi_score_changed.emit(hi_score)
 
 
@@ -125,13 +138,25 @@ func goto_result() -> void:
 
 func _load_save() -> void:
 	var cfg := ConfigFile.new()
+	var last_diff := "normal"
 	if cfg.load(SAVE_PATH) == OK:
-		hi_score = int(cfg.get_value("score", "hi_score", 0))
+		# 舊版存檔只有一個 hi_score，視為 NORMAL 的紀錄
+		hi_scores["normal"] = int(cfg.get_value("score", "hi_score", 0))
+		if cfg.has_section("hi_scores"):
+			for key in cfg.get_section_keys("hi_scores"):
+				hi_scores[key] = int(cfg.get_value("hi_scores", key, 0))
+		last_diff = String(cfg.get_value("settings", "difficulty", "normal"))
+	var d := Database.get_difficulty(StringName(last_diff))
+	set_difficulty(d if d else Database.default_difficulty())
 
 
 func _save() -> void:
 	var cfg := ConfigFile.new()
-	cfg.set_value("score", "hi_score", hi_score)
+	cfg.set_value("score", "hi_score", int(hi_scores.get("normal", 0)))
+	for key in hi_scores:
+		cfg.set_value("hi_scores", key, hi_scores[key])
+	if difficulty:
+		cfg.set_value("settings", "difficulty", String(difficulty.id))
 	cfg.save(SAVE_PATH)
 
 

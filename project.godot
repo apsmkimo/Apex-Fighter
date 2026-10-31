@@ -15,8 +15,8 @@ config/quit_on_go_back=false
 [autoload]
 
 Events="*res://src/autoload/events.gd"
-GameManager="*res://src/autoload/game_manager.gd"
 Database="*res://src/autoload/database.gd"
+GameManager="*res://src/autoload/game_manager.gd"
 
 [display]
 

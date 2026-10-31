@@ -5,9 +5,11 @@ extends Node
 
 const SHIP_DIR := "res://data/ships/"
 const STAGE_DIR := "res://data/stages/"
+const DIFFICULTY_DIR := "res://data/difficulty/"
 
 var ships: Array[ShipData] = []
 var stages: Array[StageData] = []
+var difficulties: Array[DifficultyData] = []
 
 
 func _ready() -> void:
@@ -17,6 +19,10 @@ func _ready() -> void:
 	for res in _load_dir(STAGE_DIR):
 		if res is StageData:
 			stages.append(res)
+	for res in _load_dir(DIFFICULTY_DIR):
+		if res is DifficultyData:
+			difficulties.append(res)
+	difficulties.sort_custom(func(a: DifficultyData, b: DifficultyData) -> bool: return a.sort_order < b.sort_order)
 	ships.sort_custom(func(a: ShipData, b: ShipData) -> bool: return a.sort_order < b.sort_order)
 	stages.sort_custom(func(a: StageData, b: StageData) -> bool: return a.sort_order < b.sort_order)
 
@@ -26,6 +32,21 @@ func get_ship(id: StringName) -> ShipData:
 		if s.id == id:
 			return s
 	return null
+
+
+func get_difficulty(id: StringName) -> DifficultyData:
+	for d in difficulties:
+		if d.id == id:
+			return d
+	return null
+
+
+## 預設難度：NORMAL，找不到就用第一個
+func default_difficulty() -> DifficultyData:
+	var d := get_difficulty(&"normal")
+	if d == null and not difficulties.is_empty():
+		d = difficulties[0]
+	return d
 
 
 func first_stage() -> StageData:

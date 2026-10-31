@@ -9,4 +9,4 @@ extends BulletPattern
 
 
 func get_directions(_origin: Vector2, _target: Vector2, _shot_index: int) -> Array[Vector2]:
-	return BulletPattern.fan(Vector2.DOWN.rotated(deg_to_rad(-direction_deg)), count, spread_deg)
+	return BulletPattern.fan(Vector2.DOWN.rotated(deg_to_rad(-direction_deg)), BulletPattern.diff_count(count), spread_deg)

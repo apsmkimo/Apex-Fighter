@@ -8,6 +8,7 @@ var _name: Label
 var _desc: Label
 var _stats: Label
 var _list: HBoxContainer
+var _diff_row: HBoxContainer
 
 
 func _ready() -> void:
@@ -16,7 +17,7 @@ func _ready() -> void:
 	col.add_child(UiKit.label("SELECT YOUR SHIP", 48, UiKit.ACCENT))
 
 	_preview = TextureRect.new()
-	_preview.custom_minimum_size = Vector2(200, 250)
+	_preview.custom_minimum_size = Vector2(200, 220)
 	_preview.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_preview.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	col.add_child(_preview)
@@ -44,6 +45,20 @@ func _ready() -> void:
 		b.pressed.connect(_select.bind(ship))
 		_list.add_child(b)
 
+	# 難度選擇：自動列出 Database.difficulties
+	_diff_row = HBoxContainer.new()
+	_diff_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	_diff_row.add_theme_constant_override(&"separation", 12)
+	col.add_child(_diff_row)
+	for d in Database.difficulties:
+		var db := UiKit.button(d.display_name, 28, Vector2(180, 80))
+		db.toggle_mode = true
+		db.add_theme_color_override(&"font_pressed_color", d.color)
+		db.add_theme_color_override(&"font_hover_pressed_color", d.color)
+		db.pressed.connect(_select_difficulty.bind(d))
+		_diff_row.add_child(db)
+	_refresh_difficulty()
+
 	var start := UiKit.button("LAUNCH")
 	start.pressed.connect(_launch)
 	col.add_child(start)
@@ -65,6 +80,16 @@ func _select(ship: ShipData) -> void:
 	_stats.text = "SPEED %d   LIFE %d   BOMB %d\nWEAPON  %s" % [int(ship.speed), ship.start_lives, ship.start_bombs, weapon_name]
 	for i in _list.get_child_count():
 		(_list.get_child(i) as Button).button_pressed = Database.ships[i] == ship
+
+
+func _select_difficulty(d: DifficultyData) -> void:
+	GameManager.set_difficulty(d)
+	_refresh_difficulty()
+
+
+func _refresh_difficulty() -> void:
+	for i in _diff_row.get_child_count():
+		(_diff_row.get_child(i) as Button).button_pressed = Database.difficulties[i] == GameManager.difficulty
 
 
 func _launch() -> void:

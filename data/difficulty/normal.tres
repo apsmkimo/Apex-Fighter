@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="DifficultyData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/difficulty/difficulty_data.gd" id="1_diff"]
+
+[resource]
+script = ExtResource("1_diff")
+id = &"normal"
+display_name = "NORMAL"
+sort_order = 1
+color = Color(1, 0.85, 0.4, 1)
+hp_mult = 1.0
+bullet_count_mult = 1.0
+fire_interval_mult = 1.0

@@ -36,9 +36,10 @@ func _ready() -> void:
 	var circle := CircleShape2D.new()
 	circle.radius = data.hit_radius
 	shape.shape = circle
-	health.setup(data.max_hp)
+	var diff := GameManager.difficulty
+	health.setup(diff.scale_hp(data.max_hp) if diff else data.max_hp)
 	health.died.connect(_on_died)
-	emitter.configure(data.bullet_pattern, data.fire_interval, data.first_fire_delay)
+	emitter.configure(data.bullet_pattern, diff.scale_interval(data.fire_interval) if diff else data.fire_interval, data.first_fire_delay)
 	emitter.enabled = false
 
 

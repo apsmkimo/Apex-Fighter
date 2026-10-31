@@ -9,6 +9,8 @@ func _ready() -> void:
 		col.add_child(UiKit.label("STAGE CLEAR!", 72, Color(0.5, 1, 0.7)))
 	else:
 		col.add_child(UiKit.label("GAME OVER", 72, Color(1, 0.4, 0.4)))
+	if GameManager.difficulty:
+		col.add_child(UiKit.label(GameManager.difficulty.display_name, 32, GameManager.difficulty.color))
 	col.add_child(UiKit.label("SCORE  %d" % GameManager.score, 40))
 	col.add_child(UiKit.label("HI SCORE  %d" % GameManager.hi_score, 32, Color(1, 0.85, 0.4)))
 	var retry := UiKit.button("RETRY")

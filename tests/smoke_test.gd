@@ -26,7 +26,10 @@ func _start() -> void:
 	for s in Database.ships:
 		if String(s.id) == want:
 			ship = s
-	print("[test] ship = %s" % ship.display_name)
+	var dw := OS.get_environment("SMOKE_DIFFICULTY")
+	if dw != "" and Database.get_difficulty(StringName(dw)):
+		GameManager.set_difficulty(Database.get_difficulty(StringName(dw)))
+	print("[test] ship = %s  difficulty = %s" % [ship.display_name, GameManager.difficulty.display_name])
 	GameManager.start_run(ship, Database.first_stage())
 	add_child((load(GameManager.SCENE_STAGE) as PackedScene).instantiate())
 

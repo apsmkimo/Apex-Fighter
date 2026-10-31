@@ -10,4 +10,4 @@ func get_directions(origin: Vector2, target: Vector2, _shot_index: int) -> Array
 	var to := target - origin
 	if to.length_squared() < 1.0:
 		to = Vector2.DOWN
-	return BulletPattern.fan(to, count, spread_deg)
+	return BulletPattern.fan(to, BulletPattern.diff_count(count), spread_deg)

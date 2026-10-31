@@ -2,7 +2,7 @@
 
 雷電風格的直向捲軸射擊遊戲，Android 版，使用 **Godot 4.4+（GDScript）** 開發。
 
-目前內容：**1 台戰機（FALCON）、1 個關卡（STAGE 1，15 波敵機 + 三階段 Boss）**。架構從一開始就支援多台戰機與多個關卡。
+目前內容：**3 台戰機（FALCON、PHOENIX、THUNDERBIRD）、1 個關卡（STAGE 1，15 波敵機 + 三階段 Boss）、3 種難度（EASY／NORMAL／HARD，只影響敵人彈量與血量）**。架構從一開始就支援多台戰機與多個關卡。
 
 ## 快速開始
 

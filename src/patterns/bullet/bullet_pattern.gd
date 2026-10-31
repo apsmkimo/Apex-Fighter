@@ -24,6 +24,11 @@ func fire(origin: Vector2, target: Vector2, shot_index: int) -> void:
 		BulletPool.instance.spawn(origin, dir * bullet_speed, bullet_texture, bullet_radius, damage, false)
 
 
+## 依目前難度調整一輪的子彈數
+static func diff_count(count: int) -> int:
+	return GameManager.difficulty.scale_count(count) if GameManager.difficulty else count
+
+
 ## 工具：以 center 方向為中心，展開 count 發、總角度 spread_deg。
 static func fan(center: Vector2, count: int, spread_deg: float) -> Array[Vector2]:
 	var out: Array[Vector2] = []

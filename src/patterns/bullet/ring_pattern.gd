@@ -9,6 +9,7 @@ extends BulletPattern
 func get_directions(_origin: Vector2, _target: Vector2, shot_index: int) -> Array[Vector2]:
 	var out: Array[Vector2] = []
 	var base := deg_to_rad(rotation_per_shot_deg * shot_index)
-	for i in count:
-		out.append(Vector2.DOWN.rotated(base + TAU * i / count))
+	var n := BulletPattern.diff_count(count)
+	for i in n:
+		out.append(Vector2.DOWN.rotated(base + TAU * i / n))
 	return out
