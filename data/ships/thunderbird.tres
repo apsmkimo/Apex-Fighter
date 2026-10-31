@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ShipData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/entities/player/ship_data.gd" id="1_uyvfy"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/ship_thunderbird.png" id="2_thb"]
+[ext_resource type="Resource" path="res://data/weapons/thunder_spread.tres" id="3_thndr"]
+
+[resource]
+script = ExtResource("1_uyvfy")
+id = &"thunderbird"
+display_name = "THUNDERBIRD"
+description = "High-speed interceptor. Fastest ship with the smallest hitbox; Thunder Spread covers the widest arc."
+sort_order = 2
+unlocked = true
+texture = ExtResource("2_thb")
+speed = 620.0
+touch_sensitivity = 1.4
+hitbox_radius = 5.0
+pickup_radius = 40.0
+start_lives = 3
+start_bombs = 2
+max_bombs = 4
+bomb_damage = 70
+weapon = ExtResource("3_thndr")

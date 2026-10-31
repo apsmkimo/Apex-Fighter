@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/player_thunder.png" id="1_thndr"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="2_p2wtm"]
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_xbl2r"]
+
+[sub_resource type="Resource" id="Resource_ts_lv1"]
+script = ExtResource("2_p2wtm")
+fire_interval = 0.075
+offsets = PackedVector2Array(-6, -30, 0, -36, 6, -30)
+angles_deg = PackedFloat32Array(-6, 0, 6)
+
+[sub_resource type="Resource" id="Resource_ts_lv2"]
+script = ExtResource("2_p2wtm")
+fire_interval = 0.072
+offsets = PackedVector2Array(-12, -26, -5, -32, 5, -32, 12, -26)
+angles_deg = PackedFloat32Array(-14, -4, 4, 14)
+
+[sub_resource type="Resource" id="Resource_ts_lv3"]
+script = ExtResource("2_p2wtm")
+fire_interval = 0.07
+offsets = PackedVector2Array(-16, -20, -10, -28, 0, -36, 10, -28, 16, -20)
+angles_deg = PackedFloat32Array(-22, -10, 0, 10, 22)
+
+[sub_resource type="Resource" id="Resource_ts_lv4"]
+script = ExtResource("2_p2wtm")
+fire_interval = 0.068
+offsets = PackedVector2Array(-22, -14, -16, -22, -8, -30, 0, -36, 8, -30, 16, -22, 22, -14)
+angles_deg = PackedFloat32Array(-32, -20, -9, 0, 9, 20, 32)
+
+[resource]
+script = ExtResource("3_xbl2r")
+id = &"thunder_spread"
+display_name = "Thunder Spread"
+bullet_texture = ExtResource("1_thndr")
+bullet_speed = 1700.0
+bullet_radius = 7.0
+damage = 1
+levels = Array[ExtResource("2_p2wtm")]([SubResource("Resource_ts_lv1"), SubResource("Resource_ts_lv2"), SubResource("Resource_ts_lv3"), SubResource("Resource_ts_lv4")])
