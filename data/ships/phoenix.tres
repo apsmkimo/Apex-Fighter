@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ShipData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/entities/player/ship_data.gd" id="1_uyvfy"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/ship_phoenix.png" id="2_phx"]
+[ext_resource type="Resource" path="res://data/weapons/crimson_cannon.tres" id="3_crmsn"]
+
+[resource]
+script = ExtResource("1_uyvfy")
+id = &"phoenix"
+display_name = "PHOENIX"
+description = "Heavy assault fighter. Slower, but its Crimson Cannon hits twice as hard in a focused forward stream."
+sort_order = 1
+unlocked = true
+texture = ExtResource("2_phx")
+speed = 440.0
+touch_sensitivity = 1.2
+hitbox_radius = 7.0
+pickup_radius = 48.0
+start_lives = 3
+start_bombs = 4
+max_bombs = 6
+bomb_damage = 100
+weapon = ExtResource("3_crmsn")

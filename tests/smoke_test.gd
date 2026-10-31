@@ -20,7 +20,14 @@ func _ready() -> void:
 
 
 func _start() -> void:
-	GameManager.start_run(Database.ships[0], Database.first_stage())
+	# 可用環境變數 SMOKE_SHIP 指定測試的戰機 id（預設第一台）
+	var ship: Resource = Database.ships[0]
+	var want := OS.get_environment("SMOKE_SHIP")
+	for s in Database.ships:
+		if String(s.id) == want:
+			ship = s
+	print("[test] ship = %s" % ship.display_name)
+	GameManager.start_run(ship, Database.first_stage())
 	add_child((load(GameManager.SCENE_STAGE) as PackedScene).instantiate())
 
 

@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/player_crimson.png" id="1_crmsn"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="2_p2wtm"]
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_xbl2r"]
+
+[sub_resource type="Resource" id="Resource_cc_lv1"]
+script = ExtResource("2_p2wtm")
+fire_interval = 0.13
+offsets = PackedVector2Array(-10, -34, 10, -34)
+angles_deg = PackedFloat32Array(0, 0)
+
+[sub_resource type="Resource" id="Resource_cc_lv2"]
+script = ExtResource("2_p2wtm")
+fire_interval = 0.12
+offsets = PackedVector2Array(-16, -30, 0, -40, 16, -30)
+angles_deg = PackedFloat32Array(0, 0, 0)
+
+[sub_resource type="Resource" id="Resource_cc_lv3"]
+script = ExtResource("2_p2wtm")
+fire_interval = 0.115
+offsets = PackedVector2Array(-24, -24, -9, -38, 9, -38, 24, -24)
+angles_deg = PackedFloat32Array(-2, 0, 0, 2)
+
+[sub_resource type="Resource" id="Resource_cc_lv4"]
+script = ExtResource("2_p2wtm")
+fire_interval = 0.11
+offsets = PackedVector2Array(-34, -14, -20, -28, -7, -40, 7, -40, 20, -28, 34, -14)
+angles_deg = PackedFloat32Array(-5, -1.5, 0, 0, 1.5, 5)
+
+[resource]
+script = ExtResource("3_xbl2r")
+id = &"crimson_cannon"
+display_name = "Crimson Cannon"
+bullet_texture = ExtResource("1_crmsn")
+bullet_speed = 1300.0
+bullet_radius = 10.0
+damage = 2
+levels = Array[ExtResource("2_p2wtm")]([SubResource("Resource_cc_lv1"), SubResource("Resource_cc_lv2"), SubResource("Resource_cc_lv3"), SubResource("Resource_cc_lv4")])
