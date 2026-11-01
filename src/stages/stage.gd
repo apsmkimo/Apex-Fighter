@@ -6,10 +6,10 @@ enum State { WAVES, BOSS_WARNING, BOSS, CLEAR, OVER }
 
 const PLAYER_SCENE := preload("res://src/entities/player/player.tscn")
 const BOSS_SCENE := preload("res://src/entities/bosses/boss.tscn")
-const EXPLOSION_SCENE := preload("res://src/effects/explosion.tscn")
 
 var data: StageData
 var state := State.WAVES
+var fx: NeonFx
 
 @onready var background: ScrollBackground = $Background
 @onready var enemies: Node2D = $Enemies
@@ -27,6 +27,8 @@ func _ready() -> void:
 	data = GameManager.current_stage
 	camera.position = get_viewport_rect().size / 2.0
 	background.setup(data)
+	fx = NeonFx.new()
+	effects.add_child(fx)
 
 	var player := PLAYER_SCENE.instantiate() as Player
 	player.setup(GameManager.selected_ship)
@@ -38,6 +40,8 @@ func _ready() -> void:
 	Events.game_over.connect(_on_game_over)
 	Events.screen_shake.connect(camera.shake)
 	Events.bomb_used.connect(_on_bomb_used)
+	Events.item_collected.connect(func(text: String, at: Vector2, col: Color) -> void: fx.pickup(at, col, text))
+	Events.shield_blocked.connect(func(at: Vector2) -> void: fx.shield_burst(at))
 
 	hud.show_stage_title(data.display_name)
 	GameManager.emit_all()
@@ -65,10 +69,7 @@ func _start_boss_warning() -> void:
 
 
 func spawn_explosion(at: Vector2, size_scale := 1.0) -> void:
-	var fx := EXPLOSION_SCENE.instantiate() as Explosion
-	fx.size_scale = size_scale
-	fx.position = at
-	effects.add_child(fx)
+	fx.explode(at, size_scale)
 
 
 func _on_enemy_killed(enemy_data: Resource, at: Vector2) -> void:

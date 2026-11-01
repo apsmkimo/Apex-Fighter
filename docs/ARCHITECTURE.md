@@ -71,3 +71,11 @@ res://
 - 檔案、資料夾：`snake_case`
 - 類別（class_name）：`PascalCase`
 - 一個場景配一個同名腳本，放同一個資料夾
+
+## 霓虹視覺系統（Neon Tech）
+- `src/stages/scroll_background.gd`：程式繪製背景。漸層＋掃描光帶、星雲、4 層視差星星（會閃爍）、光塵、流星。發光部分在加亮混合的子節點 `GlowLayer`。
+- `src/effects/neon_fx.gd`：共用特效層 `NeonFx.instance`。粒子用固定大小 Packed 陣列（上限 700 顆、光環 32 個），整層一次 `_draw`、一個加亮材質、一張共用光點貼圖。提供 `explode / impact / muzzle / pickup / shield_burst / hurt_burst / float_text`。
+- `src/effects/power_aura.gd`：火力等級光效（翼端燈 → 能量線 → 核心光 → 六角護罩 → 環繞能量球）。
+- 子彈：每顆子彈多一個共用貼圖與材質的光暈 Sprite（玩家為拖尾、敵人為圓形光暈），可合批。
+- HUD：`src/ui/hud/` 下的 `neon_draw.gd`（繪圖工具與圖示）、`status_panel.gd`（左下分段 HP 與圖示數字）、`bomb_button.gd`、`stage_banner.gd`（STAGE／WARNING／CLEAR 動畫）。
+- 截圖測試：`xvfb-run godot --rendering-method gl_compatibility --resolution 720x1280 --path . res://tests/screenshot.tscn`，圖存到 user://shots/。

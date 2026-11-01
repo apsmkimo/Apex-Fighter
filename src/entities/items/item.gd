@@ -35,6 +35,8 @@ func _physics_process(delta: float) -> void:
 
 
 func collect() -> void:
+	var info := _fx_info()
+	Events.item_collected.emit(info[0], global_position, info[1])
 	match data.type:
 		ItemData.Type.POWER:
 			if not GameManager.add_power():
@@ -54,3 +56,25 @@ func collect() -> void:
 		ItemData.Type.MEDAL:
 			GameManager.add_score(data.score_value)
 	queue_free()
+
+
+## 撿道具時飛出的文字與光環顏色
+func _fx_info() -> Array:
+	match data.type:
+		ItemData.Type.POWER:
+			return ["POWER UP", Color(1.0, 0.45, 0.4)]
+		ItemData.Type.BOMB:
+			return ["BOMB +1", Color(0.45, 1.0, 0.55)]
+		ItemData.Type.WEAPON:
+			var w := data.weapon
+			if w and GameManager.weapon == w:
+				return ["POWER UP", NeonFx.tex_color(w.bullet_texture) if w.kind == WeaponData.Kind.BULLET else w.laser_color]
+			if w:
+				return [w.display_name.to_upper(), NeonFx.tex_color(w.bullet_texture) if w.kind == WeaponData.Kind.BULLET else w.laser_color]
+		ItemData.Type.MISSILE:
+			return ["MISSILE +1", Color(0.75, 0.45, 1.0)]
+		ItemData.Type.SHIELD:
+			return ["SHIELD", Color(0.35, 0.85, 1.0)]
+		ItemData.Type.MEDAL:
+			return ["+%d" % data.score_value, Color(1.0, 0.8, 0.3)]
+	return ["", Color.WHITE]

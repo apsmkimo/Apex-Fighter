@@ -12,6 +12,10 @@ signal missile_changed(level: int)
 signal player_hp_changed(hp: int, max_hp: int)
 ## 護盾剩餘秒數；0 = 沒有護盾
 signal shield_changed(seconds: float)
+## 護盾擋下一次攻擊
+signal shield_blocked(at: Vector2)
+## 撿到道具（text 是飛出的提示字）
+signal item_collected(text: String, at: Vector2, color: Color)
 
 signal enemy_killed(data: Resource, at: Vector2)
 signal player_hit

@@ -14,6 +14,9 @@ var age := 0.0
 
 var _was_on_screen := false
 var _flash := 0.0
+var _shake_cd := 0.0
+## 血量達到這個值以上的敵機，被打中時畫面會輕微震動
+const BIG_ENEMY_HP := 30
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var shape: CollisionShape2D = $CollisionShape2D
@@ -59,6 +62,7 @@ func _physics_process(delta: float) -> void:
 	if on:
 		_was_on_screen = true
 	emitter.enabled = _can_fire()
+	_shake_cd -= delta
 	if _flash > 0.0:
 		_flash -= delta
 		sprite.modulate = Color(2.5, 2.5, 2.5) if _flash > 0.0 else Color.WHITE
@@ -74,6 +78,9 @@ func take_damage(amount: int) -> void:
 	if health.dead:
 		return
 	_flash = 0.05
+	if data.max_hp >= BIG_ENEMY_HP and _shake_cd <= 0.0:
+		_shake_cd = 0.18
+		Events.screen_shake.emit(2.5, 0.08)
 	health.take_damage(amount)
 
 

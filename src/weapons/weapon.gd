@@ -18,6 +18,7 @@ var firing := false:
 			_beam_len = 0.0
 			queue_redraw()
 var _cooldown := 0.0
+var _flash_col := Color(0.6, 0.9, 1.0)
 
 # 雷射狀態
 var _beam_len := 0.0
@@ -41,6 +42,7 @@ func _physics_process(delta: float) -> void:
 	var lv := data.get_level(level)
 	_cooldown = lv.fire_interval
 	var dmg := data.bullet_damage(level)
+	_flash_col = NeonFx.tex_color(data.bullet_texture)
 	var max_angle := 0.0
 	var max_off := 0.0
 	for i in lv.offsets.size():
@@ -59,6 +61,8 @@ func _physics_process(delta: float) -> void:
 
 func _shoot(offset: Vector2, deg: float, dmg: int) -> void:
 	var dir := Vector2.UP.rotated(deg_to_rad(deg))
+	if NeonFx.instance:
+		NeonFx.instance.muzzle(global_position + offset, _flash_col)
 	BulletPool.instance.spawn(global_position + offset, dir * data.bullet_speed,
 			data.bullet_texture, data.bullet_radius, dmg, true)
 

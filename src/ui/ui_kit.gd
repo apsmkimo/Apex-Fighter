@@ -12,6 +12,11 @@ static func label(text: String, size := 32, color := Color.WHITE) -> Label:
 	l.add_theme_color_override(&"font_color", color)
 	l.add_theme_color_override(&"font_outline_color", Color(0, 0, 0, 0.8))
 	l.add_theme_constant_override(&"outline_size", 6)
+	# 陰影當成柔和外光，確保在星空背景上清楚
+	l.add_theme_color_override(&"font_shadow_color", Color(0, 0, 0, 0.6))
+	l.add_theme_constant_override(&"shadow_offset_x", 0)
+	l.add_theme_constant_override(&"shadow_offset_y", 3)
+	l.add_theme_constant_override(&"shadow_outline_size", 10)
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return l

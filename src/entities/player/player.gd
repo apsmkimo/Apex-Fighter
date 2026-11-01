@@ -19,6 +19,9 @@ var max_hp := 6
 ## 護盾剩餘秒數，> 0 時可抵銷一次攻擊
 var shield := 0.0
 var _shield_fx: Node2D
+var _aura: PowerAura
+var _exhaust_timer := 0.0
+var _last_pos := Vector2.ZERO
 var _entering := false
 
 @onready var sprite: Sprite2D = $Sprite2D
@@ -61,6 +64,12 @@ func _ready() -> void:
 	max_hp = ship.max_hp
 	_shield_fx = ShieldFx.new()
 	add_child(_shield_fx)
+	# 火力等級光效
+	_aura = PowerAura.new()
+	_aura.color = ship.ui_glow
+	_aura.hull = ship.texture.get_size() if ship.texture else Vector2(64, 100)
+	_aura.level = GameManager.power_level
+	add_child(_aura)
 	area_entered.connect(_on_hurt)
 	pickup_area.area_entered.connect(_on_pickup)
 	Events.power_changed.connect(_on_power_changed)
@@ -89,6 +98,8 @@ func _physics_process(delta: float) -> void:
 		if int(ceil(shield)) != before:
 			Events.shield_changed.emit(shield)
 	_shield_fx.visible = shield > 0.0 and alive
+	_aura.visible = alive and sprite.visible and _aura.level > 0
+	_emit_exhaust(delta)
 	_shield_fx.set_meta(&"left", shield)
 	if invincible > 0.0:
 		invincible -= delta
@@ -118,6 +129,8 @@ func _clamp() -> void:
 
 func _on_power_changed(level: int, _max_level: int) -> void:
 	weapon.level = level
+	if _aura:
+		_aura.level = level
 
 
 func _on_hurt(area: Area2D) -> void:
@@ -139,6 +152,7 @@ func take_hit(amount: int) -> void:
 		shield = 0.0
 		invincible = 0.6
 		Events.shield_changed.emit(0.0)
+		Events.shield_blocked.emit(global_position)
 		Events.screen_shake.emit(6.0, 0.2)
 		return
 	hp = maxi(hp - maxi(amount, 1), 0)
@@ -148,6 +162,28 @@ func take_hit(amount: int) -> void:
 	else:
 		invincible = HIT_INVINCIBLE
 		Events.screen_shake.emit(8.0, 0.25)
+		if NeonFx.instance:
+			NeonFx.instance.hurt_burst(global_position)
+
+
+## 引擎尾焰粒子：往前飛時噴得多又長，後退時幾乎沒有。每台引擎每 2~3 幀一顆，粒子量很低。
+func _emit_exhaust(delta: float) -> void:
+	var vel := (global_position - _last_pos) / maxf(delta, 0.001)
+	_last_pos = global_position
+	if not alive or not sprite.visible or NeonFx.instance == null or ship.thruster_offsets.is_empty():
+		return
+	_exhaust_timer -= delta
+	if _exhaust_timer > 0.0:
+		return
+	var forward := clampf(-vel.y / maxf(ship.speed, 1.0), -1.0, 1.0)   # 1 = 全速往前
+	_exhaust_timer = 0.045 if forward > 0.2 else 0.07
+	if forward < -0.5:
+		return
+	var side := clampf(vel.x / maxf(ship.speed, 1.0), -1.0, 1.0)
+	for off in ship.thruster_offsets:
+		var v := Vector2(-side * 60.0 + randf_range(-25, 25), 220.0 + 260.0 * maxf(forward, 0.0))
+		NeonFx.instance.emit(global_position + off + Vector2(0, 6), v, randf_range(0.18, 0.3),
+				ship.thruster_width * 0.5, ship.thruster_color, NeonFx.Kind.DOT, 2.0)
 
 
 func add_shield() -> void:
