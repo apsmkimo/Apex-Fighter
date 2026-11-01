@@ -11,6 +11,13 @@ extends Resource
 
 @export_group("Visual")
 @export var texture: Texture2D
+## 選機畫面用的大圖（沒有就用 texture）
+@export var portrait: Texture2D
+## 選機畫面的光暈顏色
+@export var ui_glow := Color(0.35, 0.8, 1.0)
+## 選機畫面的能力條（0 ~ 1）。SPEED 由 speed 自動換算
+@export_range(0.0, 1.0) var stat_maneuver := 0.6
+@export_range(0.0, 1.0) var stat_firepower := 0.6
 ## 機身左右傾斜幅度（0 = 不傾斜，1 = 標準）
 @export var bank_amount := 1.0
 ## 引擎口位置（相對機身中心），每個位置會畫一道火焰

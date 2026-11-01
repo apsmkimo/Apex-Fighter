@@ -1,8 +1,10 @@
-[gd_resource type="Resource" script_class="ShipData" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="ShipData" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://src/entities/player/ship_data.gd" id="1_uyvfy"]
 [ext_resource type="Texture2D" path="res://assets/sprites/player/ship_thunderbird.png" id="2_thb"]
 [ext_resource type="Resource" path="res://data/weapons/thunder_spread.tres" id="3_thndr"]
+
+[ext_resource type="Texture2D" path="res://assets/ui/ships/thunderbird_portrait.png" id="9_portrait"]
 
 [resource]
 script = ExtResource("1_uyvfy")
@@ -12,6 +14,10 @@ description = "High-speed interceptor. Fastest ship with the smallest hitbox; Th
 sort_order = 2
 unlocked = true
 texture = ExtResource("2_thb")
+portrait = ExtResource("9_portrait")
+ui_glow = Color(1, 0.85, 0.3, 1)
+stat_maneuver = 0.95
+stat_firepower = 0.7
 bank_amount = 1.25
 thruster_offsets = PackedVector2Array(-8.5, 36, 9, 36)
 thruster_color = Color(1, 0.85, 0.3, 1)
