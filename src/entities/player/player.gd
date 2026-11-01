@@ -48,6 +48,8 @@ func _ready() -> void:
 	missiles.level = GameManager.missile_level
 	Events.weapon_changed.connect(func(w: Resource) -> void: weapon.data = w as WeaponData)
 	Events.missile_changed.connect(func(lv: int) -> void: missiles.level = lv)
+	FlightVisual.attach(self, sprite, Vector2.UP, ship.bank_amount, maxf(ship.speed * 0.8, 300.0),
+			ship.thruster_offsets, ship.thruster_color, ship.thruster_width, ship.thruster_length)
 	area_entered.connect(_on_hurt)
 	pickup_area.area_entered.connect(_on_pickup)
 	Events.power_changed.connect(_on_power_changed)

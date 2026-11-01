@@ -8,3 +8,5 @@ stop_distance = 360.0
 enter_time = 3.0
 amplitude = 170.0
 period = 6.0
+y_amplitude = 70.0
+y_speed = 0.9

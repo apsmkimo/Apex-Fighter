@@ -11,6 +11,13 @@ extends Resource
 
 @export_group("Visual")
 @export var texture: Texture2D
+## 機身左右傾斜幅度（0 = 不傾斜，1 = 標準）
+@export var bank_amount := 1.0
+## 引擎口位置（相對機身中心），每個位置會畫一道火焰
+@export var thruster_offsets: PackedVector2Array = PackedVector2Array([Vector2(0, 40)])
+@export var thruster_color := Color(0.3, 0.9, 1.0)
+@export var thruster_width := 10.0
+@export var thruster_length := 26.0
 
 @export_group("Handling")
 ## 鍵盤移動速度（像素/秒）

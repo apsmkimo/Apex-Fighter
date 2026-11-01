@@ -9,6 +9,17 @@ extends Resource
 @export var score := 100
 @export var explosion_scale := 1.0
 
+@export_group("Flight Visual")
+## 機身左右傾斜幅度（0 = 不傾斜）
+@export var bank_amount := 0.0
+## 引擎口位置（相對機身中心）；空的就不畫引擎火焰
+@export var thruster_offsets: PackedVector2Array = PackedVector2Array()
+@export var thruster_color := Color(1.0, 0.3, 0.9)
+@export var thruster_width := 14.0
+@export var thruster_length := 30.0
+## 多快的移動速度算「全力」（像素/秒），決定傾斜與火焰變化的靈敏度
+@export var flight_ref_speed := 120.0
+
 @export_group("Movement")
 ## 預設移動方式，波次可以覆寫
 @export var movement: MovePattern

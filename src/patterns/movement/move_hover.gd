@@ -7,6 +7,9 @@ extends MovePattern
 @export var amplitude := 170.0
 ## 左右一趟的秒數
 @export var period := 6.0
+## 前後（上下）來回的幅度與速度
+@export var y_amplitude := 20.0
+@export var y_speed := 1.3
 
 
 func offset_at(t: float) -> Vector2:
@@ -14,4 +17,4 @@ func offset_at(t: float) -> Vector2:
 		var k := 1.0 - pow(1.0 - t / enter_time, 2.0)
 		return Vector2(0, stop_distance * k)
 	var s := t - enter_time
-	return Vector2(amplitude * sin(s / period * TAU), stop_distance + 20.0 * sin(s * 1.3))
+	return Vector2(amplitude * sin(s / period * TAU), stop_distance + y_amplitude * sin(s * y_speed))

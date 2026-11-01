@@ -41,6 +41,10 @@ func _ready() -> void:
 	health.died.connect(_on_died)
 	emitter.configure(data.bullet_pattern, diff.scale_interval(data.fire_interval) if diff else data.fire_interval, data.first_fire_delay)
 	emitter.enabled = false
+	if data.bank_amount > 0.0 or not data.thruster_offsets.is_empty():
+		# 敵機機頭朝下
+		FlightVisual.attach(self, sprite, Vector2.DOWN, data.bank_amount, data.flight_ref_speed,
+				data.thruster_offsets, data.thruster_color, data.thruster_width, data.thruster_length)
 
 
 func _physics_process(delta: float) -> void:
