@@ -9,6 +9,8 @@ var _boss_seen := false
 var _kills := 0
 var _max_bullets := 0
 var _log_timer := 0.0
+var _bombs_used := 0
+var _picked := {}
 
 
 func _ready() -> void:
@@ -31,7 +33,16 @@ func _start() -> void:
 		GameManager.set_difficulty(Database.get_difficulty(StringName(dw)))
 	print("[test] ship = %s  difficulty = %s" % [ship.display_name, GameManager.difficulty.display_name])
 	GameManager.start_run(ship, Database.first_stage())
+	# SMOKE_WEAPON 指定開局武器（例如 blue_laser），SMOKE_MISSILE 指定導彈等級
+	var ww := OS.get_environment("SMOKE_WEAPON")
+	if ww != "":
+		GameManager.weapon = load("res://data/weapons/%s.tres" % ww)
+	var mw := OS.get_environment("SMOKE_MISSILE")
+	if mw != "":
+		GameManager.missile_level = int(mw)
+	print("[test] weapon = %s  missile = %d" % [GameManager.weapon.display_name, GameManager.missile_level])
 	add_child((load(GameManager.SCENE_STAGE) as PackedScene).instantiate())
+	Events.bomb_used.connect(func(_p: Vector2) -> void: _bombs_used += 1)
 
 
 func _physics_process(delta: float) -> void:
@@ -48,6 +59,10 @@ func _physics_process(delta: float) -> void:
 	if p == null:
 		return
 	p.invincible = 999.0  # 無敵
+	# 每 25 秒丟一次炸彈，測試全螢幕火焰
+	if int(t / 25.0) > _bombs_used and GameManager.bombs > 0:
+		p.use_bomb()
+	_picked[GameManager.weapon.display_name] = true
 	var target_x := get_viewport().get_visible_rect().size.x / 2.0
 	var best := INF
 	for e in get_tree().get_nodes_in_group(&"enemies"):
@@ -62,7 +77,7 @@ func _physics_process(delta: float) -> void:
 
 func _on_cleared() -> void:
 	await get_tree().create_timer(0.5).timeout
-	print("[test] PASS stage cleared at %.1fs kills=%d score=%d max_bullets=%d boss=%s" % [t, _kills, GameManager.score, _max_bullets, _boss_seen])
+	print("[test] PASS stage cleared at %.1fs kills=%d score=%d max_bullets=%d boss=%s bombs=%d weapons=%s missile=%d" % [t, _kills, GameManager.score, _max_bullets, _boss_seen, _bombs_used, _picked.keys(), GameManager.missile_level])
 	get_tree().quit(0)
 
 

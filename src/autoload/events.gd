@@ -7,6 +7,8 @@ signal hi_score_changed(hi_score: int)
 signal lives_changed(lives: int)
 signal bombs_changed(bombs: int)
 signal power_changed(level: int, max_level: int)
+signal weapon_changed(weapon: Resource)
+signal missile_changed(level: int)
 
 signal enemy_killed(data: Resource, at: Vector2)
 signal player_hit

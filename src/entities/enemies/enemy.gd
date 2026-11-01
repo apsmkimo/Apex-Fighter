@@ -91,3 +91,7 @@ func _on_died() -> void:
 func _try_drop() -> void:
 	if data.drop_item and randf() < data.drop_chance:
 		Item.spawn(data.drop_item, global_position, get_parent())
+	if not data.bonus_pool.is_empty() and randf() < data.bonus_chance:
+		var bonus := GameManager.next_drop(data.id, data.bonus_pool) as ItemData
+		if bonus:
+			Item.spawn(bonus, global_position + Vector2(randf_range(-30, 30), -20), get_parent())

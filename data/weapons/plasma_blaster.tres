@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/player_plasma.png" id="1_plsm"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="2_lvl"]
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_wpn"]
+
+[sub_resource type="Resource" id="Lv1"]
+script = ExtResource("2_lvl")
+fire_interval = 0.15
+offsets = PackedVector2Array(0, -36)
+angles_deg = PackedFloat32Array(0)
+
+[sub_resource type="Resource" id="Lv2"]
+script = ExtResource("2_lvl")
+fire_interval = 0.14
+offsets = PackedVector2Array(-12, -32, 12, -32)
+angles_deg = PackedFloat32Array(0, 0)
+
+[sub_resource type="Resource" id="Lv3"]
+script = ExtResource("2_lvl")
+fire_interval = 0.13
+offsets = PackedVector2Array(-20, -28, 0, -38, 20, -28)
+angles_deg = PackedFloat32Array(-5, 0, 5)
+
+[sub_resource type="Resource" id="Lv4"]
+script = ExtResource("2_lvl")
+fire_interval = 0.12
+offsets = PackedVector2Array(-26, -24, -9, -36, 9, -36, 26, -24)
+angles_deg = PackedFloat32Array(-8, -2, 2, 8)
+
+[resource]
+script = ExtResource("3_wpn")
+id = &"plasma_blaster"
+display_name = "Plasma Blaster"
+bullet_texture = ExtResource("1_plsm")
+bullet_speed = 1100.0
+bullet_radius = 15.0
+damage = 3
+levels = Array[ExtResource("2_lvl")]([SubResource("Lv1"), SubResource("Lv2"), SubResource("Lv3"), SubResource("Lv4")])

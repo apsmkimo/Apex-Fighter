@@ -86,6 +86,11 @@ func _on_player_hit() -> void:
 func _on_bomb_used(at: Vector2) -> void:
 	for i in 8:
 		spawn_explosion(at + Vector2.RIGHT.rotated(TAU * i / 8.0) * 160.0, 1.6)
+	# 全螢幕火焰：持續清彈＋灼燒
+	var fire := FireStorm.new()
+	if GameManager.selected_ship:
+		fire.burn_damage = maxi(1, GameManager.selected_ship.bomb_damage / 10)
+	effects.add_child(fire)
 
 
 func _on_boss_defeated() -> void:

@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="2_lvl"]
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_wpn"]
+
+[sub_resource type="Resource" id="Lv1"]
+script = ExtResource("2_lvl")
+
+[sub_resource type="Resource" id="Lv2"]
+script = ExtResource("2_lvl")
+
+[sub_resource type="Resource" id="Lv3"]
+script = ExtResource("2_lvl")
+
+[sub_resource type="Resource" id="Lv4"]
+script = ExtResource("2_lvl")
+
+[resource]
+script = ExtResource("3_wpn")
+id = &"blue_laser"
+display_name = "Blue Laser"
+damage = 2
+levels = Array[ExtResource("2_lvl")]([SubResource("Lv1"), SubResource("Lv2"), SubResource("Lv3"), SubResource("Lv4")])
+kind = 1
+laser_widths = PackedFloat32Array(16, 22, 30, 40)
+laser_damage = PackedInt32Array(2, 3, 4, 6)
+laser_tick = 0.05
+laser_color = Color(0.25, 0.6, 1, 1)

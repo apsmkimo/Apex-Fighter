@@ -21,3 +21,6 @@ extends Resource
 @export_group("Drop")
 @export var drop_item: ItemData
 @export_range(0.0, 1.0) var drop_chance := 0.0
+## 額外掉寶：依序輪替 pool 裡的道具（例如武器、導彈）
+@export var bonus_pool: Array[ItemData] = []
+@export_range(0.0, 1.0) var bonus_chance := 0.0

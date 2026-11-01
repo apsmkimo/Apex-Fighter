@@ -8,6 +8,8 @@ var _hi: Label
 var _lives: Label
 var _bombs: Label
 var _power: Label
+var _weapon: Label
+var _missile: Label
 var _center: Label
 var _boss_bar: ProgressBar
 var _boss_name: Label
@@ -23,6 +25,8 @@ func _ready() -> void:
 	Events.lives_changed.connect(_on_lives)
 	Events.bombs_changed.connect(_on_bombs)
 	Events.power_changed.connect(_on_power)
+	Events.weapon_changed.connect(_on_weapon)
+	Events.missile_changed.connect(_on_missile)
 	Events.boss_spawned.connect(_on_boss_spawned)
 	Events.boss_hp_changed.connect(_on_boss_hp)
 	Events.boss_defeated.connect(_on_boss_defeated)
@@ -79,7 +83,7 @@ func _build() -> void:
 	var bottom := VBoxContainer.new()
 	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
 	bottom.offset_left = 20
-	bottom.offset_top = -150
+	bottom.offset_top = -230
 	bottom.offset_bottom = -20
 	bottom.offset_right = 300
 	bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -87,7 +91,9 @@ func _build() -> void:
 	_lives = UiKit.label("LIFE 3", 26)
 	_bombs = UiKit.label("BOMB 3", 26, Color(0.5, 1, 0.6))
 	_power = UiKit.label("POWER 1", 26, Color(1, 0.5, 0.5))
-	for l in [_lives, _bombs, _power]:
+	_weapon = UiKit.label("VULCAN", 26, Color(0.5, 0.85, 1))
+	_missile = UiKit.label("", 26, Color(0.4, 1, 0.7))
+	for l in [_lives, _bombs, _power, _weapon, _missile]:
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		bottom.add_child(l)
 
@@ -167,6 +173,14 @@ func _on_bombs(v: int) -> void:
 
 func _on_power(level: int, max_level: int) -> void:
 	_power.text = "POWER MAX" if level >= max_level - 1 else "POWER %d" % (level + 1)
+
+
+func _on_weapon(w: Resource) -> void:
+	_weapon.text = (w as WeaponData).display_name.to_upper() if w else ""
+
+
+func _on_missile(level: int) -> void:
+	_missile.text = "" if level <= 0 else ("MISSILE MAX" if level >= GameManager.MAX_MISSILE_LEVEL else "MISSILE %d" % level)
 
 
 func _on_boss_spawned(boss: Node) -> void:

@@ -18,6 +18,7 @@ var _entering := false
 @onready var pickup_area: Area2D = $PickupArea
 @onready var pickup_shape: CollisionShape2D = $PickupArea/CollisionShape2D
 @onready var weapon: Weapon = $Weapon
+@onready var missiles: MissileLauncher = $MissileLauncher
 
 
 ## 在 add_child 之前呼叫。
@@ -42,8 +43,11 @@ func _ready() -> void:
 	var pick := CircleShape2D.new()
 	pick.radius = ship.pickup_radius
 	pickup_shape.shape = pick
-	weapon.data = ship.weapon
+	weapon.data = GameManager.weapon if GameManager.weapon else ship.weapon
 	weapon.level = GameManager.power_level
+	missiles.level = GameManager.missile_level
+	Events.weapon_changed.connect(func(w: Resource) -> void: weapon.data = w as WeaponData)
+	Events.missile_changed.connect(func(lv: int) -> void: missiles.level = lv)
 	area_entered.connect(_on_hurt)
 	pickup_area.area_entered.connect(_on_pickup)
 	Events.power_changed.connect(_on_power_changed)
@@ -83,7 +87,7 @@ func use_bomb() -> void:
 		var e := node as Enemy
 		if e and e.is_on_screen():
 			e.take_damage(ship.bomb_damage)
-	Events.bomb_used.emit(global_position)
+	Events.bomb_used.emit(global_position)  # 關卡會產生全螢幕火焰
 	Events.screen_shake.emit(16.0, 0.5)
 
 
@@ -114,6 +118,7 @@ func _on_pickup(area: Area2D) -> void:
 func _die() -> void:
 	alive = false
 	weapon.firing = false
+	missiles.firing = false
 	sprite.visible = false
 	Events.player_hit.emit()
 	Events.screen_shake.emit(14.0, 0.5)
@@ -134,10 +139,12 @@ func _spawn_in() -> void:
 	_entering = true
 	invincible = INVINCIBLE_TIME
 	weapon.firing = false
+	missiles.firing = false
 	var tw := create_tween()
 	tw.tween_property(self, "position", Vector2(size.x / 2.0, size.y - 220.0), 0.7) \
 			.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	await tw.finished
 	_entering = false
 	weapon.firing = true
+	missiles.firing = true
 	Events.player_respawned.emit()

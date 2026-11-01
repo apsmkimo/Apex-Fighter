@@ -42,6 +42,12 @@ func collect() -> void:
 		ItemData.Type.BOMB:
 			if not GameManager.add_bomb():
 				GameManager.add_score(data.score_value)
+		ItemData.Type.WEAPON:
+			if not GameManager.pick_weapon(data.weapon):
+				GameManager.add_score(data.score_value)
+		ItemData.Type.MISSILE:
+			if not GameManager.add_missile():
+				GameManager.add_score(data.score_value)
 		ItemData.Type.MEDAL:
 			GameManager.add_score(data.score_value)
 	queue_free()

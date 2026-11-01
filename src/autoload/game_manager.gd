@@ -20,6 +20,13 @@ var hi_scores := {}
 var lives := 0
 var bombs := 0
 var power_level := 0
+## 目前主武器（開局是戰機預設武器，吃武器道具會換）
+var weapon: WeaponData
+## 追蹤導彈等級，0 = 沒有
+var missile_level := 0
+const MAX_MISSILE_LEVEL := 3
+## 掉寶輪替計數 { 敵機 id: 次數 }
+var drop_counters := {}
 var last_run_cleared := false
 
 
@@ -45,6 +52,9 @@ func start_run(ship: ShipData, stage: StageData) -> void:
 	lives = ship.start_lives
 	bombs = ship.start_bombs
 	power_level = 0
+	weapon = ship.weapon
+	missile_level = 0
+	drop_counters.clear()
 	emit_all()
 
 
@@ -54,9 +64,13 @@ func emit_all() -> void:
 	Events.lives_changed.emit(lives)
 	Events.bombs_changed.emit(bombs)
 	Events.power_changed.emit(power_level, max_power())
+	Events.weapon_changed.emit(weapon)
+	Events.missile_changed.emit(missile_level)
 
 
 func max_power() -> int:
+	if weapon:
+		return weapon.max_level()
 	if selected_ship and selected_ship.weapon:
 		return selected_ship.weapon.max_level()
 	return 1
@@ -76,6 +90,9 @@ func add_score(value: int) -> void:
 func lose_life() -> bool:
 	lives -= 1
 	power_level = maxi(power_level - 1, 0)
+	if missile_level > 0:
+		missile_level -= 1
+		Events.missile_changed.emit(missile_level)
 	Events.lives_changed.emit(maxi(lives, 0))
 	Events.power_changed.emit(power_level, max_power())
 	return lives > 0
@@ -88,6 +105,36 @@ func add_power() -> bool:
 	power_level += 1
 	Events.power_changed.emit(power_level, max_power())
 	return true
+
+
+## 換主武器。拿到同一種武器時改成火力升級。回傳 false 代表全滿（呼叫端改給分數）。
+func pick_weapon(w: WeaponData) -> bool:
+	if w == null:
+		return false
+	if weapon == w:
+		return add_power()
+	weapon = w
+	power_level = mini(power_level, max_power() - 1)
+	Events.weapon_changed.emit(weapon)
+	Events.power_changed.emit(power_level, max_power())
+	return true
+
+
+func add_missile() -> bool:
+	if missile_level >= MAX_MISSILE_LEVEL:
+		return false
+	missile_level += 1
+	Events.missile_changed.emit(missile_level)
+	return true
+
+
+## 掉寶輪替：同一種敵機依序掉 pool 裡的道具
+func next_drop(enemy_id: StringName, pool: Array) -> Resource:
+	if pool.is_empty():
+		return null
+	var n: int = drop_counters.get(enemy_id, 0)
+	drop_counters[enemy_id] = n + 1
+	return pool[n % pool.size()]
 
 
 func add_bomb() -> bool:

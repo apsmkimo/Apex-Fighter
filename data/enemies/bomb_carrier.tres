@@ -1,10 +1,13 @@
-[gd_resource type="Resource" script_class="EnemyData" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="EnemyData" load_steps=8 format=3]
 
 [ext_resource type="Resource" path="res://data/patterns/aimed_3way_burst.tres" id="1_j64pa"]
 [ext_resource type="Resource" path="res://data/items/bomb.tres" id="2_h5xfi"]
 [ext_resource type="Resource" path="res://data/patterns/move_stop_and_go.tres" id="3_xareu"]
 [ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="4_ealeg"]
 [ext_resource type="Texture2D" path="res://assets/sprites/enemies/carrier.png" id="5_dqyku"]
+
+[ext_resource type="Script" path="res://src/entities/items/item_data.gd" id="b0_itm"]
+[ext_resource type="Resource" path="res://data/items/missile.tres" id="b_missile"]
 
 [resource]
 script = ExtResource("4_ealeg")
@@ -20,3 +23,5 @@ fire_interval = 1.8
 first_fire_delay = 1.3
 drop_item = ExtResource("2_h5xfi")
 drop_chance = 1.0
+bonus_pool = Array[ExtResource("b0_itm")]([ExtResource("b_missile")])
+bonus_chance = 1.0
