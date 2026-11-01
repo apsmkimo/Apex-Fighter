@@ -15,6 +15,7 @@ sort_order = 2
 unlocked = true
 texture = ExtResource("2_thb")
 portrait = ExtResource("9_portrait")
+ship_class = "S"
 ui_glow = Color(1, 0.85, 0.3, 1)
 stat_maneuver = 0.95
 stat_firepower = 0.7

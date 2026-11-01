@@ -45,6 +45,8 @@ var _weapon: RichTextLabel
 var _bars: Control
 var _diff_row: HBoxContainer
 var _launch: TextureButton
+var _hud: HudFrame
+var _arrows: Array[Button] = []
 
 
 func _ready() -> void:
@@ -70,10 +72,16 @@ func _ready() -> void:
 	_build_difficulty()
 	_build_buttons()
 
+	_hud = HudFrame.new()
+	_hud.canvas = _canvas
+	_hud.close_pressed.connect(GameManager.goto_title)
+	add_child(_hud)
+
 	var initial := GameManager.selected_ship if GameManager.selected_ship else null
 	_index = maxi(Database.ships.find(initial), 0)
 	_pos = _index
 	_update_info()
+	_hud.ship_class = Database.ships[_index].ship_class if not Database.ships.is_empty() else "A"
 
 	resized.connect(_fit)
 	_fit()
@@ -151,6 +159,7 @@ func _build_wheel() -> void:
 		arrow.draw.connect(_draw_arrow.bind(arrow, dir))
 		arrow.pressed.connect(_step.bind(dir))
 		_canvas.add_child(arrow)
+		_arrows.append(arrow)
 
 
 func _draw_arrow(b: Button, dir: int) -> void:
@@ -332,6 +341,8 @@ func _update_info() -> void:
 	var wname := ship.weapon.display_name if ship.weapon else "-"
 	_weapon.text = "[center][color=#%s]WEAPON[/color]   %s[/center]" % [g, wname]
 	_bars.queue_redraw()
+	if _hud:
+		_hud.ship_class = ship.ship_class
 	if _launch:
 		_launch.disabled = not ship.unlocked
 		_launch.modulate.a = 1.0 if ship.unlocked else 0.4
@@ -493,6 +504,11 @@ func _fit() -> void:
 	var s := minf(maxf(size.x / DESIGN.x, size.y / DESIGN.y), size.x / DESIGN.x * 1.1)
 	_canvas.scale = Vector2(s, s)
 	_canvas.position = (size - DESIGN * s) / 2.0
+	# 箭頭貼齊實際螢幕左右邊，長螢幕裁切時才不會被切掉
+	for i in _arrows.size():
+		var a := _arrows[i]
+		var screen_x := 10.0 * s if i == 0 else size.x - 10.0 * s - a.size.x * s
+		a.position.x = (screen_x - _canvas.position.x) / s
 
 
 func _notification(what: int) -> void:

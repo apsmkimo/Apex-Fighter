@@ -13,6 +13,8 @@ extends Resource
 @export var texture: Texture2D
 ## 選機畫面用的大圖（沒有就用 texture）
 @export var portrait: Texture2D
+## 選機畫面 HUD 顯示的機種等級
+@export var ship_class := "A"
 ## 選機畫面的光暈顏色
 @export var ui_glow := Color(0.35, 0.8, 1.0)
 ## 選機畫面的能力條（0 ~ 1）。SPEED 由 speed 自動換算
