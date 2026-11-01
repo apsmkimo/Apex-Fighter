@@ -49,5 +49,7 @@ score = 30000
 explosion_scale = 4.0
 movement = ExtResource("1_h0pm8")
 fire_interval = 1.5
+bullet_damage = 3
+contact_damage = 3
 first_fire_delay = 0.8
 drop_chance = 0.0

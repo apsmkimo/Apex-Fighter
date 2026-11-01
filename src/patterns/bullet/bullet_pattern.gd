@@ -17,11 +17,13 @@ func get_directions(_origin: Vector2, _target: Vector2, _shot_index: int) -> Arr
 	return [Vector2.DOWN]
 
 
-func fire(origin: Vector2, target: Vector2, shot_index: int) -> void:
+## dmg < 0 時用彈幕本身的 damage；敵機與 Boss 會傳入自己的子彈傷害
+func fire(origin: Vector2, target: Vector2, shot_index: int, dmg := -1) -> void:
 	if BulletPool.instance == null:
 		return
+	var d := dmg if dmg >= 0 else damage
 	for dir in get_directions(origin, target, shot_index):
-		BulletPool.instance.spawn(origin, dir * bullet_speed, bullet_texture, bullet_radius, damage, false)
+		BulletPool.instance.spawn(origin, dir * bullet_speed, bullet_texture, bullet_radius, d, false)
 
 
 ## 依目前難度調整一輪的子彈數

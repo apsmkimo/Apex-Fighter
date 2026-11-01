@@ -10,6 +10,9 @@ var _bombs: Label
 var _power: Label
 var _weapon: Label
 var _missile: Label
+var _shield: Label
+var _hp_bar: ProgressBar
+var _hp_label: Label
 var _center: Label
 var _boss_bar: ProgressBar
 var _boss_name: Label
@@ -27,6 +30,8 @@ func _ready() -> void:
 	Events.power_changed.connect(_on_power)
 	Events.weapon_changed.connect(_on_weapon)
 	Events.missile_changed.connect(_on_missile)
+	Events.player_hp_changed.connect(_on_hp)
+	Events.shield_changed.connect(_on_shield)
 	Events.boss_spawned.connect(_on_boss_spawned)
 	Events.boss_hp_changed.connect(_on_boss_hp)
 	Events.boss_defeated.connect(_on_boss_defeated)
@@ -83,7 +88,7 @@ func _build() -> void:
 	var bottom := VBoxContainer.new()
 	bottom.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
 	bottom.offset_left = 20
-	bottom.offset_top = -230
+	bottom.offset_top = -300
 	bottom.offset_bottom = -20
 	bottom.offset_right = 300
 	bottom.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -93,7 +98,30 @@ func _build() -> void:
 	_power = UiKit.label("POWER 1", 26, Color(1, 0.5, 0.5))
 	_weapon = UiKit.label("VULCAN", 26, Color(0.5, 0.85, 1))
 	_missile = UiKit.label("", 26, Color(0.4, 1, 0.7))
-	for l in [_lives, _bombs, _power, _weapon, _missile]:
+	_shield = UiKit.label("", 26, Color(0.45, 0.85, 1))
+	# 血條
+	var hp_row := HBoxContainer.new()
+	hp_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_hp_label = UiKit.label("HP", 24, Color(0.6, 1, 0.7))
+	hp_row.add_child(_hp_label)
+	_hp_bar = ProgressBar.new()
+	_hp_bar.custom_minimum_size = Vector2(190, 20)
+	_hp_bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_hp_bar.max_value = 6
+	_hp_bar.value = 6
+	_hp_bar.step = 1
+	_hp_bar.show_percentage = false
+	_hp_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var bg := StyleBoxFlat.new()
+	bg.bg_color = Color(0, 0, 0, 0.5)
+	bg.border_color = Color(0.5, 1, 0.7, 0.6)
+	bg.set_border_width_all(2)
+	bg.set_corner_radius_all(4)
+	_hp_bar.add_theme_stylebox_override(&"background", bg)
+	_set_hp_color(Color(0.3, 1, 0.5))
+	hp_row.add_child(_hp_bar)
+	bottom.add_child(hp_row)
+	for l in [_lives, _bombs, _power, _weapon, _missile, _shield]:
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		bottom.add_child(l)
 
@@ -171,8 +199,8 @@ func _on_bombs(v: int) -> void:
 	_bombs.text = "BOMB %d" % v
 
 
-func _on_power(level: int, max_level: int) -> void:
-	_power.text = "POWER MAX" if level >= max_level - 1 else "POWER %d" % (level + 1)
+func _on_power(level: int, _max_level: int) -> void:
+	_power.text = "POWER %d" % (level + 1)
 
 
 func _on_weapon(w: Resource) -> void:
@@ -180,7 +208,25 @@ func _on_weapon(w: Resource) -> void:
 
 
 func _on_missile(level: int) -> void:
-	_missile.text = "" if level <= 0 else ("MISSILE MAX" if level >= GameManager.MAX_MISSILE_LEVEL else "MISSILE %d" % level)
+	_missile.text = "" if level <= 0 else "MISSILE %d" % level
+
+
+func _on_hp(hp: int, max_hp: int) -> void:
+	_hp_bar.max_value = max_hp
+	_hp_bar.value = hp
+	var r := float(hp) / maxf(max_hp, 1)
+	_set_hp_color(Color(1, 0.3, 0.3) if r <= 0.34 else (Color(1, 0.85, 0.3) if r <= 0.67 else Color(0.3, 1, 0.5)))
+
+
+func _set_hp_color(c: Color) -> void:
+	var fill := StyleBoxFlat.new()
+	fill.bg_color = c
+	fill.set_corner_radius_all(4)
+	_hp_bar.add_theme_stylebox_override(&"fill", fill)
+
+
+func _on_shield(seconds: float) -> void:
+	_shield.text = "" if seconds <= 0.0 else "SHIELD %ds" % int(ceil(seconds))
 
 
 func _on_boss_spawned(boss: Node) -> void:

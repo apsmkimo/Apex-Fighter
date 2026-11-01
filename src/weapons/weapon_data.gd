@@ -1,6 +1,6 @@
 class_name WeaponData
 extends Resource
-## 玩家武器設定。levels 的長度就是火力等級數。
+## 玩家武器設定。levels 是前幾級的設計；火力沒有上限，超過的等級由 extra_levels() 自動加強。
 
 @export var id: StringName = &"vulcan"
 @export var display_name := "Vulcan"
@@ -24,16 +24,37 @@ enum Kind { BULLET, LASER }
 @export var laser_color := Color(0.25, 0.6, 1.0)
 
 
+## 設計好的等級數（不是上限）
 func max_level() -> int:
 	return maxi(levels.size(), 1)
 
 
+## 超過設計等級的部分（0 = 還在設計範圍內）
+func extra_levels(level: int) -> int:
+	var designed := laser_widths.size() if kind == Kind.LASER else levels.size()
+	return maxi(level - (maxi(designed, 1) - 1), 0)
+
+
+## 一般武器超過設計等級：前 MAX_EXTRA_PAIRS 級每級多一對外側子彈，之後每級傷害 +1
+const MAX_EXTRA_PAIRS := 4
+
+
+func extra_pairs(level: int) -> int:
+	return mini(extra_levels(level), MAX_EXTRA_PAIRS)
+
+
+func bullet_damage(level: int) -> int:
+	return damage + maxi(extra_levels(level) - MAX_EXTRA_PAIRS, 0)
+
+
 func laser_width(level: int) -> float:
-	return laser_widths[clampi(level, 0, laser_widths.size() - 1)] if not laser_widths.is_empty() else 20.0
+	var base := laser_widths[clampi(level, 0, laser_widths.size() - 1)] if not laser_widths.is_empty() else 20.0
+	return minf(base + 6.0 * extra_levels(level), 90.0)
 
 
 func laser_hit_damage(level: int) -> int:
-	return laser_damage[clampi(level, 0, laser_damage.size() - 1)] if not laser_damage.is_empty() else 1
+	var base := laser_damage[clampi(level, 0, laser_damage.size() - 1)] if not laser_damage.is_empty() else 1
+	return base + extra_levels(level)
 
 
 func get_level(index: int) -> WeaponLevel:

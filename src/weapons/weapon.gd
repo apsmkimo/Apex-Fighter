@@ -40,11 +40,27 @@ func _physics_process(delta: float) -> void:
 		return
 	var lv := data.get_level(level)
 	_cooldown = lv.fire_interval
+	var dmg := data.bullet_damage(level)
+	var max_angle := 0.0
+	var max_off := 0.0
 	for i in lv.offsets.size():
-		var angle := deg_to_rad(lv.angles_deg[i]) if i < lv.angles_deg.size() else 0.0
-		var dir := Vector2.UP.rotated(angle)
-		BulletPool.instance.spawn(global_position + lv.offsets[i], dir * data.bullet_speed,
-				data.bullet_texture, data.bullet_radius, data.damage, true)
+		var deg := lv.angles_deg[i] if i < lv.angles_deg.size() else 0.0
+		max_angle = maxf(max_angle, absf(deg))
+		max_off = maxf(max_off, absf(lv.offsets[i].x))
+		_shoot(lv.offsets[i], deg, dmg)
+	# 超過設計等級：外側一對一對加上去
+	var step := 6.0 if max_angle > 4.0 else 3.0
+	for k in data.extra_pairs(level):
+		var deg := max_angle + step * (k + 1)
+		var ox := max_off + 10.0 * (k + 1)
+		_shoot(Vector2(-ox, -10.0 + 4.0 * k), -deg, dmg)
+		_shoot(Vector2(ox, -10.0 + 4.0 * k), deg, dmg)
+
+
+func _shoot(offset: Vector2, deg: float, dmg: int) -> void:
+	var dir := Vector2.UP.rotated(deg_to_rad(deg))
+	BulletPool.instance.spawn(global_position + offset, dir * data.bullet_speed,
+			data.bullet_texture, data.bullet_radius, dmg, true)
 
 
 # ---------- 雷射 ----------

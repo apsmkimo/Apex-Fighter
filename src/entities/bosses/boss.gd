@@ -4,12 +4,17 @@ extends Enemy
 
 var phase_index := -1
 var _phase_emitters: Array[BulletEmitter] = []
+var ultimate: BossUltimate
 
 
 func _ready() -> void:
 	super._ready()
 	Events.boss_spawned.emit(self)
 	health.damaged.connect(_on_damaged)
+	if boss_data().ult_enabled:
+		ultimate = BossUltimate.new()
+		ultimate.setup(self)
+		add_child(ultimate)
 	_enter_phase(0)
 
 
@@ -26,6 +31,9 @@ func take_damage(amount: int) -> void:
 func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
 	var firing := age >= boss_data().entry_time and not health.dead
+	# 儲備能量與發射雷射時暫停一般彈幕
+	if ultimate and ultimate.busy():
+		firing = false
 	for e in _phase_emitters:
 		e.enabled = firing
 
@@ -68,11 +76,14 @@ func _enter_phase(index: int) -> void:
 			iv = GameManager.difficulty.scale_interval(iv)
 		e.configure(phase.patterns[i], iv, 0.6 + 0.2 * i)
 		e.enabled = false
+		e.bullet_damage = data.bullet_damage
 		add_child(e)
 		_phase_emitters.append(e)
 
 
 func _on_died() -> void:
+	if ultimate:
+		ultimate.cancel()
 	for e in _phase_emitters:
 		e.enabled = false
 	GameManager.add_score(data.score)

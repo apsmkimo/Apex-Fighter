@@ -24,7 +24,6 @@ var power_level := 0
 var weapon: WeaponData
 ## 追蹤導彈等級，0 = 沒有
 var missile_level := 0
-const MAX_MISSILE_LEVEL := 3
 ## 掉寶輪替計數 { 敵機 id: 次數 }
 var drop_counters := {}
 var last_run_cleared := false
@@ -98,10 +97,8 @@ func lose_life() -> bool:
 	return lives > 0
 
 
-## 火力升級。已經滿級時回傳 false（呼叫端可以改給分數）。
+## 火力升級（沒有上限）。
 func add_power() -> bool:
-	if power_level >= max_power() - 1:
-		return false
 	power_level += 1
 	Events.power_changed.emit(power_level, max_power())
 	return true
@@ -114,15 +111,13 @@ func pick_weapon(w: WeaponData) -> bool:
 	if weapon == w:
 		return add_power()
 	weapon = w
-	power_level = mini(power_level, max_power() - 1)
 	Events.weapon_changed.emit(weapon)
 	Events.power_changed.emit(power_level, max_power())
 	return true
 
 
+## 導彈升級（沒有上限）。
 func add_missile() -> bool:
-	if missile_level >= MAX_MISSILE_LEVEL:
-		return false
 	missile_level += 1
 	Events.missile_changed.emit(missile_level)
 	return true

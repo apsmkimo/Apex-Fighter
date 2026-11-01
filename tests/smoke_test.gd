@@ -17,6 +17,7 @@ func _ready() -> void:
 	Events.boss_spawned.connect(func(_b: Node) -> void: _boss_seen = true; print("[test] boss spawned at %.1fs" % t))
 	Events.enemy_killed.connect(func(_d: Resource, _p: Vector2) -> void: _kills += 1)
 	Events.stage_cleared.connect(_on_cleared)
+	Events.boss_ultimate.connect(func(st: String) -> void: print("[test] boss ultimate %s at %.1fs" % [st, t]))
 	Events.game_over.connect(func() -> void: _fail("game over"))
 	_start.call_deferred()
 

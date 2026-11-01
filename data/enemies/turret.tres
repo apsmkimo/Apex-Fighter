@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="EnemyData" load_steps=10 format=3]
+[gd_resource type="Resource" script_class="EnemyData" load_steps=11 format=3]
 
 [ext_resource type="Resource" path="res://data/patterns/spread_5.tres" id="1_bka2i"]
 [ext_resource type="Resource" path="res://data/items/power.tres" id="2_wcw60"]
@@ -10,6 +10,7 @@
 [ext_resource type="Resource" path="res://data/items/missile.tres" id="b_missile"]
 [ext_resource type="Resource" path="res://data/items/weapon_plasma.tres" id="b_weapon_plasma"]
 [ext_resource type="Resource" path="res://data/items/weapon_laser.tres" id="b_weapon_laser"]
+[ext_resource type="Resource" path="res://data/items/shield.tres" id="b_shield"]
 
 [resource]
 script = ExtResource("4_68v6c")
@@ -25,5 +26,5 @@ fire_interval = 1.3
 first_fire_delay = 1.3
 drop_item = ExtResource("2_wcw60")
 drop_chance = 0.35
-bonus_pool = Array[ExtResource("b0_itm")]([ExtResource("b_missile"), ExtResource("b_weapon_plasma"), ExtResource("b_missile"), ExtResource("b_weapon_laser")])
+bonus_pool = Array[ExtResource("b0_itm")]([ExtResource("b_missile"), ExtResource("b_weapon_plasma"), ExtResource("b_missile"), ExtResource("b_weapon_laser"), ExtResource("b_shield")])
 bonus_chance = 0.4

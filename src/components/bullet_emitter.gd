@@ -5,6 +5,8 @@ extends Node2D
 @export var pattern: BulletPattern
 @export var interval := 1.0
 var enabled := true
+## 打到玩家時扣的血；-1 = 用彈幕本身的設定
+var bullet_damage := -1
 
 var _timer := 0.5
 var _shot_index := 0
@@ -41,5 +43,5 @@ func _shoot() -> void:
 	var target := global_position + Vector2.DOWN * 100.0
 	if Player.instance and Player.instance.alive:
 		target = Player.instance.global_position
-	pattern.fire(global_position, target, _shot_index)
+	pattern.fire(global_position, target, _shot_index, bullet_damage)
 	_shot_index += 1

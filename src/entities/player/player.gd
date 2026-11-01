@@ -6,11 +6,19 @@ extends Area2D
 static var instance: Player
 
 const INVINCIBLE_TIME := 2.5
+## 被打中但沒死時的短暫無敵，避免同一波子彈連續扣血
+const HIT_INVINCIBLE := 1.0
+const SHIELD_TIME := 20.0
 const EDGE := Vector2(24, 40)
 
 var ship: ShipData
 var alive := false
 var invincible := 0.0
+var hp := 6
+var max_hp := 6
+## 護盾剩餘秒數，> 0 時可抵銷一次攻擊
+var shield := 0.0
+var _shield_fx: Node2D
 var _entering := false
 
 @onready var sprite: Sprite2D = $Sprite2D
@@ -50,6 +58,9 @@ func _ready() -> void:
 	Events.missile_changed.connect(func(lv: int) -> void: missiles.level = lv)
 	FlightVisual.attach(self, sprite, Vector2.UP, ship.bank_amount, maxf(ship.speed * 0.8, 300.0),
 			ship.thruster_offsets, ship.thruster_color, ship.thruster_width, ship.thruster_length)
+	max_hp = ship.max_hp
+	_shield_fx = ShieldFx.new()
+	add_child(_shield_fx)
 	area_entered.connect(_on_hurt)
 	pickup_area.area_entered.connect(_on_pickup)
 	Events.power_changed.connect(_on_power_changed)
@@ -72,6 +83,13 @@ func _physics_process(delta: float) -> void:
 		if dir != Vector2.ZERO:
 			position += dir * ship.speed * delta
 			_clamp()
+	if shield > 0.0:
+		var before := int(ceil(shield))
+		shield = maxf(shield - delta, 0.0)
+		if int(ceil(shield)) != before:
+			Events.shield_changed.emit(shield)
+	_shield_fx.visible = shield > 0.0 and alive
+	_shield_fx.set_meta(&"left", shield)
 	if invincible > 0.0:
 		invincible -= delta
 		sprite.visible = int(invincible * 20.0) % 2 == 0
@@ -106,10 +124,35 @@ func _on_hurt(area: Area2D) -> void:
 	if not alive or invincible > 0.0:
 		return
 	if area is Bullet and not (area as Bullet).is_player_bullet:
-		(area as Bullet).release()
-		_die()
+		var b := area as Bullet
+		b.release()
+		take_hit(b.damage)
 	elif area is Enemy:
+		take_hit((area as Enemy).data.contact_damage)
+
+
+## 受到攻擊：先由護盾抵銷，再扣血，血量歸零才失去一條命。
+func take_hit(amount: int) -> void:
+	if not alive or _entering or invincible > 0.0:
+		return
+	if shield > 0.0:
+		shield = 0.0
+		invincible = 0.6
+		Events.shield_changed.emit(0.0)
+		Events.screen_shake.emit(6.0, 0.2)
+		return
+	hp = maxi(hp - maxi(amount, 1), 0)
+	Events.player_hp_changed.emit(hp, max_hp)
+	if hp <= 0:
 		_die()
+	else:
+		invincible = HIT_INVINCIBLE
+		Events.screen_shake.emit(8.0, 0.25)
+
+
+func add_shield() -> void:
+	shield = SHIELD_TIME
+	Events.shield_changed.emit(shield)
 
 
 func _on_pickup(area: Area2D) -> void:
@@ -119,6 +162,8 @@ func _on_pickup(area: Area2D) -> void:
 
 func _die() -> void:
 	alive = false
+	shield = 0.0
+	Events.shield_changed.emit(0.0)
 	weapon.firing = false
 	missiles.firing = false
 	sprite.visible = false
@@ -138,6 +183,8 @@ func _spawn_in() -> void:
 	var size := get_viewport_rect().size
 	position = Vector2(size.x / 2.0, size.y + 80.0)
 	alive = true
+	hp = max_hp
+	Events.player_hp_changed.emit(hp, max_hp)
 	_entering = true
 	invincible = INVINCIBLE_TIME
 	weapon.firing = false
@@ -150,3 +197,34 @@ func _spawn_in() -> void:
 	weapon.firing = true
 	missiles.firing = true
 	Events.player_respawned.emit()
+
+
+## 護盾外觀：藍色六角能量罩，最後 3 秒閃爍
+class ShieldFx extends Node2D:
+	var _t := 0.0
+
+	func _ready() -> void:
+		z_index = 2
+		var mat := CanvasItemMaterial.new()
+		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		material = mat
+		visible = false
+
+	func _process(delta: float) -> void:
+		_t += delta
+		if visible:
+			queue_redraw()
+
+	func _draw() -> void:
+		var left: float = get_meta(&"left", 0.0)
+		var a := 1.0
+		if left < 3.0:
+			a = 0.35 + 0.65 * float(int(_t * 10.0) % 2)
+		var r := 58.0 + 3.0 * sin(_t * 6.0)
+		draw_circle(Vector2.ZERO, r, Color(0.2, 0.6, 1.0, 0.12 * a))
+		var pts := PackedVector2Array()
+		for i in 7:
+			var ang := _t * 0.8 + i * TAU / 6.0
+			pts.append(Vector2(cos(ang), sin(ang)) * r)
+		draw_polyline(pts, Color(0.4, 0.85, 1.0, 0.8 * a), 3.0, true)
+		draw_arc(Vector2.ZERO, r - 6.0, 0, TAU, 40, Color(0.5, 0.9, 1.0, 0.35 * a), 2.0, true)

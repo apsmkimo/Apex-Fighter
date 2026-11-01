@@ -48,6 +48,9 @@ func collect() -> void:
 		ItemData.Type.MISSILE:
 			if not GameManager.add_missile():
 				GameManager.add_score(data.score_value)
+		ItemData.Type.SHIELD:
+			if Player.instance:
+				Player.instance.add_shield()
 		ItemData.Type.MEDAL:
 			GameManager.add_score(data.score_value)
 	queue_free()

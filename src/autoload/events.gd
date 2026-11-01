@@ -9,6 +9,9 @@ signal bombs_changed(bombs: int)
 signal power_changed(level: int, max_level: int)
 signal weapon_changed(weapon: Resource)
 signal missile_changed(level: int)
+signal player_hp_changed(hp: int, max_hp: int)
+## 護盾剩餘秒數；0 = 沒有護盾
+signal shield_changed(seconds: float)
 
 signal enemy_killed(data: Resource, at: Vector2)
 signal player_hit
@@ -18,6 +21,8 @@ signal bomb_used(at: Vector2)
 signal boss_spawned(boss: Node)
 signal boss_hp_changed(ratio: float)
 signal boss_defeated
+## Boss 大絕招：state = "charge" / "fire" / "end"
+signal boss_ultimate(state: String)
 
 signal stage_warning(text: String)
 signal stage_cleared

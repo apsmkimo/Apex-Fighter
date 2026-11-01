@@ -2,7 +2,7 @@ class_name ItemData
 extends Resource
 ## 道具設定。
 
-enum Type { POWER, BOMB, MEDAL, WEAPON, MISSILE }
+enum Type { POWER, BOMB, MEDAL, WEAPON, MISSILE, SHIELD }
 
 @export var type: Type = Type.POWER
 @export var texture: Texture2D

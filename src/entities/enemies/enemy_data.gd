@@ -25,6 +25,10 @@ extends Resource
 @export var movement: MovePattern
 
 @export_group("Attack")
+## 子彈打中玩家扣的血（玩家預設 6 血：一般 2 = 可擋 3 發，Boss 3 = 可擋 2 發）
+@export var bullet_damage := 2
+## 撞到玩家扣的血
+@export var contact_damage := 2
 @export var bullet_pattern: BulletPattern
 @export var fire_interval := 1.5
 @export var first_fire_delay := 0.8

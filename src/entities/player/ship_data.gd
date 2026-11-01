@@ -39,6 +39,8 @@ extends Resource
 @export var pickup_radius := 44.0
 
 @export_group("Stock")
+## 每條命的血量（一般子彈 2、Boss 子彈 3、Boss 大絕招 4）
+@export var max_hp := 6
 @export var start_lives := 3
 @export var start_bombs := 3
 @export var max_bombs := 5
