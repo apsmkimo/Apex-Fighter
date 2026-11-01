@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="ShipData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/entities/player/ship_data.gd" id="1_sd"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/ship_harrier.png" id="2_tex"]
+[ext_resource type="Resource" path="res://data/weapons/venom_rail.tres" id="3_wpn"]
+[ext_resource type="Texture2D" path="res://assets/ui/ships/harrier_portrait.png" id="4_portrait"]
+
+[resource]
+script = ExtResource("1_sd")
+id = &"harrier"
+display_name = "HARRIER"
+description = "Rapid-fire striker. Venom Rail has the highest fire rate, with wingtip cannons."
+sort_order = 5
+unlocked = true
+texture = ExtResource("2_tex")
+portrait = ExtResource("4_portrait")
+ship_class = "R"
+ui_glow = Color(0.3, 1.0, 0.35, 1)
+stat_maneuver = 0.75
+stat_firepower = 0.7
+bank_amount = 0.9
+thruster_offsets = PackedVector2Array(-15, 36, 0, 38, 15, 36)
+thruster_color = Color(0.3, 1.0, 0.35, 1)
+thruster_width = 9.0
+thruster_length = 24.0
+speed = 560.0
+touch_sensitivity = 1.35
+hitbox_radius = 6.0
+pickup_radius = 44.0
+max_hp = 6
+start_lives = 3
+start_bombs = 3
+max_bombs = 5
+bomb_damage = 70
+weapon = ExtResource("3_wpn")

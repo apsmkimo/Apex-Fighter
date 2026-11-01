@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/player_needle.png" id="1_tex"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="2_lv"]
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_wd"]
+
+[sub_resource type="Resource" id="lv1"]
+script = ExtResource("2_lv")
+fire_interval = 0.1
+offsets = PackedVector2Array(-6, -40, 6, -40)
+angles_deg = PackedFloat32Array(0, 0)
+
+[sub_resource type="Resource" id="lv2"]
+script = ExtResource("2_lv")
+fire_interval = 0.1
+offsets = PackedVector2Array(-6, -40, 6, -40, -24, -24, 24, -24)
+angles_deg = PackedFloat32Array(0, 0, 3, -3)
+
+[sub_resource type="Resource" id="lv3"]
+script = ExtResource("2_lv")
+fire_interval = 0.095
+offsets = PackedVector2Array(-6, -40, 6, -40, -24, -24, 24, -24, -38, -12, 38, -12)
+angles_deg = PackedFloat32Array(0, 0, 3, -3, 5, -5)
+
+[sub_resource type="Resource" id="lv4"]
+script = ExtResource("2_lv")
+fire_interval = 0.09
+offsets = PackedVector2Array(-6, -40, 6, -40, -24, -24, 24, -24, -38, -12, 38, -12, -46, -4, 46, -4)
+angles_deg = PackedFloat32Array(0, 0, 3, -3, 5, -5, -8, 8)
+
+[resource]
+script = ExtResource("3_wd")
+id = &"shadow_needle"
+display_name = "Shadow Needle"
+bullet_texture = ExtResource("1_tex")
+bullet_speed = 2100.0
+bullet_radius = 6.0
+damage = 2
+levels = Array[ExtResource("2_lv")]([SubResource("lv1"), SubResource("lv2"), SubResource("lv3"), SubResource("lv4")])

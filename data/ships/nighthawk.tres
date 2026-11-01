@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="ShipData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/entities/player/ship_data.gd" id="1_sd"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/ship_nighthawk.png" id="2_tex"]
+[ext_resource type="Resource" path="res://data/weapons/shadow_needle.tres" id="3_wpn"]
+[ext_resource type="Texture2D" path="res://assets/ui/ships/nighthawk_portrait.png" id="4_portrait"]
+
+[resource]
+script = ExtResource("1_sd")
+id = &"nighthawk"
+display_name = "NIGHTHAWK"
+description = "Stealth interceptor. Fastest ship with the smallest hitbox. Shadow Needles cross inward, and its bomb hits hardest."
+sort_order = 6
+unlocked = true
+texture = ExtResource("2_tex")
+portrait = ExtResource("4_portrait")
+ship_class = "X"
+ui_glow = Color(0.6, 0.55, 1.0, 1)
+stat_maneuver = 0.95
+stat_firepower = 0.6
+bank_amount = 1.0
+thruster_offsets = PackedVector2Array(-8, 34, 8, 34)
+thruster_color = Color(0.45, 0.55, 1.0, 1)
+thruster_width = 10.0
+thruster_length = 26.0
+speed = 640.0
+touch_sensitivity = 1.45
+hitbox_radius = 4.0
+pickup_radius = 42.0
+max_hp = 6
+start_lives = 3
+start_bombs = 2
+max_bombs = 4
+bomb_damage = 120
+weapon = ExtResource("3_wpn")
