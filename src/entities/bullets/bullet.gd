@@ -11,6 +11,9 @@ var velocity := Vector2.ZERO
 var damage := 1
 var is_player_bullet := false
 var active := false
+## 穿透彈：打中不消失，對同一隻敵機只打一次
+var pierce := false
+var _hit_ids: Array[int] = []
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var shape: CollisionShape2D = $CollisionShape2D
@@ -40,6 +43,8 @@ func activate(pos: Vector2, vel: Vector2, tex: Texture2D, radius: float, dmg: in
 	velocity = vel
 	damage = dmg
 	is_player_bullet = player_owned
+	pierce = false
+	_hit_ids.clear()
 	sprite.texture = tex
 	sprite.rotation = vel.angle() + PI / 2.0  # 圖片朝上
 	_circle.radius = radius
@@ -83,6 +88,15 @@ func _physics_process(delta: float) -> void:
 
 func _on_area_entered(area: Area2D) -> void:
 	if active and is_player_bullet and area is Enemy:
+		if pierce:
+			var id := area.get_instance_id()
+			if id in _hit_ids:
+				return
+			_hit_ids.append(id)
+			(area as Enemy).take_damage(damage)
+			if NeonFx.instance:
+				NeonFx.instance.impact(global_position, _col)
+			return
 		(area as Enemy).take_damage(damage)
 		if NeonFx.instance and randf() < 0.6:
 			NeonFx.instance.impact(global_position, _col)

@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="StageData" load_steps=25 format=3]
+[gd_resource type="Resource" script_class="StageData" load_steps=42 format=3]
 
 [ext_resource type="Resource" path="res://data/enemies/boss_violet_fortress.tres" id="1_5ox8f"]
+[ext_resource type="Resource" path="res://data/enemies/boss_crimson_widow.tres" id="1_widow"]
 [ext_resource type="Script" path="res://src/stages/stage_data.gd" id="2_a154h"]
 [ext_resource type="Script" path="res://src/stages/wave_data.gd" id="3_u1kn1"]
 [ext_resource type="Resource" path="res://data/enemies/dart.tres" id="4_lstpg"]
@@ -165,6 +166,170 @@ step_x = 0.0
 movement_override = ExtResource("8_gmauv")
 mirror = true
 
+[sub_resource type="Resource" id="W2_0"]
+script = ExtResource("3_u1kn1")
+time = 1.0
+enemy = ExtResource("4_lstpg")
+count = 6
+interval = 0.35
+start_x = 0.5
+step_x = 0
+movement_override = ExtResource("5_dk08l")
+mirror = true
+
+[sub_resource type="Resource" id="W2_1"]
+script = ExtResource("3_u1kn1")
+time = 3.0
+enemy = ExtResource("7_xac5c")
+count = 2
+interval = 0
+start_x = 0.25
+step_x = 0.5
+mirror = false
+
+[sub_resource type="Resource" id="W2_2"]
+script = ExtResource("3_u1kn1")
+time = 5.5
+enemy = ExtResource("6_t4dgm")
+count = 1
+interval = 0
+start_x = 0.3
+step_x = 0
+mirror = true
+
+[sub_resource type="Resource" id="W2_3"]
+script = ExtResource("3_u1kn1")
+time = 6.0
+enemy = ExtResource("4_lstpg")
+count = 5
+interval = 0.3
+start_x = 0.1
+step_x = 0
+movement_override = ExtResource("8_gmauv")
+mirror = true
+
+[sub_resource type="Resource" id="W2_4"]
+script = ExtResource("3_u1kn1")
+time = 9.0
+enemy = ExtResource("9_ecfjx")
+count = 1
+interval = 0
+start_x = 0.5
+step_x = 0
+mirror = false
+
+[sub_resource type="Resource" id="W2_5"]
+script = ExtResource("3_u1kn1")
+time = 10.0
+enemy = ExtResource("7_xac5c")
+count = 3
+interval = 0.5
+start_x = 0.2
+step_x = 0.3
+mirror = false
+
+[sub_resource type="Resource" id="W2_6"]
+script = ExtResource("3_u1kn1")
+time = 13.5
+enemy = ExtResource("4_lstpg")
+count = 8
+interval = 0.3
+start_x = 0.3
+step_x = 0
+movement_override = ExtResource("5_dk08l")
+mirror = true
+
+[sub_resource type="Resource" id="W2_7"]
+script = ExtResource("3_u1kn1")
+time = 16.0
+enemy = ExtResource("9_ecfjx")
+count = 2
+interval = 0
+start_x = 0.3
+step_x = 0.4
+mirror = false
+
+[sub_resource type="Resource" id="W2_8"]
+script = ExtResource("3_u1kn1")
+time = 17.0
+enemy = ExtResource("6_t4dgm")
+count = 1
+interval = 0
+start_x = 0.5
+step_x = 0
+mirror = false
+
+[sub_resource type="Resource" id="W2_9"]
+script = ExtResource("3_u1kn1")
+time = 19.0
+enemy = ExtResource("7_xac5c")
+count = 4
+interval = 0.4
+start_x = 0.15
+step_x = 0.233
+mirror = false
+
+[sub_resource type="Resource" id="W2_10"]
+script = ExtResource("3_u1kn1")
+time = 22.0
+enemy = ExtResource("4_lstpg")
+count = 6
+interval = 0.25
+start_x = 0.1
+step_x = 0.16
+mirror = false
+
+[sub_resource type="Resource" id="W2_11"]
+script = ExtResource("3_u1kn1")
+time = 24.0
+enemy = ExtResource("9_ecfjx")
+count = 1
+interval = 0
+start_x = 0.5
+step_x = 0
+mirror = false
+
+[sub_resource type="Resource" id="W2_12"]
+script = ExtResource("3_u1kn1")
+time = 24.5
+enemy = ExtResource("7_xac5c")
+count = 2
+interval = 0
+start_x = 0.2
+step_x = 0.6
+mirror = false
+
+[sub_resource type="Resource" id="W2_13"]
+script = ExtResource("3_u1kn1")
+time = 27.0
+enemy = ExtResource("4_lstpg")
+count = 10
+interval = 0.25
+start_x = 0.35
+step_x = 0
+movement_override = ExtResource("5_dk08l")
+mirror = true
+
+[sub_resource type="Resource" id="W2_14"]
+script = ExtResource("3_u1kn1")
+time = 30.0
+enemy = ExtResource("7_xac5c")
+count = 3
+interval = 0.5
+start_x = 0.2
+step_x = 0.3
+mirror = false
+
+[sub_resource type="Resource" id="W2_15"]
+script = ExtResource("3_u1kn1")
+time = 31.0
+enemy = ExtResource("6_t4dgm")
+count = 1
+interval = 0
+start_x = 0.3
+step_x = 0
+mirror = true
+
 [resource]
 script = ExtResource("2_a154h")
 id = &"stage_01"
@@ -174,5 +339,8 @@ scroll_speed = 160.0
 bg_top_color = Color(0.04, 0.06, 0.16, 1)
 bg_bottom_color = Color(0.1, 0.14, 0.3, 1)
 waves = Array[ExtResource("3_u1kn1")]([SubResource("Resource_x7s4n"), SubResource("Resource_j807p"), SubResource("Resource_yqygw"), SubResource("Resource_ua71i"), SubResource("Resource_avtj5"), SubResource("Resource_hpgot"), SubResource("Resource_eq3ib"), SubResource("Resource_w2n56"), SubResource("Resource_t5pdp"), SubResource("Resource_fkv7t"), SubResource("Resource_8r5s2"), SubResource("Resource_gmegb"), SubResource("Resource_vg135"), SubResource("Resource_88gao"), SubResource("Resource_n35ka")])
-boss = ExtResource("1_5ox8f")
+mid_boss = ExtResource("1_5ox8f")
+waves_after_mid = Array[ExtResource("3_u1kn1")]([SubResource("W2_0"), SubResource("W2_1"), SubResource("W2_2"), SubResource("W2_3"), SubResource("W2_4"), SubResource("W2_5"), SubResource("W2_6"), SubResource("W2_7"), SubResource("W2_8"), SubResource("W2_9"), SubResource("W2_10"), SubResource("W2_11"), SubResource("W2_12"), SubResource("W2_13"), SubResource("W2_14"), SubResource("W2_15")])
+after_mid_hp_mult = 2.0
+boss = ExtResource("1_widow")
 boss_warning_time = 2.5

@@ -1,9 +1,10 @@
-[gd_resource type="Resource" script_class="ShipData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ShipData" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://src/entities/player/ship_data.gd" id="1_sd"]
 [ext_resource type="Texture2D" path="res://assets/sprites/player/ship_albatross.png" id="2_tex"]
 [ext_resource type="Resource" path="res://data/weapons/halo_lance.tres" id="3_wpn"]
 [ext_resource type="Texture2D" path="res://assets/ui/ships/albatross_portrait.png" id="4_portrait"]
+[ext_resource type="Resource" path="res://data/weapons/nova_wave.tres" id="9_special"]
 
 [resource]
 script = ExtResource("1_sd")
@@ -33,3 +34,4 @@ start_bombs = 3
 max_bombs = 5
 bomb_damage = 90
 weapon = ExtResource("3_wpn")
+special_weapon = ExtResource("9_special")

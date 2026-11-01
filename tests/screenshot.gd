@@ -2,7 +2,7 @@ extends Node
 ## 截圖工具（需要有畫面的環境，例如 xvfb-run）：跑關卡並在指定時間存截圖到 user://shots/。
 ## 執行：xvfb-run godot --rendering-method gl_compatibility --path . res://tests/screenshot.tscn
 
-const SHOTS := [1.0, 7.0, 8.15, 20.0]
+var SHOTS: Array = [1.0, 7.0, 8.15, 20.0] if OS.get_environment("SHOT_BOSS") != "1" else [6.2, 7.8, 9.6, 10.6]
 var t := 0.0
 var _i := 0
 var _boosted := false
@@ -15,7 +15,18 @@ func _ready() -> void:
 	for s in Database.ships:
 		if String(s.id) == OS.get_environment("SMOKE_SHIP"):
 			ship = s
-	GameManager.start_run(ship, Database.first_stage())
+	var stage: StageData = Database.first_stage()
+	# SHOT_BOSS=1：跳過波次直接打最終 Boss，大絕招提早發動（檢查紅眼雷射與吐絲）
+	if OS.get_environment("SHOT_BOSS") == "1":
+		stage = stage.duplicate()
+		stage.waves = []
+		stage.mid_boss = null
+		stage.boss_warning_time = 0.5
+		var b: BossData = stage.boss.duplicate()
+		b.ult_first_delay = 0.5
+		b.ult_interval = 1.0
+		stage.boss = b
+	GameManager.start_run(ship, stage)
 	add_child((load(GameManager.SCENE_STAGE) as PackedScene).instantiate())
 
 

@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/player_nova.png" id="1_tex"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="2_lv"]
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_wd"]
+
+[sub_resource type="Resource" id="lv1"]
+script = ExtResource("2_lv")
+fire_interval = 0.22
+offsets = PackedVector2Array(0, -40)
+angles_deg = PackedFloat32Array(0)
+
+[sub_resource type="Resource" id="lv2"]
+script = ExtResource("2_lv")
+fire_interval = 0.22
+offsets = PackedVector2Array(-16, -34, 16, -34)
+angles_deg = PackedFloat32Array(-4, 4)
+
+[sub_resource type="Resource" id="lv3"]
+script = ExtResource("2_lv")
+fire_interval = 0.21
+offsets = PackedVector2Array(-24, -30, 0, -42, 24, -30)
+angles_deg = PackedFloat32Array(-10, 0, 10)
+
+[sub_resource type="Resource" id="lv4"]
+script = ExtResource("2_lv")
+fire_interval = 0.2
+offsets = PackedVector2Array(-34, -24, -16, -36, 0, -44, 16, -36, 34, -24)
+angles_deg = PackedFloat32Array(-16, -7, 0, 7, 16)
+
+[resource]
+script = ExtResource("3_wd")
+id = &"nova_wave"
+display_name = "Nova Wave"
+bullet_texture = ExtResource("1_tex")
+bullet_speed = 1000.0
+bullet_radius = 18.0
+damage = 2
+levels = Array[ExtResource("2_lv")]([SubResource("lv1"), SubResource("lv2"), SubResource("lv3"), SubResource("lv4")])
+pierce = true

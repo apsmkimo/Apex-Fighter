@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="ShipData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ShipData" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://src/entities/player/ship_data.gd" id="1_uyvfy"]
 [ext_resource type="Texture2D" path="res://assets/sprites/player/ship_falcon.png" id="2_meiqx"]
 [ext_resource type="Resource" path="res://data/weapons/vulcan.tres" id="3_u2ltx"]
 
 [ext_resource type="Texture2D" path="res://assets/ui/ships/falcon_portrait.png" id="9_portrait"]
+[ext_resource type="Resource" path="res://data/weapons/arc_thunder.tres" id="9_special"]
 
 [resource]
 script = ExtResource("1_uyvfy")
@@ -33,3 +34,4 @@ start_bombs = 3
 max_bombs = 5
 bomb_damage = 80
 weapon = ExtResource("3_u2ltx")
+special_weapon = ExtResource("9_special")

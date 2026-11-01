@@ -23,3 +23,24 @@ extends EnemyData
 ## 砲口位置（相對 Boss 中心）
 @export var ult_origin := Vector2(0, 80)
 @export var ult_color := Color(1.0, 0.25, 0.85)
+## 大絕招種類，依序輪流使用：beam = 往下大範圍雷射、eye_laser = 紅眼掃射雷射、web = 吐絲封住行動
+@export var ult_kinds: Array[StringName] = [&"beam"]
+
+@export_subgroup("Eye Laser")
+## 眼睛位置（相對 Boss 中心）
+@export var ult_eye_offset := Vector2(0, -20)
+@export var ult_eye_width := 44.0
+## 掃射角度範圍（度）
+@export var ult_eye_sweep_deg := 34.0
+@export var ult_eye_charge := 2.0
+@export var ult_eye_fire := 1.8
+
+@export_subgroup("Web")
+## 吐絲位置（相對 Boss 中心）
+@export var ult_web_origin := Vector2(0, 90)
+@export var ult_web_count := 5
+@export var ult_web_spread_deg := 60.0
+@export var ult_web_speed := 270.0
+## 被絲網黏住無法移動的秒數（左右滑動可以提早掙脫）
+@export var ult_web_stun := 2.2
+@export var ult_web_charge := 1.2

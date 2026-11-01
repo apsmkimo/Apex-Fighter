@@ -15,10 +15,15 @@ var done := false
 
 
 func start(stage: StageData, target: Node) -> void:
+	start_waves(stage.waves, target)
+
+
+## 從頭開始跑一組波次（中階 Boss 之後的第二段也用這個）
+func start_waves(waves: Array[WaveData], target: Node) -> void:
 	_target = target
 	_time = 0.0
 	_queue.clear()
-	for wave in stage.waves:
+	for wave in waves:
 		if wave.enemy == null:
 			continue
 		for i in wave.count:

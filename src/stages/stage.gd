@@ -10,6 +10,8 @@ const BOSS_SCENE := preload("res://src/entities/bosses/boss.tscn")
 var data: StageData
 var state := State.WAVES
 var fx: NeonFx
+## 已經打倒中階 Boss，進入後半段
+var _final_phase := false
 
 @onready var background: ScrollBackground = $Background
 @onready var enemies: Node2D = $Enemies
@@ -59,13 +61,40 @@ func _start_boss_warning() -> void:
 	await get_tree().create_timer(data.boss_warning_time).timeout
 	if state != State.BOSS_WARNING:
 		return
-	if data.boss == null:
+	if _current_boss_data() == null:
 		_on_boss_defeated()
 		return
 	state = State.BOSS
+	var bd := _current_boss_data()
 	var boss := BOSS_SCENE.instantiate() as Boss
-	boss.setup(data.boss, Vector2(get_viewport_rect().size.x / 2.0, -120.0))
+	boss.setup(bd, Vector2(get_viewport_rect().size.x / 2.0, -160.0))
 	enemies.add_child(boss)
+
+
+## 現在該出場的 Boss：有中階 Boss 而且還沒打倒時是中階 Boss
+func _current_boss_data() -> BossData:
+	if data.mid_boss and not _final_phase:
+		return data.mid_boss
+	return data.boss
+
+
+func _is_mid_boss_fight() -> bool:
+	return data.mid_boss != null and not _final_phase
+
+
+## 打倒中階 Boss：清彈 → 提示 → 第二段波次（敵機血量加倍）
+func _start_final_phase() -> void:
+	_final_phase = true
+	GameManager.enemy_hp_mult = data.after_mid_hp_mult
+	if BulletPool.instance:
+		BulletPool.instance.clear_enemy_bullets()
+	Events.screen_shake.emit(16.0, 0.8)
+	await get_tree().create_timer(2.5).timeout
+	if state == State.OVER:
+		return
+	hud.show_notice("FINAL ASSAULT", "ENEMY REINFORCEMENTS", NeonDraw.AMBER)
+	state = State.WAVES
+	spawner.start_waves(data.waves_after_mid, enemies)
 
 
 func spawn_explosion(at: Vector2, size_scale := 1.0) -> void:
@@ -96,6 +125,10 @@ func _on_bomb_used(at: Vector2) -> void:
 
 func _on_boss_defeated() -> void:
 	if state == State.CLEAR or state == State.OVER:
+		return
+	if _is_mid_boss_fight():
+		state = State.BOSS_WARNING   # 暫時狀態，避免 _physics_process 立刻再叫 Boss
+		_start_final_phase()
 		return
 	state = State.CLEAR
 	if BulletPool.instance:

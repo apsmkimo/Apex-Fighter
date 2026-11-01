@@ -48,3 +48,5 @@ extends Resource
 
 @export_group("Weapon")
 @export var weapon: WeaponData
+## 撿到特殊武器道具（紫金星）時換成的武器。戰機分兩組，各組拿到不同武器
+@export var special_weapon: WeaponData

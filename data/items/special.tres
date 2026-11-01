@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/entities/items/item_data.gd" id="1_item"]
+[ext_resource type="Texture2D" path="res://assets/sprites/items/special.png" id="2_tex"]
+
+[resource]
+script = ExtResource("1_item")
+type = 6
+texture = ExtResource("2_tex")
+score_value = 3000

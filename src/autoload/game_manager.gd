@@ -26,6 +26,8 @@ var weapon: WeaponData
 var missile_level := 0
 ## 掉寶輪替計數 { 敵機 id: 次數 }
 var drop_counters := {}
+## 關卡中途調整的敵機血量倍率（中階 Boss 之後 = 2）
+var enemy_hp_mult := 1.0
 var last_run_cleared := false
 
 
@@ -54,6 +56,7 @@ func start_run(ship: ShipData, stage: StageData) -> void:
 	weapon = ship.weapon
 	missile_level = 0
 	drop_counters.clear()
+	enemy_hp_mult = 1.0
 	emit_all()
 
 

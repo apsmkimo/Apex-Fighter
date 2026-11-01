@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="ShipData" load_steps=5 format=3]
+[gd_resource type="Resource" script_class="ShipData" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://src/entities/player/ship_data.gd" id="1_uyvfy"]
 [ext_resource type="Texture2D" path="res://assets/sprites/player/ship_thunderbird.png" id="2_thb"]
 [ext_resource type="Resource" path="res://data/weapons/thunder_spread.tres" id="3_thndr"]
 
 [ext_resource type="Texture2D" path="res://assets/ui/ships/thunderbird_portrait.png" id="9_portrait"]
+[ext_resource type="Resource" path="res://data/weapons/arc_thunder.tres" id="9_special"]
 
 [resource]
 script = ExtResource("1_uyvfy")
@@ -33,3 +34,4 @@ start_bombs = 2
 max_bombs = 4
 bomb_damage = 70
 weapon = ExtResource("3_thndr")
+special_weapon = ExtResource("9_special")

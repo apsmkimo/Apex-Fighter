@@ -1,7 +1,7 @@
 class_name Weapon
 extends Node2D
 ## 掛在玩家身上的主武器，依照 WeaponData 與目前火力等級自動攻擊。
-## 一般武器發射子彈；LASER 武器畫出一道連續光束，打到正前方最近的敵人。
+## BULLET 發射子彈（可穿透）；LASER 畫出多條細光束（火力越高越多條）；ARC 放出連鎖閃電。
 
 const LASER_MUZZLE := Vector2(0, -40)
 
@@ -15,16 +15,22 @@ var firing := false:
 	set(v):
 		firing = v
 		if not v:
-			_beam_len = 0.0
+			_beam_lens.clear()
+			_arc_fade = 0.0
 			queue_redraw()
 var _cooldown := 0.0
 var _flash_col := Color(0.6, 0.9, 1.0)
 
-# 雷射狀態
-var _beam_len := 0.0
-var _beam_hit := false
+# 雷射狀態（每條光束各自的長度與是否命中）
+var _beam_lens := PackedFloat32Array()
+var _beam_hits: Array[bool] = []
 var _laser_tick := 0.0
 var _t := 0.0
+
+# 連鎖閃電狀態：每段閃電是一串世界座標折線，_arc_fade 從 1 淡到 0
+var _arcs: Array[PackedVector2Array] = []
+var _arc_fade := 0.0
+var _arc_cd := 0.0
 
 
 func _physics_process(delta: float) -> void:
@@ -33,6 +39,9 @@ func _physics_process(delta: float) -> void:
 		return
 	if data.kind == WeaponData.Kind.LASER:
 		_process_laser(delta)
+		return
+	if data.kind == WeaponData.Kind.ARC:
+		_process_arc(delta)
 		return
 	if data.levels.is_empty() or BulletPool.instance == null:
 		return
@@ -63,60 +72,151 @@ func _shoot(offset: Vector2, deg: float, dmg: int) -> void:
 	var dir := Vector2.UP.rotated(deg_to_rad(deg))
 	if NeonFx.instance:
 		NeonFx.instance.muzzle(global_position + offset, _flash_col)
-	BulletPool.instance.spawn(global_position + offset, dir * data.bullet_speed,
+	var b := BulletPool.instance.spawn(global_position + offset, dir * data.bullet_speed,
 			data.bullet_texture, data.bullet_radius, dmg, true)
+	b.pierce = data.pierce
 
 
-# ---------- 雷射 ----------
+# ---------- 雷射：細光束，火力越高條數越多 ----------
+
+func _beam_x(i: int, n: int) -> float:
+	return (i - (n - 1) / 2.0) * data.laser_spacing
+
 
 func _process_laser(delta: float) -> void:
-	var origin := global_position + LASER_MUZZLE
+	var n := data.laser_beams(level)
 	var half := data.laser_width(level) / 2.0
-	var target: Enemy = null
-	var best_y := -INF
-	for node in get_tree().get_nodes_in_group(&"enemies"):
-		var e := node as Enemy
-		if e == null or e.health.dead or not e.is_on_screen():
-			continue
-		var p := e.global_position
-		if p.y >= origin.y:
-			continue
-		if absf(p.x - origin.x) <= half + e.data.hit_radius * 0.8 and p.y > best_y:
-			best_y = p.y
-			target = e
-	if target:
-		_beam_len = origin.y - (target.global_position.y + target.data.hit_radius * 0.5)
-		_beam_hit = true
-		_laser_tick -= delta
-		if _laser_tick <= 0.0:
-			_laser_tick = data.laser_tick
-			target.take_damage(data.laser_hit_damage(level))
-	else:
-		_beam_len = origin.y + 40.0
-		_beam_hit = false
-	_beam_len = maxf(_beam_len, 0.0)
+	_beam_lens.resize(n)
+	_beam_hits.resize(n)
+	_laser_tick -= delta
+	var tick := _laser_tick <= 0.0
+	if tick:
+		_laser_tick = data.laser_tick
+	var dmg := data.laser_hit_damage(level)
+	var enemies := get_tree().get_nodes_in_group(&"enemies")
+	for b in n:
+		var origin := global_position + LASER_MUZZLE + Vector2(_beam_x(b, n), 0)
+		var target: Enemy = null
+		var best_y := -INF
+		for node in enemies:
+			var e := node as Enemy
+			if e == null or e.health.dead or not e.is_on_screen():
+				continue
+			var p := e.global_position
+			if p.y >= origin.y:
+				continue
+			if absf(p.x - origin.x) <= half + e.data.hit_radius * 0.8 and p.y > best_y:
+				best_y = p.y
+				target = e
+		if target:
+			_beam_lens[b] = maxf(origin.y - (target.global_position.y + target.data.hit_radius * 0.5), 0.0)
+			_beam_hits[b] = true
+			if tick:
+				target.take_damage(dmg)
+		else:
+			_beam_lens[b] = origin.y + 40.0
+			_beam_hits[b] = false
 	queue_redraw()
 
 
+# ---------- 連鎖閃電 ----------
+
+func _process_arc(delta: float) -> void:
+	_arc_fade = maxf(_arc_fade - delta * 9.0, 0.0)
+	_arc_cd -= delta
+	queue_redraw()
+	if _arc_cd > 0.0:
+		return
+	_arc_cd = data.arc_interval
+	var origin := global_position + LASER_MUZZLE
+	var enemies := get_tree().get_nodes_in_group(&"enemies")
+	var hit: Array[Enemy] = []
+	var from := origin
+	var dmg := data.arc_hit_damage(level)
+	var chains := data.arc_chains(level)
+	_arcs.clear()
+	for c in chains:
+		var limit := data.arc_range if c == 0 else data.arc_jump
+		var best: Enemy = null
+		var best_d := limit
+		for node in enemies:
+			var e := node as Enemy
+			if e == null or e.health.dead or not e.is_on_screen() or e in hit:
+				continue
+			# 第一下只打前方的敵人
+			if c == 0 and e.global_position.y > origin.y + 20.0:
+				continue
+			var d := from.distance_to(e.global_position)
+			if d < best_d:
+				best_d = d
+				best = e
+		if best == null:
+			break
+		hit.append(best)
+		_arcs.append(_bolt(from, best.global_position))
+		from = best.global_position
+	if hit.is_empty():
+		# 沒有目標：往前放出一小段電弧
+		_arcs.append(_bolt(origin, origin + Vector2(randf_range(-40, 40), -110)))
+	else:
+		for e in hit:
+			e.take_damage(dmg)
+			if NeonFx.instance:
+				NeonFx.instance.impact(e.global_position, data.laser_color)
+	_arc_fade = 1.0
+
+
+## 產生鋸齒狀閃電折線（世界座標）
+func _bolt(a: Vector2, b: Vector2) -> PackedVector2Array:
+	var pts := PackedVector2Array([a])
+	var segs := maxi(4, int(a.distance_to(b) / 28.0))
+	var normal := (b - a).normalized().orthogonal()
+	for i in range(1, segs):
+		var k := float(i) / segs
+		pts.append(a.lerp(b, k) + normal * randf_range(-14.0, 14.0))
+	pts.append(b)
+	return pts
+
+
 func _draw() -> void:
-	if data == null or data.kind != WeaponData.Kind.LASER or _beam_len <= 0.0:
+	if data == null:
+		return
+	if data.kind == WeaponData.Kind.ARC:
+		_draw_arcs()
+	elif data.kind == WeaponData.Kind.LASER:
+		_draw_lasers()
+
+
+func _draw_arcs() -> void:
+	if _arc_fade <= 0.0:
+		return
+	var c := data.laser_color
+	for arc in _arcs:
+		var local := PackedVector2Array()
+		for p in arc:
+			local.append(to_local(p))
+		draw_polyline(local, Color(c.r, c.g, c.b, 0.3 * _arc_fade), 9.0)
+		draw_polyline(local, Color(c.r, c.g, c.b, 0.85 * _arc_fade), 3.5)
+		draw_polyline(local, Color(1, 1, 1, _arc_fade), 1.5)
+		draw_circle(local[local.size() - 1], 10.0, Color(c.r, c.g, c.b, 0.6 * _arc_fade))
+	draw_circle(LASER_MUZZLE, 9.0, Color(c.r, c.g, c.b, 0.7 * _arc_fade))
+
+
+func _draw_lasers() -> void:
+	if not firing or _beam_lens.is_empty():
 		return
 	var w := data.laser_width(level)
 	var c := data.laser_color
 	var flick := 0.85 + 0.15 * sin(_t * 60.0)
-	var top := LASER_MUZZLE + Vector2(0, -_beam_len)
-	# 外層光暈 → 主光束 → 白色核心
-	draw_line(LASER_MUZZLE, top, Color(c.r, c.g, c.b, 0.22), w * 2.2 * flick)
-	draw_line(LASER_MUZZLE, top, Color(c.r, c.g, c.b, 0.65), w * flick)
-	draw_line(LASER_MUZZLE, top, Color(0.85, 0.95, 1.0, 0.95), w * 0.35)
-	# 砲口光球
-	draw_circle(LASER_MUZZLE, w * 0.9, Color(c.r, c.g, c.b, 0.5))
-	draw_circle(LASER_MUZZLE, w * 0.45, Color(0.9, 0.97, 1.0, 0.95))
-	# 命中火花
-	if _beam_hit:
-		var r := w * (0.9 + 0.3 * sin(_t * 45.0))
-		draw_circle(top, r, Color(c.r, c.g, c.b, 0.55))
-		draw_circle(top, r * 0.5, Color(1, 1, 1, 0.9))
-		for i in 6:
-			var a := _t * 9.0 + TAU * i / 6.0
-			draw_line(top, top + Vector2.RIGHT.rotated(a) * r * 1.8, Color(0.7, 0.9, 1.0, 0.8), 2.0)
+	var n := _beam_lens.size()
+	for b in n:
+		var muzzle := LASER_MUZZLE + Vector2(_beam_x(b, n), 0)
+		var top := muzzle + Vector2(0, -_beam_lens[b])
+		draw_line(muzzle, top, Color(c.r, c.g, c.b, 0.22), w * 2.4 * flick)
+		draw_line(muzzle, top, Color(c.r, c.g, c.b, 0.7), w * flick)
+		draw_line(muzzle, top, Color(0.85, 0.95, 1.0, 0.95), w * 0.35)
+		draw_circle(muzzle, w * 0.9, Color(c.r, c.g, c.b, 0.55))
+		if _beam_hits[b]:
+			var r := w * (1.0 + 0.3 * sin(_t * 45.0 + b))
+			draw_circle(top, r, Color(c.r, c.g, c.b, 0.55))
+			draw_circle(top, r * 0.5, Color(1, 1, 1, 0.9))

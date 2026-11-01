@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_wd"]
+
+[resource]
+script = ExtResource("1_wd")
+id = &"arc_thunder"
+display_name = "Arc Thunder"
+damage = 2
+kind = 2
+laser_color = Color(0.7, 0.6, 1, 1)
+arc_interval = 0.12
+arc_damage = 2
+arc_range = 560.0
+arc_jump = 230.0

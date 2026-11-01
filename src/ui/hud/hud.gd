@@ -210,6 +210,11 @@ func show_stage_title(text: String) -> void:
 	_banner.play(text, "MISSION START", NeonDraw.CYAN, 2.6)
 
 
+## 一般提示橫幅（例如打倒中階 Boss 之後）
+func show_notice(title: String, subtitle: String, col: Color) -> void:
+	_banner.play(title, subtitle, col, 2.6)
+
+
 func _on_bomb_pressed() -> void:
 	if Player.instance and not get_tree().paused:
 		Player.instance.use_bomb()
@@ -234,7 +239,7 @@ func _on_weapon(w: Resource) -> void:
 	if wd == null:
 		return
 	_status.weapon_name = wd.display_name.to_upper()
-	_status.weapon_color = wd.laser_color if wd.kind == WeaponData.Kind.LASER else NeonFx.tex_color(wd.bullet_texture)
+	_status.weapon_color = WeaponData.ui_color(wd)
 	_status.queue_redraw()
 
 

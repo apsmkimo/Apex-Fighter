@@ -50,6 +50,10 @@ func collect() -> void:
 		ItemData.Type.MISSILE:
 			if not GameManager.add_missile():
 				GameManager.add_score(data.score_value)
+		ItemData.Type.SPECIAL:
+			var sw := GameManager.selected_ship.special_weapon if GameManager.selected_ship else null
+			if not GameManager.pick_weapon(sw):
+				GameManager.add_score(data.score_value)
 		ItemData.Type.SHIELD:
 			if Player.instance:
 				Player.instance.add_shield()
@@ -65,12 +69,14 @@ func _fx_info() -> Array:
 			return ["POWER UP", Color(1.0, 0.45, 0.4)]
 		ItemData.Type.BOMB:
 			return ["BOMB +1", Color(0.45, 1.0, 0.55)]
-		ItemData.Type.WEAPON:
+		ItemData.Type.WEAPON, ItemData.Type.SPECIAL:
 			var w := data.weapon
+			if data.type == ItemData.Type.SPECIAL and GameManager.selected_ship:
+				w = GameManager.selected_ship.special_weapon
 			if w and GameManager.weapon == w:
-				return ["POWER UP", NeonFx.tex_color(w.bullet_texture) if w.kind == WeaponData.Kind.BULLET else w.laser_color]
+				return ["POWER UP", WeaponData.ui_color(w)]
 			if w:
-				return [w.display_name.to_upper(), NeonFx.tex_color(w.bullet_texture) if w.kind == WeaponData.Kind.BULLET else w.laser_color]
+				return [w.display_name.to_upper(), WeaponData.ui_color(w)]
 		ItemData.Type.MISSILE:
 			return ["MISSILE +1", Color(0.75, 0.45, 1.0)]
 		ItemData.Type.SHIELD:

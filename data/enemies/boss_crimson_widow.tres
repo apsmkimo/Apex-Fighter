@@ -1,0 +1,58 @@
+[gd_resource type="Resource" script_class="BossData" load_steps=15 format=3]
+
+[ext_resource type="Resource" path="res://data/patterns/move_widow_hover.tres" id="1_move"]
+[ext_resource type="Script" path="res://src/entities/bosses/boss_phase.gd" id="2_phase"]
+[ext_resource type="Script" path="res://src/patterns/bullet/bullet_pattern.gd" id="3_pat"]
+[ext_resource type="Resource" path="res://data/patterns/aimed_3way_burst.tres" id="4_a3"]
+[ext_resource type="Resource" path="res://data/patterns/ring_12.tres" id="5_r12"]
+[ext_resource type="Resource" path="res://data/patterns/spiral_6.tres" id="6_sp6"]
+[ext_resource type="Resource" path="res://data/patterns/spread_7.tres" id="7_s7"]
+[ext_resource type="Resource" path="res://data/patterns/ring_20.tres" id="8_r20"]
+[ext_resource type="Resource" path="res://data/patterns/spread_5.tres" id="9_s5"]
+[ext_resource type="Script" path="res://src/entities/bosses/boss_data.gd" id="10_bd"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_crimson_widow.png" id="11_tex"]
+
+[sub_resource type="Resource" id="Phase1"]
+script = ExtResource("2_phase")
+hp_ratio_end = 0.65
+patterns = Array[ExtResource("3_pat")]([ExtResource("7_s7"), ExtResource("5_r12")])
+intervals = PackedFloat32Array(1.2, 1.6)
+
+[sub_resource type="Resource" id="Phase2"]
+script = ExtResource("2_phase")
+hp_ratio_end = 0.3
+patterns = Array[ExtResource("3_pat")]([ExtResource("6_sp6"), ExtResource("4_a3"), ExtResource("9_s5")])
+intervals = PackedFloat32Array(0.18, 1.4, 1.9)
+
+[sub_resource type="Resource" id="Phase3"]
+script = ExtResource("2_phase")
+hp_ratio_end = 0.0
+patterns = Array[ExtResource("3_pat")]([ExtResource("8_r20"), ExtResource("7_s7"), ExtResource("4_a3")])
+intervals = PackedFloat32Array(0.5, 1.1, 1.6)
+
+[resource]
+script = ExtResource("10_bd")
+boss_name = "CRIMSON WIDOW"
+entry_time = 3.5
+phases = Array[ExtResource("2_phase")]([SubResource("Phase1"), SubResource("Phase2"), SubResource("Phase3")])
+ult_kinds = Array[StringName]([&"eye_laser", &"web"])
+ult_first_delay = 7.0
+ult_interval = 9.0
+ult_damage = 4
+ult_eye_offset = Vector2(0, -25)
+ult_web_origin = Vector2(0, 105)
+ult_color = Color(1, 0.12, 0.15, 1)
+id = &"crimson_widow"
+texture = ExtResource("11_tex")
+bank_amount = 0.2
+flight_ref_speed = 110.0
+max_hp = 1100
+hit_radius = 115.0
+score = 60000
+explosion_scale = 5.0
+movement = ExtResource("1_move")
+fire_interval = 1.5
+first_fire_delay = 0.8
+bullet_damage = 3
+contact_damage = 3
+drop_chance = 0.0

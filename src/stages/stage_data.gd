@@ -15,6 +15,13 @@ extends Resource
 @export_group("Waves")
 @export var waves: Array[WaveData] = []
 
+@export_group("Mid Boss")
+## 不為空時：波次 → 中階 Boss → waves_after_mid → 最終 Boss
+@export var mid_boss: BossData
+@export var waves_after_mid: Array[WaveData] = []
+## 中階 Boss 之後出現的敵機（含最終 Boss）血量倍率
+@export var after_mid_hp_mult := 2.0
+
 @export_group("Boss")
 @export var boss: BossData
 @export var boss_warning_time := 2.5

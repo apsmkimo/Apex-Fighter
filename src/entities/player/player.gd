@@ -20,6 +20,9 @@ var max_hp := 6
 var shield := 0.0
 var _shield_fx: Node2D
 var _aura: PowerAura
+## 被 Boss 絲網黏住的剩餘秒數（> 0 時不能移動，左右滑動可以加速掙脫）
+var webbed := 0.0
+var _web_fx: WebFx
 var _exhaust_timer := 0.0
 var _last_pos := Vector2.ZERO
 var _entering := false
@@ -70,6 +73,8 @@ func _ready() -> void:
 	_aura.hull = ship.texture.get_size() if ship.texture else Vector2(64, 100)
 	_aura.level = GameManager.power_level
 	add_child(_aura)
+	_web_fx = WebFx.new()
+	add_child(_web_fx)
 	area_entered.connect(_on_hurt)
 	pickup_area.area_entered.connect(_on_pickup)
 	Events.power_changed.connect(_on_power_changed)
@@ -80,7 +85,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not alive or _entering:
 		return
 	if event is InputEventScreenDrag:
-		position += (event as InputEventScreenDrag).relative * ship.touch_sensitivity
+		var rel := (event as InputEventScreenDrag).relative
+		if webbed > 0.0:
+			_struggle(rel.length())
+			return
+		position += rel * ship.touch_sensitivity
 		_clamp()
 	elif event.is_action_pressed(&"bomb"):
 		use_bomb()
@@ -89,6 +98,10 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if alive and not _entering:
 		var dir := Input.get_vector(&"move_left", &"move_right", &"move_up", &"move_down")
+		if webbed > 0.0:
+			if Input.is_action_just_pressed(&"move_left") or Input.is_action_just_pressed(&"move_right"):
+				_struggle(60.0)
+			dir = Vector2.ZERO
 		if dir != Vector2.ZERO:
 			position += dir * ship.speed * delta
 			_clamp()
@@ -97,6 +110,9 @@ func _physics_process(delta: float) -> void:
 		shield = maxf(shield - delta, 0.0)
 		if int(ceil(shield)) != before:
 			Events.shield_changed.emit(shield)
+	if webbed > 0.0:
+		webbed = maxf(webbed - delta, 0.0)
+	_web_fx.left = webbed if alive else 0.0
 	_shield_fx.visible = shield > 0.0 and alive
 	_aura.visible = alive and sprite.visible and _aura.level > 0
 	_emit_exhaust(delta)
@@ -186,6 +202,26 @@ func _emit_exhaust(delta: float) -> void:
 				ship.thruster_width * 0.5, ship.thruster_color, NeonFx.Kind.DOT, 2.0)
 
 
+## 被絲網黏住：護盾可以擋掉；否則 sec 秒內不能移動（仍會自動開火）
+func apply_web(sec: float) -> void:
+	if not alive or _entering:
+		return
+	if shield > 0.0:
+		shield = 0.0
+		Events.shield_changed.emit(0.0)
+		Events.shield_blocked.emit(global_position)
+		return
+	webbed = maxf(webbed, sec)
+	Events.screen_shake.emit(5.0, 0.2)
+	if NeonFx.instance:
+		NeonFx.instance.float_text(global_position + Vector2(0, -70), "STUCK! SWIPE!", Color(0.85, 0.88, 1.0))
+
+
+## 左右亂滑可以提早掙脫絲網
+func _struggle(amount: float) -> void:
+	webbed = maxf(webbed - amount / 900.0, 0.0)
+
+
 func add_shield() -> void:
 	shield = SHIELD_TIME
 	Events.shield_changed.emit(shield)
@@ -198,6 +234,7 @@ func _on_pickup(area: Area2D) -> void:
 
 func _die() -> void:
 	alive = false
+	webbed = 0.0
 	shield = 0.0
 	Events.shield_changed.emit(0.0)
 	weapon.firing = false
@@ -264,3 +301,35 @@ class ShieldFx extends Node2D:
 			pts.append(Vector2(cos(ang), sin(ang)) * r)
 		draw_polyline(pts, Color(0.4, 0.85, 1.0, 0.8 * a), 3.0, true)
 		draw_arc(Vector2.ZERO, r - 6.0, 0, TAU, 40, Color(0.5, 0.9, 1.0, 0.35 * a), 2.0, true)
+
+
+## 絲網外觀：黏在機身上的白色蛛網，快掙脫時變淡
+class WebFx extends Node2D:
+	var left := 0.0:
+		set(v):
+			left = v
+			visible = v > 0.0
+	var _t := 0.0
+
+	func _ready() -> void:
+		z_index = 3
+		visible = false
+
+	func _process(delta: float) -> void:
+		_t += delta
+		if visible:
+			queue_redraw()
+
+	func _draw() -> void:
+		var a := clampf(left / 1.2, 0.25, 0.9)
+		var col := Color(0.9, 0.92, 1.0, a)
+		var r := 46.0 + 2.0 * sin(_t * 12.0)   # 輕微抖動，表示在掙扎
+		for i in 10:
+			var ang := TAU * i / 10.0 + 0.15
+			draw_line(Vector2.ZERO, Vector2.RIGHT.rotated(ang) * r, col, 1.6)
+		for ring in 3:
+			var rr := r * (0.35 + 0.28 * ring)
+			var pts := PackedVector2Array()
+			for i in 11:
+				pts.append(Vector2.RIGHT.rotated(TAU * i / 10.0 + 0.15) * rr * (0.92 + 0.08 * (i % 2)))
+			draw_polyline(pts, col, 1.4)
