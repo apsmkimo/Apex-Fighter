@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="StageData" load_steps=28 format=3]
+[gd_resource type="Resource" script_class="StageData" load_steps=39 format=3]
 
 [ext_resource type="Script" path="res://src/stages/stage_data.gd" id="s_stage"]
 [ext_resource type="Script" path="res://src/stages/wave_data.gd" id="w_wave"]
@@ -198,6 +198,119 @@ step_x = 0
 movement_override = ExtResource("m_diag")
 mirror = true
 
+[sub_resource type="Resource" id="A0"]
+script = ExtResource("w_wave")
+time = 1.5
+enemy = ExtResource("e_shade")
+count = 6
+interval = 0.3
+start_x = 0.15
+step_x = 0.14
+mirror = false
+
+[sub_resource type="Resource" id="A1"]
+script = ExtResource("w_wave")
+time = 4.0
+enemy = ExtResource("e_shade")
+count = 6
+interval = 0.3
+start_x = 0.2
+step_x = 0
+movement_override = ExtResource("m_sine")
+mirror = true
+
+[sub_resource type="Resource" id="A2"]
+script = ExtResource("w_wave")
+time = 7.0
+enemy = ExtResource("e_raptor")
+count = 2
+interval = 0.8
+start_x = 0.25
+step_x = 0.5
+mirror = false
+
+[sub_resource type="Resource" id="A3"]
+script = ExtResource("w_wave")
+time = 10.0
+enemy = ExtResource("e_shade")
+count = 8
+interval = 0.25
+start_x = 0.1
+step_x = 0
+movement_override = ExtResource("m_diag")
+mirror = true
+
+[sub_resource type="Resource" id="A4"]
+script = ExtResource("w_wave")
+time = 13.0
+enemy = ExtResource("e_raptor")
+count = 1
+interval = 0
+start_x = 0.2
+step_x = 0
+mirror = true
+
+[sub_resource type="Resource" id="A5"]
+script = ExtResource("w_wave")
+time = 15.0
+enemy = ExtResource("e_raptor")
+count = 1
+interval = 0
+start_x = 0.5
+step_x = 0
+mirror = false
+
+[sub_resource type="Resource" id="A6"]
+script = ExtResource("w_wave")
+time = 19.0
+enemy = ExtResource("e_jugg")
+count = 1
+interval = 0
+start_x = 0.3
+step_x = 0
+mirror = false
+
+[sub_resource type="Resource" id="A7"]
+script = ExtResource("w_wave")
+time = 21.0
+enemy = ExtResource("e_shade")
+count = 6
+interval = 0.3
+start_x = 0.35
+step_x = 0
+movement_override = ExtResource("m_sine")
+mirror = true
+
+[sub_resource type="Resource" id="A8"]
+script = ExtResource("w_wave")
+time = 24.0
+enemy = ExtResource("e_jugg")
+count = 1
+interval = 0
+start_x = 0.3
+step_x = 0
+mirror = true
+
+[sub_resource type="Resource" id="A9"]
+script = ExtResource("w_wave")
+time = 27.0
+enemy = ExtResource("e_raptor")
+count = 2
+interval = 0.7
+start_x = 0.25
+step_x = 0.5
+mirror = false
+
+[sub_resource type="Resource" id="A10"]
+script = ExtResource("w_wave")
+time = 30.0
+enemy = ExtResource("e_shade")
+count = 8
+interval = 0.25
+start_x = 0.1
+step_x = 0.11
+mirror = false
+
 [resource]
 script = ExtResource("s_stage")
 id = &"stage_02"
@@ -208,6 +321,7 @@ bg_top_color = Color(0.12, 0.03, 0.08, 1)
 bg_bottom_color = Color(0.24, 0.06, 0.14, 1)
 waves = Array[ExtResource("w_wave")]([SubResource("W0"), SubResource("W1"), SubResource("W2"), SubResource("W3"), SubResource("W4"), SubResource("W5"), SubResource("W6"), SubResource("W7"), SubResource("W8"), SubResource("W9"), SubResource("W10"), SubResource("W11"), SubResource("W12"), SubResource("W13"), SubResource("W14"), SubResource("W15"), SubResource("W16"), SubResource("W17")])
 mid_boss = ExtResource("b_mid")
+waves_after_mid = Array[ExtResource("w_wave")]([SubResource("A0"), SubResource("A1"), SubResource("A2"), SubResource("A3"), SubResource("A4"), SubResource("A5"), SubResource("A6"), SubResource("A7"), SubResource("A8"), SubResource("A9"), SubResource("A10")])
 after_mid_hp_mult = 1.0
 boss = ExtResource("b_final")
 boss_warning_time = 2.5

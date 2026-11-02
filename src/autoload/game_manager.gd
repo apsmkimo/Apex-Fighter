@@ -8,6 +8,14 @@ const SCENE_TITLE := "res://src/ui/menus/title_screen.tscn"
 const SCENE_SHIP_SELECT := "res://src/ui/menus/ship_select.tscn"
 const SCENE_STAGE := "res://src/stages/stage.tscn"
 const SCENE_RESULT := "res://src/ui/menus/result_screen.tscn"
+const SCENE_MAP := "res://src/ui/menus/star_map.tscn"
+
+## 全域平衡（使用者 2026-11-02 要求）：一般敵人防禦 ×3、子彈變少、停留更久
+const ENEMY_DEFENSE_MULT := 3.0
+const ENEMY_FIRE_INTERVAL_MULT := 1.7
+const BOSS_FIRE_INTERVAL_MULT := 1.35
+## 一般敵人移動時間倍率（<1 = 動得更慢、在畫面上停更久）
+const ENEMY_MOVE_TIME_SCALE := 0.65
 
 var selected_ship: ShipData
 var current_stage: StageData
@@ -29,6 +37,8 @@ var drop_counters := {}
 ## 關卡中途調整的敵機血量倍率（中階 Boss 之後 = 2）
 var enemy_hp_mult := 1.0
 var last_run_cleared := false
+## 已依序通過的關卡數（星圖解鎖用，0 = 只有第一關可以打）
+var cleared_stages := 0
 
 
 func _ready() -> void:
@@ -91,10 +101,13 @@ func add_score(value: int) -> void:
 ## 被擊落時呼叫。回傳 true 代表還有殘機可以繼續。
 func lose_life() -> bool:
 	lives -= 1
-	power_level = maxi(power_level - 1, 0)
-	if missile_level > 0:
-		missile_level -= 1
-		Events.missile_changed.emit(missile_level)
+	# 被擊落：所有武器與火力都要重新收集（炸彈保留）
+	power_level = 0
+	missile_level = 0
+	Events.missile_changed.emit(missile_level)
+	if selected_ship and weapon != selected_ship.weapon:
+		weapon = selected_ship.weapon
+		Events.weapon_changed.emit(weapon)
 	Events.lives_changed.emit(maxi(lives, 0))
 	Events.power_changed.emit(power_level, max_power())
 	return lives > 0
@@ -153,6 +166,9 @@ func use_bomb() -> bool:
 
 func end_run(cleared: bool) -> void:
 	last_run_cleared = cleared
+	if cleared and current_stage:
+		var idx := Database.stages.find(current_stage)
+		cleared_stages = maxi(cleared_stages, idx + 1)
 	_save()
 
 
@@ -175,6 +191,10 @@ func goto_stage() -> void:
 	change_scene(SCENE_STAGE)
 
 
+func goto_map() -> void:
+	change_scene(SCENE_MAP)
+
+
 func goto_result() -> void:
 	change_scene(SCENE_RESULT)
 
@@ -191,6 +211,7 @@ func _load_save() -> void:
 			for key in cfg.get_section_keys("hi_scores"):
 				hi_scores[key] = int(cfg.get_value("hi_scores", key, 0))
 		last_diff = String(cfg.get_value("settings", "difficulty", "normal"))
+		cleared_stages = int(cfg.get_value("progress", "cleared_stages", 0))
 	var d := Database.get_difficulty(StringName(last_diff))
 	set_difficulty(d if d else Database.default_difficulty())
 
@@ -207,7 +228,7 @@ func _save() -> void:
 	# 先讀舊檔，避免蓋掉 AudioManager 寫進同一個 save.cfg 的音量
 	var cfg := ConfigFile.new()
 	cfg.load(SAVE_PATH)
-	for section in ["score", "hi_scores", "settings"]:
+	for section in ["score", "hi_scores", "settings", "progress"]:
 		if cfg.has_section(section):
 			cfg.erase_section(section)
 	cfg.set_value("score", "hi_score", int(hi_scores.get("normal", 0)))
@@ -215,6 +236,7 @@ func _save() -> void:
 		cfg.set_value("hi_scores", key, hi_scores[key])
 	if difficulty:
 		cfg.set_value("settings", "difficulty", String(difficulty.id))
+	cfg.set_value("progress", "cleared_stages", cleared_stages)
 	cfg.save(SAVE_PATH)
 	# SMCPKG_SUPPORT<<<CursorM9SaveEnd
 

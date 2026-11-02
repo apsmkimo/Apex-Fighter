@@ -84,6 +84,7 @@ func _enter_phase(index: int) -> void:
 		var iv := phase.intervals[i] if i < phase.intervals.size() else 1.0
 		if GameManager.difficulty:
 			iv = GameManager.difficulty.scale_interval(iv)
+		iv *= GameManager.BOSS_FIRE_INTERVAL_MULT
 		e.configure(phase.patterns[i], iv, 0.6 + 0.2 * i)
 		e.enabled = false
 		e.bullet_damage = data.bullet_damage

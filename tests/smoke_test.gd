@@ -2,7 +2,7 @@ extends Node
 ## 自動測試：無敵自動駕駛跑完第一關，檢查波次 → Boss → 過關流程。
 ## 執行：godot --headless --fixed-fps 60 res://tests/smoke_test.tscn
 
-const TIMEOUT := 300.0
+const TIMEOUT := 520.0
 
 var t := 0.0
 var _boss_seen := false
@@ -56,8 +56,11 @@ func _physics_process(delta: float) -> void:
 	_log_timer += delta
 	if _log_timer > 10.0:
 		_log_timer = 0.0
-		print("[test] t=%.0fs enemies=%d bullets=%d score=%d power=%d lives=%d" % [t, get_tree().get_nodes_in_group(&"enemies").size(),
+		print("[test] t=%.0fs w=%s firing=%s enemies=%d bullets=%d score=%d power=%d lives=%d" % [t, GameManager.weapon.display_name, Player.instance.weapon.firing if Player.instance else false, get_tree().get_nodes_in_group(&"enemies").size(),
 			BulletPool.instance.active_count() if BulletPool.instance else 0, GameManager.score, GameManager.power_level, GameManager.lives])
+		for n in get_tree().get_nodes_in_group(&"enemies"):
+			if n is Boss:
+				print("[test]   boss hp=%d pos=%s on=%s age=%.1f player=%s" % [(n as Enemy).health.hp, (n as Node2D).global_position, (n as Enemy).is_on_screen(), (n as Enemy).age, Player.instance.position if Player.instance else Vector2.ZERO])
 	var p := Player.instance
 	if p == null:
 		return

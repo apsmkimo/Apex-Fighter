@@ -468,8 +468,8 @@ func _on_launch() -> void:
 	var ship: ShipData = Database.ships[_index]
 	if not ship.unlocked:
 		return
-	GameManager.start_run(ship, Database.first_stage())
-	GameManager.goto_stage()
+	GameManager.selected_ship = ship
+	GameManager.goto_map()
 
 
 # ---------------------------------------------------------------- 共用

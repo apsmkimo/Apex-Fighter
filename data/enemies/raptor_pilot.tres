@@ -25,4 +25,4 @@ bullet_pattern = ExtResource("3_pat")
 fire_interval = 1.5
 first_fire_delay = 0.6
 drop_item = ExtResource("b_power")
-drop_chance = 0.15
+drop_chance = 0.05

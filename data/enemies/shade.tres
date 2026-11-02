@@ -3,11 +3,13 @@
 [ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="1_ed"]
 [ext_resource type="Texture2D" path="res://assets/sprites/enemies/shade.png" id="2_tex"]
 [ext_resource type="Resource" path="res://data/patterns/aimed_single.tres" id="3_pat"]
+[ext_resource type="Resource" path="res://data/patterns/move_straight_fast.tres" id="4_mv"]
 
 [resource]
 script = ExtResource("1_ed")
 id = &"shade"
 texture = ExtResource("2_tex")
+movement = ExtResource("4_mv")
 max_hp = 3
 hit_radius = 20.0
 score = 150

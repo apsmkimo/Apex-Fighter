@@ -177,6 +177,9 @@ func _process_arc(delta: float) -> void:
 			if c == 0 and e.aim_point().y > origin.y + 20.0:
 				continue
 			var d := from.distance_to(e.aim_point())
+			# Boss 體型大且停在畫面上方：第一下多給 420 的射程，避免連鎖閃電打不到 Boss
+			if c == 0 and e is Boss:
+				d -= 420.0
 			if d < best_d:
 				best_d = d
 				best = e

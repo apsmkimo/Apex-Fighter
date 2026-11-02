@@ -25,6 +25,6 @@ bullet_pattern = ExtResource("1_klpcc")
 fire_interval = 2.0
 first_fire_delay = 0.7
 drop_item = ExtResource("2_4at78")
-drop_chance = 1.0
+drop_chance = 0.45
 bonus_pool = Array[ExtResource("b0_itm")]([ExtResource("b_weapon_plasma"), ExtResource("b_weapon_laser"), ExtResource("b_shield"), ExtResource("b_special")])
 bonus_chance = 1.0

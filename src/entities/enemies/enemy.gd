@@ -4,8 +4,10 @@ extends Area2D
 ## 有特殊行為的敵機可以繼承這個類別（Boss 就是這樣做的）。
 
 const SCREEN_MARGIN := 140.0
-const MAX_LIFETIME := 40.0
+const MAX_LIFETIME := 60.0
 
+## 移動時間倍率（一般敵人較慢，停留更久；Boss = 1）
+var move_time_scale := 1.0
 var data: EnemyData
 var movement: MovePattern
 var spawn_pos := Vector2.ZERO
@@ -45,9 +47,13 @@ func _ready() -> void:
 	shape.shape = circle
 	var diff := GameManager.difficulty
 	var base_hp := diff.scale_hp(data.max_hp) if diff else data.max_hp
-	health.setup(int(round(base_hp * GameManager.enemy_hp_mult)))
+	var defense := 1.0 if self is Boss else GameManager.ENEMY_DEFENSE_MULT
+	health.setup(int(round(base_hp * GameManager.enemy_hp_mult * defense)))
+	if not self is Boss:
+		move_time_scale = GameManager.ENEMY_MOVE_TIME_SCALE
 	health.died.connect(_on_died)
-	emitter.configure(data.bullet_pattern, diff.scale_interval(data.fire_interval) if diff else data.fire_interval, data.first_fire_delay)
+	var fire_iv := (diff.scale_interval(data.fire_interval) if diff else data.fire_interval) * GameManager.ENEMY_FIRE_INTERVAL_MULT
+	emitter.configure(data.bullet_pattern, fire_iv, data.first_fire_delay)
 	emitter.enabled = false
 	emitter.bullet_damage = data.bullet_damage
 	if data.bank_amount > 0.0 or not data.thruster_offsets.is_empty():
@@ -59,7 +65,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	age += delta
 	if movement:
-		var off := movement.offset_at(age)
+		var off := movement.offset_at(age * move_time_scale)
 		if flip_x:
 			off.x = -off.x
 		position = spawn_pos + off
