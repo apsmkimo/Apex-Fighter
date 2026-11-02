@@ -65,7 +65,13 @@ func _ready() -> void:
 	_start.focus_mode = Control.FOCUS_NONE
 	_start.button_down.connect(func(): _start.scale = Vector2.ONE * 0.94)
 	_start.button_up.connect(func(): _start.scale = Vector2.ONE)
-	_start.pressed.connect(GameManager.goto_ship_select)
+	# SMCPKG_SUPPORT>>>CursorM9TitleBtn
+	# _start.pressed.connect(GameManager.goto_ship_select)
+	_start.pressed.connect(func() -> void:
+		Events.ui_pressed.emit()
+		GameManager.goto_ship_select()
+	)
+	# SMCPKG_SUPPORT<<<CursorM9TitleBtnEnd
 	_canvas.add_child(_start)
 
 	if OS.get_name() != "Android" and OS.get_name() != "iOS":
@@ -76,6 +82,10 @@ func _ready() -> void:
 
 	resized.connect(_fit)
 	_fit()
+	# SMCPKG_SUPPORT>>>CursorM9TitleAudio
+	_build_audio()
+	Events.music_requested.emit(&"title")
+	# SMCPKG_SUPPORT<<<CursorM9TitleAudioEnd
 
 
 ## HI SCORE：金色字＋左右裝飾線，仿設計稿
@@ -122,6 +132,21 @@ func _fit() -> void:
 	var s := minf(maxf(size.x / DESIGN.x, size.y / DESIGN.y), size.x / DESIGN.x * 1.1)
 	_canvas.scale = Vector2(s, s)
 	_canvas.position = (size - DESIGN * s) / 2.0
+
+
+# SMCPKG_SUPPORT>>>CursorM9TitleAudioUi
+func _build_audio() -> void:
+	var audio_btn := UiKit.button("AUDIO", 26, Vector2(220, 64))
+	audio_btn.position = Vector2(36, 1188)
+	var panel := AudioPanel.new()
+	panel.position = Vector2(90, 820)
+	panel.visible = false
+	audio_btn.pressed.connect(func() -> void: panel.visible = not panel.visible)
+	panel.close_requested.connect(func() -> void: panel.visible = false)
+	_canvas.add_child(panel)
+	panel.enable_close()
+	_canvas.add_child(audio_btn)
+# SMCPKG_SUPPORT<<<CursorM9TitleAudioUiEnd
 
 
 func _process(delta: float) -> void:

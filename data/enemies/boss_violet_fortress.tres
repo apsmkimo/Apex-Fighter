@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BossData" load_steps=15 format=3]
+[gd_resource type="Resource" script_class="BossData" load_steps=16 format=3]
 
 [ext_resource type="Resource" path="res://data/patterns/move_boss_hover.tres" id="1_h0pm8"]
 [ext_resource type="Script" path="res://src/entities/bosses/boss_phase.gd" id="2_b0vpg"]
@@ -11,6 +11,7 @@
 [ext_resource type="Resource" path="res://data/patterns/spread_7.tres" id="9_w8ylt"]
 [ext_resource type="Script" path="res://src/entities/bosses/boss_data.gd" id="10_qy4f1"]
 [ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_violet_fortress.png" id="11_61wsg"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/mid_boss.wav" id="bgm_mid"]
 
 [sub_resource type="Resource" id="Resource_o2v1i"]
 script = ExtResource("2_b0vpg")
@@ -33,6 +34,7 @@ intervals = PackedFloat32Array(0.55, 1.3, 2)
 [resource]
 script = ExtResource("10_qy4f1")
 boss_name = "VIOLET FORTRESS"
+bgm = ExtResource("bgm_mid")
 entry_time = 3.0
 phases = Array[ExtResource("2_b0vpg")]([SubResource("Resource_o2v1i"), SubResource("Resource_2vf2q"), SubResource("Resource_a0cfv")])
 id = &"violet_fortress"

@@ -27,6 +27,9 @@ func _physics_process(delta: float) -> void:
 	if _cooldown > 0.0:
 		return
 	_cooldown = INTERVAL
+	# SMCPKG_SUPPORT>>>CursorM9Missile
+	Events.missile_fired.emit()
+	# SMCPKG_SUPPORT<<<CursorM9MissileEnd
 	# 導彈放在玩家所在的節點（Actors），才不會跟著戰機移動
 	var stage := get_parent().get_parent()
 	var n := shots_for(level)

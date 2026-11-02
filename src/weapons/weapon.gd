@@ -20,6 +20,10 @@ var firing := false:
 			queue_redraw()
 var _cooldown := 0.0
 var _flash_col := Color(0.6, 0.9, 1.0)
+# SMCPKG_SUPPORT>>>CursorM9Shot
+## 射擊音效最短間隔。一輪多發只發一次訊號，連射再由 AudioManager 節流。
+var _shot_sfx_wait := 0.0
+# SMCPKG_SUPPORT<<<CursorM9ShotEnd
 
 # 雷射狀態（每條光束各自的長度與是否命中）
 var _beam_lens := PackedFloat32Array()
@@ -35,6 +39,9 @@ var _arc_cd := 0.0
 
 func _physics_process(delta: float) -> void:
 	_t += delta
+	# SMCPKG_SUPPORT>>>CursorM9ShotTick
+	_shot_sfx_wait = maxf(_shot_sfx_wait - delta, 0.0)
+	# SMCPKG_SUPPORT<<<CursorM9ShotTickEnd
 	if data == null or not firing:
 		return
 	if data.kind == WeaponData.Kind.LASER:
@@ -66,6 +73,9 @@ func _physics_process(delta: float) -> void:
 		var ox := max_off + 10.0 * (k + 1)
 		_shoot(Vector2(-ox, -10.0 + 4.0 * k), -deg, dmg)
 		_shoot(Vector2(ox, -10.0 + 4.0 * k), deg, dmg)
+	# SMCPKG_SUPPORT>>>CursorM9ShotVolley
+	_emit_shot_sfx()
+	# SMCPKG_SUPPORT<<<CursorM9ShotVolleyEnd
 
 
 func _shoot(offset: Vector2, deg: float, dmg: int) -> void:
@@ -75,6 +85,20 @@ func _shoot(offset: Vector2, deg: float, dmg: int) -> void:
 	var b := BulletPool.instance.spawn(global_position + offset, dir * data.bullet_speed,
 			data.bullet_texture, data.bullet_radius, dmg, true)
 	b.pierce = data.pierce
+
+
+# SMCPKG_SUPPORT>>>CursorM9ShotEmit
+func _emit_shot_sfx() -> void:
+	if data == null or _shot_sfx_wait > 0.0:
+		return
+	_shot_sfx_wait = 0.08
+	var kind_name := &"bullet"
+	if data.kind == WeaponData.Kind.LASER:
+		kind_name = &"laser"
+	elif data.kind == WeaponData.Kind.ARC:
+		kind_name = &"arc"
+	Events.weapon_fired.emit(data.id, kind_name)
+# SMCPKG_SUPPORT<<<CursorM9ShotEmitEnd
 
 
 # ---------- 雷射：細光束，火力越高條數越多 ----------
@@ -92,6 +116,9 @@ func _process_laser(delta: float) -> void:
 	var tick := _laser_tick <= 0.0
 	if tick:
 		_laser_tick = data.laser_tick
+		# SMCPKG_SUPPORT>>>CursorM9LaserSfx
+		_emit_shot_sfx()
+		# SMCPKG_SUPPORT<<<CursorM9LaserSfxEnd
 	var dmg := data.laser_hit_damage(level)
 	var enemies := get_tree().get_nodes_in_group(&"enemies")
 	for b in n:
@@ -128,6 +155,9 @@ func _process_arc(delta: float) -> void:
 	if _arc_cd > 0.0:
 		return
 	_arc_cd = data.arc_interval
+	# SMCPKG_SUPPORT>>>CursorM9ArcSfx
+	_emit_shot_sfx()
+	# SMCPKG_SUPPORT<<<CursorM9ArcSfxEnd
 	var origin := global_position + LASER_MUZZLE
 	var enemies := get_tree().get_nodes_in_group(&"enemies")
 	var hit: Array[Enemy] = []

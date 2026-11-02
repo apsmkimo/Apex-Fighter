@@ -28,7 +28,11 @@ static func button(text: String, size := 36, min_size := Vector2(360, 96)) -> Bu
 	b.custom_minimum_size = min_size
 	b.add_theme_font_size_override(&"font_size", size)
 	b.focus_mode = Control.FOCUS_NONE
+	# SMCPKG_SUPPORT>>>CursorM9Ui
+	# return b
+	b.pressed.connect(func() -> void: Events.ui_pressed.emit())
 	return b
+	# SMCPKG_SUPPORT<<<CursorM9UiEnd
 
 
 static func centered_column(parent: Control, separation := 24) -> VBoxContainer:

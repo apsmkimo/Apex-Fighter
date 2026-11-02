@@ -37,6 +37,9 @@ func _physics_process(delta: float) -> void:
 func collect() -> void:
 	var info := _fx_info()
 	Events.item_collected.emit(info[0], global_position, info[1])
+	# SMCPKG_SUPPORT>>>CursorM9Item
+	Events.item_picked.emit(data.type)
+	# SMCPKG_SUPPORT<<<CursorM9ItemEnd
 	match data.type:
 		ItemData.Type.POWER:
 			if not GameManager.add_power():

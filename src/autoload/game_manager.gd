@@ -196,13 +196,27 @@ func _load_save() -> void:
 
 
 func _save() -> void:
+	# SMCPKG_SUPPORT>>>CursorM9Save
+	# var cfg := ConfigFile.new()
+	# cfg.set_value("score", "hi_score", int(hi_scores.get("normal", 0)))
+	# for key in hi_scores:
+	# 	cfg.set_value("hi_scores", key, hi_scores[key])
+	# if difficulty:
+	# 	cfg.set_value("settings", "difficulty", String(difficulty.id))
+	# cfg.save(SAVE_PATH)
+	# 先讀舊檔，避免蓋掉 AudioManager 寫進同一個 save.cfg 的音量
 	var cfg := ConfigFile.new()
+	cfg.load(SAVE_PATH)
+	for section in ["score", "hi_scores", "settings"]:
+		if cfg.has_section(section):
+			cfg.erase_section(section)
 	cfg.set_value("score", "hi_score", int(hi_scores.get("normal", 0)))
 	for key in hi_scores:
 		cfg.set_value("hi_scores", key, hi_scores[key])
 	if difficulty:
 		cfg.set_value("settings", "difficulty", String(difficulty.id))
 	cfg.save(SAVE_PATH)
+	# SMCPKG_SUPPORT<<<CursorM9SaveEnd
 
 
 # ---------- 按鍵設定（電腦測試用；手機用觸控） ----------

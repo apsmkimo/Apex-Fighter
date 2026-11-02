@@ -78,6 +78,9 @@ func is_on_screen() -> bool:
 func take_damage(amount: int) -> void:
 	if health.dead:
 		return
+	# SMCPKG_SUPPORT>>>CursorM9Hit
+	Events.enemy_damaged.emit(global_position)
+	# SMCPKG_SUPPORT<<<CursorM9HitEnd
 	_flash = 0.05
 	if data.max_hp >= BIG_ENEMY_HP and _shake_cd <= 0.0:
 		_shake_cd = 0.18

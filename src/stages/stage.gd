@@ -47,6 +47,9 @@ func _ready() -> void:
 
 	hud.show_stage_title(data.display_name)
 	GameManager.emit_all()
+	# SMCPKG_SUPPORT>>>CursorM9StageMusic
+	Events.music_requested.emit(&"stage")
+	# SMCPKG_SUPPORT<<<CursorM9StageMusicEnd
 	spawner.start(data, enemies)
 
 

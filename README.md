@@ -39,3 +39,4 @@ godot --headless --fixed-fps 60 --path . --scene res://tests/smoke_test.tscn
 ## 素材
 
 目前的圖都是程式產生的佔位圖（placeholder），之後換成正式美術只要替換 `assets/sprites/` 裡同名的 PNG。
+音效與 BGM 也是程式產生的佔位音，換成同名檔即可，見 [如何新增內容](docs/ADDING_CONTENT.md)。

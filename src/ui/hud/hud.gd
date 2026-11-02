@@ -135,6 +135,9 @@ func _build() -> void:
 	add_child(_pause_panel)
 	var col := UiKit.centered_column(_pause_panel)
 	col.add_child(UiKit.label("PAUSED", 56, NeonDraw.CYAN))
+	# SMCPKG_SUPPORT>>>CursorM9PauseAudio
+	col.add_child(AudioPanel.new())
+	# SMCPKG_SUPPORT<<<CursorM9PauseAudioEnd
 	var resume := _neon_button("RESUME", 34, Vector2(360, 92), NeonDraw.CYAN)
 	resume.pressed.connect(toggle_pause)
 	col.add_child(resume)

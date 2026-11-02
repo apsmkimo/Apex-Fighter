@@ -177,6 +177,9 @@ func take_hit(amount: int) -> void:
 		_die()
 	else:
 		invincible = HIT_INVINCIBLE
+		# SMCPKG_SUPPORT>>>CursorM9Hurt
+		Events.player_hurt.emit()
+		# SMCPKG_SUPPORT<<<CursorM9HurtEnd
 		Events.screen_shake.emit(8.0, 0.25)
 		if NeonFx.instance:
 			NeonFx.instance.hurt_burst(global_position)

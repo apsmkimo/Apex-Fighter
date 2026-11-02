@@ -31,7 +31,13 @@ func _ready() -> void:
 	_close.flat = true
 	_close.focus_mode = Control.FOCUS_NONE
 	_close.draw.connect(_draw_close)
-	_close.pressed.connect(func(): close_pressed.emit())
+	# SMCPKG_SUPPORT>>>CursorM9UiClose
+	# _close.pressed.connect(func(): close_pressed.emit())
+	_close.pressed.connect(func() -> void:
+		Events.ui_pressed.emit()
+		close_pressed.emit()
+	)
+	# SMCPKG_SUPPORT<<<CursorM9UiCloseEnd
 	add_child(_close)
 
 

@@ -62,6 +62,10 @@ func _on_damaged(_amount: int, _current: int) -> void:
 
 func _enter_phase(index: int) -> void:
 	phase_index = index
+	# SMCPKG_SUPPORT>>>CursorM9Phase
+	if index > 0:
+		Events.boss_phase_changed.emit(index)
+	# SMCPKG_SUPPORT<<<CursorM9PhaseEnd
 	for e in _phase_emitters:
 		e.queue_free()
 	_phase_emitters.clear()

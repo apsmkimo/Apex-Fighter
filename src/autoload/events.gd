@@ -18,9 +18,24 @@ signal shield_blocked(at: Vector2)
 signal item_collected(text: String, at: Vector2, color: Color)
 
 signal enemy_killed(data: Resource, at: Vector2)
+# SMCPKG_SUPPORT>>>CursorM9Signals
+# signal player_hit
+## 玩家被擊落（失去一條命的那一下）。沒死的受擊看 player_hurt。
 signal player_hit
+## 玩家被打中但還活著
+signal player_hurt
 signal player_respawned
 signal bomb_used(at: Vector2)
+## 主武器打出一輪。kind = bullet / laser / arc
+signal weapon_fired(weapon_id: StringName, kind: StringName)
+## 追蹤導彈打出一輪（不是每一發）
+signal missile_fired
+## 敵機被打中、還沒死
+signal enemy_damaged(at: Vector2)
+## 撿到道具的種類（ItemData.Type 的數值）
+signal item_picked(item_type: int)
+## Boss 進入下一個階段（進場的第 0 階段不發）
+signal boss_phase_changed(index: int)
 
 signal boss_spawned(boss: Node)
 signal boss_hp_changed(ratio: float)
@@ -33,3 +48,12 @@ signal stage_cleared
 signal game_over
 
 signal screen_shake(strength: float, duration: float)
+
+## UI 按鈕（暫停選單、標題、結算、難度……）
+signal ui_pressed
+## 選機畫面換了一台戰機
+signal ship_selected
+## 要求播放某個畫面的 BGM：title / ship_select / stage / result
+## boss 曲由 AudioManager 在 boss_spawned 時自己換，不用畫面再發一次
+signal music_requested(context: StringName)
+# SMCPKG_SUPPORT<<<CursorM9SignalsEnd

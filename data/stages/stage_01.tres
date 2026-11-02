@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="StageData" load_steps=42 format=3]
+[gd_resource type="Resource" script_class="StageData" load_steps=43 format=3]
 
 [ext_resource type="Resource" path="res://data/enemies/boss_violet_fortress.tres" id="1_5ox8f"]
 [ext_resource type="Resource" path="res://data/enemies/boss_crimson_widow.tres" id="1_widow"]
@@ -10,6 +10,7 @@
 [ext_resource type="Resource" path="res://data/enemies/turret.tres" id="7_xac5c"]
 [ext_resource type="Resource" path="res://data/patterns/move_diagonal.tres" id="8_gmauv"]
 [ext_resource type="Resource" path="res://data/enemies/bomb_carrier.tres" id="9_ecfjx"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/stage.wav" id="bgm_stage"]
 
 [sub_resource type="Resource" id="Resource_x7s4n"]
 script = ExtResource("3_u1kn1")
@@ -338,6 +339,7 @@ sort_order = 0
 scroll_speed = 160.0
 bg_top_color = Color(0.04, 0.06, 0.16, 1)
 bg_bottom_color = Color(0.1, 0.14, 0.3, 1)
+bgm = ExtResource("bgm_stage")
 waves = Array[ExtResource("3_u1kn1")]([SubResource("Resource_x7s4n"), SubResource("Resource_j807p"), SubResource("Resource_yqygw"), SubResource("Resource_ua71i"), SubResource("Resource_avtj5"), SubResource("Resource_hpgot"), SubResource("Resource_eq3ib"), SubResource("Resource_w2n56"), SubResource("Resource_t5pdp"), SubResource("Resource_fkv7t"), SubResource("Resource_8r5s2"), SubResource("Resource_gmegb"), SubResource("Resource_vg135"), SubResource("Resource_88gao"), SubResource("Resource_n35ka")])
 mid_boss = ExtResource("1_5ox8f")
 waves_after_mid = Array[ExtResource("3_u1kn1")]([SubResource("W2_0"), SubResource("W2_1"), SubResource("W2_2"), SubResource("W2_3"), SubResource("W2_4"), SubResource("W2_5"), SubResource("W2_6"), SubResource("W2_7"), SubResource("W2_8"), SubResource("W2_9"), SubResource("W2_10"), SubResource("W2_11"), SubResource("W2_12"), SubResource("W2_13"), SubResource("W2_14"), SubResource("W2_15")])

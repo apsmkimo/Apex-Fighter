@@ -3,6 +3,9 @@ extends Control
 
 
 func _ready() -> void:
+	# SMCPKG_SUPPORT>>>CursorM9ResultMusic
+	Events.music_requested.emit(&"result")
+	# SMCPKG_SUPPORT<<<CursorM9ResultMusicEnd
 	UiKit.background(self)
 	var col := UiKit.centered_column(self, 32)
 	if GameManager.last_run_cleared:

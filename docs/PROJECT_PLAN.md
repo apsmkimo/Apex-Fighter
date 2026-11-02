@@ -45,7 +45,7 @@
 - [x] M6 HUD、暫停、標題、選機、結算畫面、最高分存檔
 - [x] M7 無敵自動駕駛的流程測試
 - [ ] M8 在實機上調手感（移動倍率、子彈速度、難度）
-- [ ] M9 音效與 BGM（`assets/audio/`，新增 AudioManager）
+- [x] M9 音效與 BGM（`assets/audio/`，AudioManager：Master／BGM／SFX、交叉淡化、音量存檔、佔位音）
 - [ ] M10 正式美術（替換 `assets/sprites/`）與中文字型
 - [ ] M11 Android 簽章與上架準備
 

@@ -16,6 +16,27 @@ func _check(cond: bool, msg: String) -> void:
 
 
 func _run() -> void:
+	# SMCPKG_SUPPORT>>>CursorM9AudioTest
+	_check(AudioServer.get_bus_index(&"BGM") > 0, "BGM bus")
+	_check(AudioServer.get_bus_index(&"SFX") > 0, "SFX bus")
+	var ui_wav := load("res://assets/audio/sfx/ui.wav") as AudioStreamWAV
+	var title_wav := load("res://assets/audio/bgm/title.wav") as AudioStreamWAV
+	_check(ui_wav != null and ui_wav.data.size() > 0, "ui wav imported")
+	_check(title_wav != null and title_wav.get_length() > 1.0, "title bgm imported")
+	ui_wav = null
+	title_wav = null
+	AudioManager.set_linear("BGM", 0.42)
+	GameManager._save()
+	var cfg := ConfigFile.new()
+	_check(cfg.load(GameManager.SAVE_PATH) == OK, "save file written")
+	_check(is_equal_approx(float(cfg.get_value("audio", "bgm", -1.0)), 0.42), "bgm volume kept in save")
+	_check(cfg.has_section("score"), "score section still in save")
+	cfg = null
+	AudioManager.set_linear("BGM", 0.7)
+	AudioManager.play_sfx(&"ui")
+	Events.music_requested.emit(&"title")
+	Events.weapon_fired.emit(&"vulcan", &"bullet")
+	# SMCPKG_SUPPORT<<<CursorM9AudioTestEnd
 	GameManager.start_run(Database.ships[0], Database.first_stage())
 	add_child((load(GameManager.SCENE_STAGE) as PackedScene).instantiate())
 	await get_tree().create_timer(2.0).timeout

@@ -3,6 +3,10 @@ extends EnemyData
 ## Boss 設定：在 EnemyData 之上加入多階段彈幕。
 
 @export var boss_name := "BOSS"
+# SMCPKG_SUPPORT>>>CursorM9BossBgm
+## Boss 戰 BGM。留空就用 MusicCatalog 的 boss。中階 Boss 與最終 Boss 可以各放一首。
+@export var bgm: AudioStream
+# SMCPKG_SUPPORT<<<CursorM9BossBgmEnd
 ## 進場時間，這段時間內無敵、不開火
 @export var entry_time := 3.0
 @export var phases: Array[BossPhase] = []

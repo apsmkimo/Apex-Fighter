@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BossData" load_steps=15 format=3]
+[gd_resource type="Resource" script_class="BossData" load_steps=16 format=3]
 
 [ext_resource type="Resource" path="res://data/patterns/move_widow_hover.tres" id="1_move"]
 [ext_resource type="Script" path="res://src/entities/bosses/boss_phase.gd" id="2_phase"]
@@ -11,6 +11,7 @@
 [ext_resource type="Resource" path="res://data/patterns/spread_5.tres" id="9_s5"]
 [ext_resource type="Script" path="res://src/entities/bosses/boss_data.gd" id="10_bd"]
 [ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_crimson_widow.png" id="11_tex"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/boss.wav" id="bgm_boss"]
 
 [sub_resource type="Resource" id="Phase1"]
 script = ExtResource("2_phase")
@@ -33,6 +34,7 @@ intervals = PackedFloat32Array(0.5, 1.1, 1.6)
 [resource]
 script = ExtResource("10_bd")
 boss_name = "CRIMSON WIDOW"
+bgm = ExtResource("bgm_boss")
 entry_time = 3.5
 phases = Array[ExtResource("2_phase")]([SubResource("Phase1"), SubResource("Phase2"), SubResource("Phase3")])
 ult_kinds = Array[StringName]([&"eye_laser", &"web"])

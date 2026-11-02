@@ -85,6 +85,9 @@ func _ready() -> void:
 
 	resized.connect(_fit)
 	_fit()
+	# SMCPKG_SUPPORT>>>CursorM9SelectMusic
+	Events.music_requested.emit(&"ship_select")
+	# SMCPKG_SUPPORT<<<CursorM9SelectMusicEnd
 
 
 # ---------------------------------------------------------------- 輪盤
@@ -285,6 +288,9 @@ func _snap_to(target: int) -> void:
 	if new_index != _index:
 		_index = new_index
 		_update_info()
+		# SMCPKG_SUPPORT>>>CursorM9ShipSfx
+		Events.ship_selected.emit()
+		# SMCPKG_SUPPORT<<<CursorM9ShipSfxEnd
 
 
 # ---------------------------------------------------------------- 資訊
@@ -406,6 +412,9 @@ func _capsule_style(c: Color, selected: bool, pressed_look := false) -> StyleBox
 
 
 func _select_difficulty(d: DifficultyData) -> void:
+	# SMCPKG_SUPPORT>>>CursorM9DiffSfx
+	Events.ui_pressed.emit()
+	# SMCPKG_SUPPORT<<<CursorM9DiffSfxEnd
 	GameManager.set_difficulty(d)
 	_refresh_difficulty()
 
@@ -446,6 +455,9 @@ func _image_button(tex: Texture2D, center: Vector2, width: float) -> TextureButt
 	b.focus_mode = Control.FOCUS_NONE
 	b.button_down.connect(func(): b.scale = Vector2.ONE * 0.94)
 	b.button_up.connect(func(): b.scale = Vector2.ONE)
+	# SMCPKG_SUPPORT>>>CursorM9ImageBtn
+	b.pressed.connect(func() -> void: Events.ui_pressed.emit())
+	# SMCPKG_SUPPORT<<<CursorM9ImageBtnEnd
 	_canvas.add_child(b)
 	return b
 

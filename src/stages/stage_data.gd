@@ -10,7 +10,11 @@ extends Resource
 @export var scroll_speed := 160.0
 @export var bg_top_color := Color(0.04, 0.06, 0.16)
 @export var bg_bottom_color := Color(0.10, 0.14, 0.30)
+# SMCPKG_SUPPORT>>>CursorM9Bgm
+# @export var bgm: AudioStream
+## 這個關卡的 BGM。留空就用 MusicCatalog 的 stage。換成同名音檔即可替換。
 @export var bgm: AudioStream
+# SMCPKG_SUPPORT<<<CursorM9BgmEnd
 
 @export_group("Waves")
 @export var waves: Array[WaveData] = []

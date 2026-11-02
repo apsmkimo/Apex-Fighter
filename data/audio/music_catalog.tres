@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="MusicCatalog" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://src/audio/music_catalog.gd" id="1_script"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/title.wav" id="2_title"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/ship_select.wav" id="3_select"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/stage.wav" id="4_stage"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/boss.wav" id="5_boss"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/result.wav" id="6_result"]
+
+[resource]
+script = ExtResource("1_script")
+title = ExtResource("2_title")
+ship_select = ExtResource("3_select")
+stage = ExtResource("4_stage")
+boss = ExtResource("5_boss")
+result = ExtResource("6_result")
