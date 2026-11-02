@@ -15,6 +15,12 @@ func _ready() -> void:
 		ultimate = BossUltimate.new()
 		ultimate.setup(self)
 		add_child(ultimate)
+	if data.weak_radius > 0.0:
+		var mark := WeakPointMarker.new()
+		mark.position = data.weak_offset
+		mark.radius = data.weak_radius
+		mark.color = boss_data().ult_color
+		add_child(mark)
 	_enter_phase(0)
 
 
@@ -94,3 +100,31 @@ func _on_died() -> void:
 	Events.enemy_killed.emit(data, global_position)
 	Events.boss_defeated.emit()
 	queue_free()
+
+
+## 弱點提示：在發光核心外圍畫旋轉的虛線瞄準圈，提醒玩家只有打這裡才有效
+class WeakPointMarker extends Node2D:
+	var radius := 40.0
+	var color := Color(1, 0.3, 0.3)
+	var _t := 0.0
+
+	func _ready() -> void:
+		z_index = 4
+		var mat := CanvasItemMaterial.new()
+		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		material = mat
+
+	func _process(delta: float) -> void:
+		_t += delta
+		queue_redraw()
+
+	func _draw() -> void:
+		var pulse := 0.5 + 0.5 * sin(_t * 4.0)
+		var c := Color(color.r, color.g, color.b, 0.35 + 0.3 * pulse)
+		for i in 6:
+			var a := _t * 1.2 + TAU * i / 6.0
+			draw_arc(Vector2.ZERO, radius + 4.0, a, a + 0.6, 8, c, 2.5)
+		for i in 4:
+			var a := -_t * 0.8 + TAU * i / 4.0
+			var d := Vector2.RIGHT.rotated(a)
+			draw_line(d * (radius + 10.0), d * (radius + 20.0), c, 2.0)

@@ -20,6 +20,15 @@ extends Resource
 ## 多快的移動速度算「全力」（像素/秒），決定傾斜與火焰變化的靈敏度
 @export var flight_ref_speed := 120.0
 
+@export_group("Weak Point")
+## weak_radius > 0 時只有打到弱點（發光核心）附近才有傷害，打到其他地方被裝甲擋掉
+@export var weak_offset := Vector2.ZERO
+@export var weak_radius := 0.0
+
+@export_group("Death")
+## 被打爆後掉出來繼續攻擊的單位（例如戰機裡的機器人）
+@export var death_spawn: EnemyData
+
 @export_group("Movement")
 ## 預設移動方式，波次可以覆寫
 @export var movement: MovePattern

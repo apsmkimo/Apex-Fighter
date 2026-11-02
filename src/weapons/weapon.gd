@@ -129,14 +129,14 @@ func _process_laser(delta: float) -> void:
 			var e := node as Enemy
 			if e == null or e.health.dead or not e.is_on_screen():
 				continue
-			var p := e.global_position
+			var p := e.aim_point()
 			if p.y >= origin.y:
 				continue
-			if absf(p.x - origin.x) <= half + e.data.hit_radius * 0.8 and p.y > best_y:
+			if absf(p.x - origin.x) <= half + e.aim_radius() * 0.8 and p.y > best_y:
 				best_y = p.y
 				target = e
 		if target:
-			_beam_lens[b] = maxf(origin.y - (target.global_position.y + target.data.hit_radius * 0.5), 0.0)
+			_beam_lens[b] = maxf(origin.y - (target.aim_point().y + target.aim_radius() * 0.5), 0.0)
 			_beam_hits[b] = true
 			if tick:
 				target.take_damage(dmg)
@@ -174,17 +174,17 @@ func _process_arc(delta: float) -> void:
 			if e == null or e.health.dead or not e.is_on_screen() or e in hit:
 				continue
 			# 第一下只打前方的敵人
-			if c == 0 and e.global_position.y > origin.y + 20.0:
+			if c == 0 and e.aim_point().y > origin.y + 20.0:
 				continue
-			var d := from.distance_to(e.global_position)
+			var d := from.distance_to(e.aim_point())
 			if d < best_d:
 				best_d = d
 				best = e
 		if best == null:
 			break
 		hit.append(best)
-		_arcs.append(_bolt(from, best.global_position))
-		from = best.global_position
+		_arcs.append(_bolt(from, best.aim_point()))
+		from = best.aim_point()
 	if hit.is_empty():
 		# 沒有目標：往前放出一小段電弧
 		_arcs.append(_bolt(origin, origin + Vector2(randf_range(-40, 40), -110)))
@@ -192,7 +192,7 @@ func _process_arc(delta: float) -> void:
 		for e in hit:
 			e.take_damage(dmg)
 			if NeonFx.instance:
-				NeonFx.instance.impact(e.global_position, data.laser_color)
+				NeonFx.instance.impact(e.aim_point(), data.laser_color)
 	_arc_fade = 1.0
 
 

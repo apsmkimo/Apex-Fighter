@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="1_ed"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/raptor.png" id="2_tex"]
+[ext_resource type="Resource" path="res://data/patterns/spread_5.tres" id="3_pat"]
+[ext_resource type="Resource" path="res://data/patterns/move_slow_sway.tres" id="4_mv"]
+[ext_resource type="Resource" path="res://data/enemies/raptor_pilot.tres" id="5_pilot"]
+[ext_resource type="Script" path="res://src/entities/items/item_data.gd" id="b0_itm"]
+[ext_resource type="Resource" path="res://data/items/missile.tres" id="b_missile"]
+[ext_resource type="Resource" path="res://data/items/weapon_plasma.tres" id="b_weapon_plasma"]
+[ext_resource type="Resource" path="res://data/items/weapon_laser.tres" id="b_weapon_laser"]
+[ext_resource type="Resource" path="res://data/items/shield.tres" id="b_shield"]
+[ext_resource type="Resource" path="res://data/items/special.tres" id="b_special"]
+[ext_resource type="Resource" path="res://data/items/power.tres" id="b_power"]
+
+[resource]
+script = ExtResource("1_ed")
+id = &"raptor"
+texture = ExtResource("2_tex")
+max_hp = 26
+hit_radius = 36.0
+score = 600
+explosion_scale = 1.5
+movement = ExtResource("4_mv")
+bullet_pattern = ExtResource("3_pat")
+fire_interval = 1.8
+first_fire_delay = 1.0
+death_spawn = ExtResource("5_pilot")
+bonus_pool = Array[ExtResource("b0_itm")]([ExtResource("b_missile"), ExtResource("b_shield"), ExtResource("b_special"), ExtResource("b_weapon_laser")])
+bonus_chance = 0.3

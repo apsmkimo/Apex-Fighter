@@ -53,6 +53,16 @@ func first_stage() -> StageData:
 	return stages[0] if not stages.is_empty() else null
 
 
+## 下一關；已經是最後一關就回傳 null
+func next_stage(current: StageData) -> StageData:
+	var i := stages.find(current)
+	return stages[i + 1] if i >= 0 and i + 1 < stages.size() else null
+
+
+func stage_by_index(i: int) -> StageData:
+	return stages[clampi(i, 0, stages.size() - 1)] if not stages.is_empty() else null
+
+
 func _load_dir(path: String) -> Array:
 	var out := []
 	var dir := DirAccess.open(path)

@@ -45,7 +45,13 @@ func _physics_process(delta: float) -> void:
 		_target = _find_target()
 	var desired := Vector2.UP * SPEED
 	if _target:
-		desired = (_target.global_position - global_position).normalized() * SPEED
+		desired = (_target.aim_point() - global_position).normalized() * SPEED
+		# 有弱點的敵人：穿過裝甲，飛到弱點才爆
+		if _target.has_weak_point() and global_position.distance_to(_target.aim_point()) < _target.aim_radius():
+			_done = true
+			_target.take_damage(damage)
+			queue_free()
+			return
 	if _age > 0.12:
 		var ang := velocity.angle()
 		var want := desired.angle()
@@ -67,7 +73,7 @@ func _find_target() -> Enemy:
 		var e := node as Enemy
 		if e == null or e.health.dead or not e.is_on_screen():
 			continue
-		var d := global_position.distance_squared_to(e.global_position)
+		var d := global_position.distance_squared_to(e.aim_point())
 		if d < best_d:
 			best_d = d
 			best = e
@@ -75,7 +81,7 @@ func _find_target() -> Enemy:
 
 
 func _on_area_entered(area: Area2D) -> void:
-	if _done or not area is Enemy:
+	if _done or not area is Enemy or (area as Enemy).has_weak_point():
 		return
 	_done = true
 	(area as Enemy).take_damage(damage)

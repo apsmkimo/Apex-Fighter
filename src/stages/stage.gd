@@ -95,7 +95,8 @@ func _start_final_phase() -> void:
 	await get_tree().create_timer(2.5).timeout
 	if state == State.OVER:
 		return
-	hud.show_notice("FINAL ASSAULT", "ENEMY REINFORCEMENTS", NeonDraw.AMBER)
+	if not data.waves_after_mid.is_empty():
+		hud.show_notice("FINAL ASSAULT", "ENEMY REINFORCEMENTS", NeonDraw.AMBER)
 	state = State.WAVES
 	spawner.start_waves(data.waves_after_mid, enemies)
 
@@ -139,6 +140,13 @@ func _on_boss_defeated() -> void:
 	Events.screen_shake.emit(20.0, 1.2)
 	Events.stage_cleared.emit()
 	await get_tree().create_timer(3.5).timeout
+	# 還有下一關就直接接著打（分數、殘機、武器、火力都保留）
+	var next := Database.next_stage(data)
+	if next:
+		GameManager.current_stage = next
+		GameManager.enemy_hp_mult = 1.0
+		GameManager.goto_stage()
+		return
 	GameManager.end_run(true)
 	GameManager.goto_result()
 

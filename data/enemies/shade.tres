@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="1_ed"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/shade.png" id="2_tex"]
+[ext_resource type="Resource" path="res://data/patterns/aimed_single.tres" id="3_pat"]
+
+[resource]
+script = ExtResource("1_ed")
+id = &"shade"
+texture = ExtResource("2_tex")
+max_hp = 3
+hit_radius = 20.0
+score = 150
+explosion_scale = 0.9
+bullet_pattern = ExtResource("3_pat")
+fire_interval = 2.2
+first_fire_delay = 0.9

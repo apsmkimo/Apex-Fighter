@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="MoveSine" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/patterns/movement/move_sine.gd" id="1_ms"]
+
+[resource]
+script = ExtResource("1_ms")
+speed = 55.0
+amplitude = 130.0
+frequency = 0.22

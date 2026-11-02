@@ -39,6 +39,30 @@ extends EnemyData
 @export var ult_eye_charge := 2.0
 @export var ult_eye_fire := 1.8
 
+@export_subgroup("Pincer")
+## 兩支鉗子雷射：右鉗位置（左鉗自動左右對稱），從內往外張開掃射
+@export var ult_pincer_offset := Vector2(120, -40)
+@export var ult_pincer_width := 30.0
+@export var ult_pincer_charge := 1.8
+@export var ult_pincer_fire := 1.8
+
+@export_subgroup("Nova")
+## 核心放出數圈擴散衝擊波，每圈有一個缺口可以鑽過去
+@export var ult_nova_rings := 3
+@export var ult_nova_gap_deg := 55.0
+@export var ult_nova_speed := 320.0
+@export var ult_nova_width := 24.0
+@export var ult_nova_charge := 2.0
+
+@export_subgroup("Feather")
+## 雙翼砲台齊射：從這些位置連續朝玩家附近灑出子彈
+@export var ult_feather_points: PackedVector2Array = PackedVector2Array()
+@export var ult_feather_time := 2.4
+@export var ult_feather_rate := 0.06
+@export var ult_feather_speed := 380.0
+@export var ult_feather_charge := 1.6
+@export var ult_feather_texture: Texture2D
+
 @export_subgroup("Web")
 ## 吐絲位置（相對 Boss 中心）
 @export var ult_web_origin := Vector2(0, 90)

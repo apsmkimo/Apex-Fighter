@@ -4,6 +4,9 @@ extends Node2D
 ##   beam      儲能（粒子聚集＋警示區）→ 往下發射大範圍雷射
 ##   eye_laser 眼睛充能、紅色瞄準扇形 → 紅眼雷射從一側掃到另一側
 ##   web       口部蓄力 → 吐出數團絲網，碰到玩家會黏住無法移動（護盾可擋）
+##   pincer    左右鉗子充能 → 兩道雷射由內往外張開（中間與兩側留有安全區）
+##   nova      核心充能 → 數圈擴散衝擊波，每圈有缺口可以鑽過
+##   feather   雙翼砲台發光 → 大量子彈齊射（一般子彈傷害）
 ## 雷射類打到玩家扣 BossData.ult_damage（滿血只擋得住一次），一次發射只扣一次。
 
 enum State { IDLE, CHARGE, FIRE }
@@ -25,6 +28,11 @@ var _eye_from := 0.0
 var _eye_to := 0.0
 # 絲網：每團 [世界座標, 速度, 旋轉角]
 var _webs: Array = []
+# 衝擊波：每圈 [半徑, 缺口中心角, 已命中]
+var _rings: Array = []
+var _rings_left := 0
+var _ring_cd := 0.0
+var _feather_cd := 0.0
 
 
 func setup(b: Boss) -> void:
@@ -45,9 +53,15 @@ func busy() -> bool:
 	return state == State.CHARGE or (state == State.FIRE and kind != &"web")
 
 
+## 吐絲與衝擊波要等飛出畫面才結束
+func _waits_for_projectiles() -> bool:
+	return kind == &"web" or kind == &"nova"
+
+
 func cancel() -> void:
 	state = State.IDLE
 	_webs.clear()
+	_rings.clear()
 	queue_redraw()
 
 
@@ -74,9 +88,21 @@ func _physics_process(delta: float) -> void:
 					Events.screen_shake.emit(4.0, 0.1)
 				&"web":
 					_update_webs(delta)
-			var finished := _timer <= 0.0 if kind != &"web" else (_webs.is_empty() or _timer <= 0.0)
+				&"pincer":
+					_check_pincer_hit()
+					Events.screen_shake.emit(4.0, 0.1)
+				&"nova":
+					_update_nova(delta)
+				&"feather":
+					_update_feather(delta)
+			var finished := _timer <= 0.0
+			if kind == &"web":
+				finished = _webs.is_empty() or _timer <= 0.0
+			elif kind == &"nova":
+				finished = (_rings.is_empty() and _rings_left <= 0) or _timer <= 0.0
 			if finished:
 				_webs.clear()
+				_rings.clear()
 				state = State.IDLE
 				_timer = bd.ult_interval
 				Events.boss_ultimate.emit("end")
@@ -94,6 +120,12 @@ func _start_charge() -> void:
 			_timer = bd.ult_eye_charge
 		&"web":
 			_timer = bd.ult_web_charge
+		&"pincer":
+			_timer = bd.ult_pincer_charge
+		&"nova":
+			_timer = bd.ult_nova_charge
+		&"feather":
+			_timer = bd.ult_feather_charge
 		_:
 			_timer = bd.ult_charge_time
 	_charge_total = _timer
@@ -120,6 +152,17 @@ func _start_fire() -> void:
 		&"web":
 			_timer = WEB_MAX_TIME
 			_spawn_webs()
+		&"pincer":
+			_timer = bd.ult_pincer_fire
+			Events.screen_shake.emit(10.0, 0.3)
+		&"nova":
+			_timer = 8.0
+			_rings.clear()
+			_rings_left = bd.ult_nova_rings
+			_ring_cd = 0.0
+		&"feather":
+			_timer = bd.ult_feather_time
+			_feather_cd = 0.0
 		_:
 			_timer = bd.ult_fire_time
 			Events.screen_shake.emit(14.0, 0.4)
@@ -161,6 +204,8 @@ func _charge_origin() -> Vector2:
 			return bd.ult_eye_offset
 		&"web":
 			return bd.ult_web_origin
+		&"pincer":
+			return bd.ult_pincer_offset
 	return bd.ult_origin
 
 
@@ -227,6 +272,78 @@ func _update_webs(delta: float) -> void:
 			_webs.remove_at(i)
 
 
+# ---------- pincer ----------
+
+## 鉗子雷射角度：side = 1 右鉗、-1 左鉗。從偏內側（96°）張開到偏外側（78°）
+func _pincer_angle(side: float) -> float:
+	var k := clampf(1.0 - _timer / bd.ult_pincer_fire, 0.0, 1.0) if state == State.FIRE else 0.0
+	var deg := lerpf(96.0, 78.0, ease(k, -1.5))
+	return deg_to_rad(90.0 + (deg - 90.0) * side)
+
+
+func _pincer_origin(side: float) -> Vector2:
+	return Vector2(bd.ult_pincer_offset.x * side, bd.ult_pincer_offset.y)
+
+
+func _check_pincer_hit() -> void:
+	var pl := Player.instance
+	if _hit_done or pl == null or not pl.alive or _beam_ratio(bd.ult_pincer_fire) < 0.5:
+		return
+	for side: float in [-1.0, 1.0]:
+		var origin := global_position + _pincer_origin(side)
+		var dir := Vector2.RIGHT.rotated(_pincer_angle(side))
+		var rel := pl.global_position - origin
+		if rel.dot(dir) > 0.0 and absf(rel.cross(dir)) < bd.ult_pincer_width * 0.4 + pl.ship.hitbox_radius:
+			_hit_done = true
+			pl.take_hit(bd.ult_damage)
+			return
+
+
+# ---------- nova ----------
+
+func _update_nova(delta: float) -> void:
+	_ring_cd -= delta
+	if _rings_left > 0 and _ring_cd <= 0.0:
+		_rings_left -= 1
+		_ring_cd = 0.75
+		# 缺口大致朝玩家，但每圈偏一點，逼玩家移動
+		var gap := _aim_angle(bd.ult_origin) + randf_range(-0.7, 0.7)
+		_rings.append([30.0, gap, false])
+		Events.screen_shake.emit(8.0, 0.2)
+	var pl := Player.instance
+	var origin := global_position + bd.ult_origin
+	var half_gap := deg_to_rad(bd.ult_nova_gap_deg) * 0.5
+	for i in range(_rings.size() - 1, -1, -1):
+		var r: Array = _rings[i]
+		r[0] += bd.ult_nova_speed * delta
+		if r[0] > 1600.0:
+			_rings.remove_at(i)
+			continue
+		if r[2] or pl == null or not pl.alive:
+			continue
+		var rel := pl.global_position - origin
+		if absf(rel.length() - (r[0] as float)) < bd.ult_nova_width * 0.5 + pl.ship.hitbox_radius:
+			if absf(angle_difference(rel.angle(), r[1] as float)) > half_gap:
+				r[2] = true
+				pl.take_hit(bd.ult_damage)
+
+
+# ---------- feather ----------
+
+func _update_feather(delta: float) -> void:
+	_feather_cd -= delta
+	if _feather_cd > 0.0 or BulletPool.instance == null or bd.ult_feather_points.is_empty():
+		return
+	_feather_cd = bd.ult_feather_rate
+	var p := bd.ult_feather_points[randi() % bd.ult_feather_points.size()]
+	var from := global_position + p
+	var ang := _aim_angle(p) + randf_range(-0.45, 0.45)
+	BulletPool.instance.spawn(from, Vector2.RIGHT.rotated(ang) * bd.ult_feather_speed,
+			bd.ult_feather_texture, 8.0, bd.bullet_damage, false)
+	if NeonFx.instance:
+		NeonFx.instance.muzzle(from, bd.ult_color)
+
+
 # ---------- 繪製 ----------
 
 func _draw() -> void:
@@ -244,6 +361,10 @@ func _draw() -> void:
 					_draw_eye_laser(c)
 				&"web":
 					_draw_webs()
+				&"pincer":
+					_draw_pincer(c)
+				&"nova":
+					_draw_nova(c)
 
 
 func _draw_charge(c: Color) -> void:
@@ -272,6 +393,27 @@ func _draw_charge(c: Color) -> void:
 			for a: float in [center - half, center + half]:
 				draw_line(o, o + Vector2.RIGHT.rotated(a) * far, Color(c.r, c.g, c.b, 0.3 + 0.5 * blink), 2.0)
 			draw_line(o, o + Vector2.RIGHT.rotated(center) * far, Color(1, 0.5, 0.5, 0.2 + 0.4 * k), 1.5)
+		&"pincer":
+			# 兩道鉗子雷射會掃過的扇形
+			for side: float in [-1.0, 1.0]:
+				var po := _pincer_origin(side)
+				var a0 := deg_to_rad(90.0 + 6.0 * side)
+				var a1 := deg_to_rad(90.0 - 12.0 * side)
+				var far := 1800.0
+				draw_colored_polygon(PackedVector2Array([po, po + Vector2.RIGHT.rotated(a0) * far, po + Vector2.RIGHT.rotated(a1) * far]),
+						Color(c.r, c.g, c.b, 0.05 + 0.08 * k * blink))
+				for a: float in [a0, a1]:
+					draw_line(po, po + Vector2.RIGHT.rotated(a) * far, Color(c.r, c.g, c.b, 0.3 + 0.5 * blink), 2.0)
+				draw_circle(po, 8.0 + 18.0 * k, Color(c.r, c.g, c.b, 0.6))
+		&"nova":
+			# 核心外圍一圈圈往內收的預告環
+			for i in 3:
+				var rr := fmod(200.0 - _t * 220.0 + i * 70.0, 210.0) + 20.0
+				draw_arc(o, rr, 0, TAU, 48, Color(c.r, c.g, c.b, 0.25 + 0.4 * k), 3.0)
+		&"feather":
+			# 每個翼砲台閃爍
+			for p in bd.ult_feather_points:
+				draw_circle(p, 5.0 + 6.0 * k * blink, Color(c.r, c.g, c.b, 0.5 + 0.4 * blink))
 		&"web":
 			# 口部的白色絲線蓄力
 			for i in 6:
@@ -348,3 +490,32 @@ func _draw_webs() -> void:
 				pts.append(p + Vector2.RIGHT.rotated(rot + TAU * i / 8.0) * rr)
 			draw_polyline(pts, Color(col.r, col.g, col.b, 0.7), 1.3)
 		draw_circle(p, 4.0, Color(1, 0.3, 0.35, 0.9))
+
+
+func _draw_pincer(c: Color) -> void:
+	var w := bd.ult_pincer_width * _beam_ratio(bd.ult_pincer_fire)
+	var flick := 0.88 + 0.12 * sin(_t * 75.0)
+	for side: float in [-1.0, 1.0]:
+		var o := _pincer_origin(side)
+		var end := o + Vector2.RIGHT.rotated(_pincer_angle(side)) * 1900.0
+		draw_line(o, end, Color(c.r, c.g, c.b, 0.22), w * 2.0 * flick)
+		draw_line(o, end, Color(c.r, c.g, c.b, 0.75), w * flick)
+		draw_line(o, end, Color(1, 0.85, 1, 0.95), w * 0.35)
+		draw_circle(o, w * 0.9, Color(c.r, c.g, c.b, 0.6))
+		draw_circle(o, w * 0.45, Color(1, 0.95, 1, 1))
+
+
+func _draw_nova(c: Color) -> void:
+	var o := bd.ult_origin
+	var half_gap := deg_to_rad(bd.ult_nova_gap_deg) * 0.5
+	for r in _rings:
+		var rad: float = r[0]
+		var gap: float = r[1]
+		var a0 := gap + half_gap
+		var a1 := gap - half_gap + TAU
+		var segs := clampi(int(rad / 6.0), 24, 160)
+		draw_arc(o, rad, a0, a1, segs, Color(c.r, c.g, c.b, 0.25), bd.ult_nova_width * 1.8)
+		draw_arc(o, rad, a0, a1, segs, Color(c.r, c.g, c.b, 0.8), bd.ult_nova_width * 0.8)
+		draw_arc(o, rad, a0, a1, segs, Color(1, 0.85, 0.8, 0.95), bd.ult_nova_width * 0.25)
+	if _rings_left > 0:
+		draw_circle(o, 30.0 + 6.0 * sin(_t * 30.0), Color(c.r, c.g, c.b, 0.7))

@@ -15,14 +15,17 @@ func _ready() -> void:
 	for s in Database.ships:
 		if String(s.id) == OS.get_environment("SMOKE_SHIP"):
 			ship = s
-	var stage: StageData = Database.first_stage()
+	var stw := OS.get_environment("SHOT_STAGE")
+	var stage: StageData = Database.stage_by_index(int(stw) - 1) if stw != "" else Database.first_stage()
 	# SHOT_BOSS=1：跳過波次直接打最終 Boss，大絕招提早發動（檢查紅眼雷射與吐絲）
 	if OS.get_environment("SHOT_BOSS") == "1":
 		stage = stage.duplicate()
+		var _keep_mid: BossData = stage.mid_boss
 		stage.waves = []
 		stage.mid_boss = null
 		stage.boss_warning_time = 0.5
-		var b: BossData = stage.boss.duplicate()
+		var src: BossData = _keep_mid if OS.get_environment("SHOT_MID") == "1" and _keep_mid else stage.boss
+		var b: BossData = src.duplicate()
 		b.ult_first_delay = 0.5
 		b.ult_interval = 1.0
 		stage.boss = b

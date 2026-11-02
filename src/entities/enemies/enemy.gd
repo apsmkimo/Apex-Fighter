@@ -38,6 +38,10 @@ func _ready() -> void:
 	sprite.texture = data.texture
 	var circle := CircleShape2D.new()
 	circle.radius = data.hit_radius
+	# 有弱點的敵人：碰撞範圍只剩發光核心，子彈會穿過裝甲、只有打中核心才算
+	if data.weak_radius > 0.0:
+		circle.radius = data.weak_radius
+		shape.position = data.weak_offset
 	shape.shape = circle
 	var diff := GameManager.difficulty
 	var base_hp := diff.scale_hp(data.max_hp) if diff else data.max_hp
@@ -75,6 +79,19 @@ func is_on_screen() -> bool:
 	return get_viewport_rect().has_point(global_position)
 
 
+## 武器瞄準的位置：有弱點就是弱點
+func aim_point() -> Vector2:
+	return global_position + data.weak_offset if data.weak_radius > 0.0 else global_position
+
+
+func aim_radius() -> float:
+	return data.weak_radius if data.weak_radius > 0.0 else data.hit_radius
+
+
+func has_weak_point() -> bool:
+	return data.weak_radius > 0.0
+
+
 func take_damage(amount: int) -> void:
 	if health.dead:
 		return
@@ -101,7 +118,19 @@ func _on_died() -> void:
 	GameManager.add_score(data.score)
 	Events.enemy_killed.emit(data, global_position)
 	_try_drop()
+	if data.death_spawn:
+		_spawn_on_death.call_deferred(data.death_spawn, global_position, get_parent())
 	queue_free()
+
+
+static func _spawn_on_death(d: EnemyData, pos: Vector2, parent: Node) -> void:
+	if parent == null or not is_instance_valid(parent):
+		return
+	var e := (load("res://src/entities/enemies/enemy.tscn") as PackedScene).instantiate() as Enemy
+	e.setup(d, pos)
+	parent.add_child(e)
+	if NeonFx.instance:
+		NeonFx.instance.float_text(pos + Vector2(0, -40), "EJECT!", Color(1.0, 0.35, 0.3))
 
 
 func _try_drop() -> void:

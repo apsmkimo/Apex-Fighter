@@ -33,7 +33,9 @@ func _start() -> void:
 	if dw != "" and Database.get_difficulty(StringName(dw)):
 		GameManager.set_difficulty(Database.get_difficulty(StringName(dw)))
 	print("[test] ship = %s  difficulty = %s" % [ship.display_name, GameManager.difficulty.display_name])
-	GameManager.start_run(ship, Database.first_stage())
+	# SMOKE_STAGE 指定關卡（1 = 第一關，2 = 第二關）
+	var sw := OS.get_environment("SMOKE_STAGE")
+	GameManager.start_run(ship, Database.stage_by_index(int(sw) - 1) if sw != "" else Database.first_stage())
 	# SMOKE_WEAPON 指定開局武器（例如 blue_laser），SMOKE_MISSILE 指定導彈等級
 	var ww := OS.get_environment("SMOKE_WEAPON")
 	if ww != "":
