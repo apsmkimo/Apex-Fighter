@@ -136,7 +136,7 @@ func _fit() -> void:
 
 # SMCPKG_SUPPORT>>>CursorM9TitleAudioUi
 func _build_audio() -> void:
-	var audio_btn := UiKit.button("AUDIO", 26, Vector2(220, 64))
+	var audio_btn := UiKit.button("SETTINGS", 26, Vector2(220, 64))
 	audio_btn.position = Vector2(36, 1188)
 	var panel := AudioPanel.new()
 	panel.position = Vector2(90, 820)

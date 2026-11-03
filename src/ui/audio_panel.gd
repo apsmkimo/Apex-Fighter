@@ -28,12 +28,32 @@ func _ready() -> void:
 	_box = VBoxContainer.new()
 	_box.add_theme_constant_override(&"separation", 8)
 	add_child(_box)
-	_box.add_child(UiKit.label("AUDIO", 28, NeonDraw.CYAN))
+	_box.add_child(UiKit.label("SETTINGS", 28, NeonDraw.CYAN))
+	_box.add_child(UiKit.label("AUDIO", 20, NeonDraw.CYAN))
 	_add_row(&"Master", "MASTER")
 	_add_row(&"BGM", "BGM")
 	_add_row(&"SFX", "SFX")
 	AudioManager.settings_changed.connect(_refresh)
 	_refresh()
+	_add_test_toggle()
+
+
+## 測試模式開關：所有關卡可選＋戰機無敵（暫時給開發測試用）
+func _add_test_toggle() -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override(&"separation", 10)
+	var lab := UiKit.label("TEST MODE", 22, Color(1.0, 0.75, 0.3))
+	lab.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	lab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(lab)
+	var btn := CheckButton.new()
+	btn.focus_mode = Control.FOCUS_NONE
+	btn.button_pressed = GameManager.test_mode
+	btn.custom_minimum_size = Vector2(90, 44)
+	btn.toggled.connect(func(on: bool) -> void: GameManager.set_test_mode(on))
+	row.add_child(btn)
+	_box.add_child(row)
+	_box.add_child(UiKit.label("All stages + invincible", 16, Color(0.7, 0.8, 0.9)))
 
 
 ## 標題畫面的彈出面板用：多一顆關閉鈕

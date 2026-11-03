@@ -41,6 +41,8 @@ var player_damage_mult := 1.0
 var last_run_cleared := false
 ## 已依序通過的關卡數（星圖解鎖用，0 = 只有第一關可以打）
 var cleared_stages := 0
+## 測試模式（SETTINGS 開關）：所有關卡都能選、戰機無敵。會存檔
+var test_mode := false
 
 
 func _ready() -> void:
@@ -215,6 +217,7 @@ func _load_save() -> void:
 				hi_scores[key] = int(cfg.get_value("hi_scores", key, 0))
 		last_diff = String(cfg.get_value("settings", "difficulty", "normal"))
 		cleared_stages = int(cfg.get_value("progress", "cleared_stages", 0))
+		test_mode = bool(cfg.get_value("settings", "test_mode", false))
 	var d := Database.get_difficulty(StringName(last_diff))
 	set_difficulty(d if d else Database.default_difficulty())
 
@@ -240,7 +243,13 @@ func _save() -> void:
 	if difficulty:
 		cfg.set_value("settings", "difficulty", String(difficulty.id))
 	cfg.set_value("progress", "cleared_stages", cleared_stages)
+	cfg.set_value("settings", "test_mode", test_mode)
 	cfg.save(SAVE_PATH)
+
+
+func set_test_mode(on: bool) -> void:
+	test_mode = on
+	_save()
 	# SMCPKG_SUPPORT<<<CursorM9SaveEnd
 
 

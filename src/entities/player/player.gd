@@ -172,6 +172,10 @@ func _on_hurt(area: Area2D) -> void:
 func take_hit(amount: int) -> void:
 	if not alive or _entering or invincible > 0.0:
 		return
+	# 測試模式：無敵（照樣閃一下讓人知道被打到）
+	if GameManager.test_mode:
+		invincible = 0.15
+		return
 	if shield > 0.0:
 		shield = 0.0
 		invincible = 0.6

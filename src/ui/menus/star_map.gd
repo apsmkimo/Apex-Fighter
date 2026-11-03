@@ -64,7 +64,7 @@ func _build_layout() -> void:
 	for i in SLOT_COUNT:
 		# 左右交錯，再加一點固定的錯位，讓航線不像棋盤
 		var x := 230.0 if i % 2 == 0 else 490.0
-		x += [0.0, 20.0, -30.0, 10.0, -15.0, 25.0, -20.0, 15.0, -10.0][i]
+		x += [0.0, 20.0, -30.0, 10.0, -15.0, 25.0, -20.0, 15.0, -10.0, 20.0][i % 10]
 		_nodes.append(Vector2(x, MAP_H - BOTTOM_PAD - i * STEP_Y))
 	# 用 Catmull-Rom 把節點串成平滑航線
 	_path = PackedVector2Array()
@@ -96,7 +96,7 @@ func _current_index() -> int:
 
 
 func _is_unlocked(i: int) -> bool:
-	return i < _stage_count() and i <= GameManager.cleared_stages
+	return i < _stage_count() and (i <= GameManager.cleared_stages or GameManager.test_mode)
 
 
 func _node_map(i: int) -> Vector2:
@@ -253,7 +253,9 @@ func _draw_path() -> void:
 	for p in _path:
 		scaled.append(_to_screen(p))
 	# 已解鎖航段的終點索引
-	var lit_end := _path_seg_start[mini(_current_index(), _path_seg_start.size() - 1)] if _current_index() > 0 else 0
+	# 第 i 個節點在 _path 的位置：最後一個節點是整條路徑的終點
+	var ci := _current_index()
+	var lit_end := (_path_seg_start[ci] if ci < _path_seg_start.size() else _path.size() - 1) if ci > 0 else 0
 	lit_end = mini(lit_end, scaled.size() - 1)
 	# 先畫整條暗色虛線
 	for i in range(0, scaled.size() - 1, 2):
