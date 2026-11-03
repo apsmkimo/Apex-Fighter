@@ -14,6 +14,13 @@ var active := false
 ## 穿透彈：打中不消失，對同一隻敵機只打一次
 var pierce := false
 var _hit_ids: Array[int] = []
+## 追蹤彈轉向速度（弧度/秒）
+var homing := 0.0
+var _target: Enemy
+var _retarget := 0.0
+## 爆裂彈
+var splash_radius := 0.0
+var splash_damage := 0
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var shape: CollisionShape2D = $CollisionShape2D
@@ -44,6 +51,11 @@ func activate(pos: Vector2, vel: Vector2, tex: Texture2D, radius: float, dmg: in
 	damage = dmg
 	is_player_bullet = player_owned
 	pierce = false
+	homing = 0.0
+	_target = null
+	_retarget = 0.0
+	splash_radius = 0.0
+	splash_damage = 0
 	_hit_ids.clear()
 	sprite.texture = tex
 	sprite.rotation = vel.angle() + PI / 2.0  # 圖片朝上
@@ -81,6 +93,8 @@ func _set_active(value: bool) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if homing > 0.0:
+		_steer(delta)
 	position += velocity * delta
 	if not get_viewport_rect().grow(SCREEN_MARGIN).has_point(global_position):
 		release()
@@ -98,6 +112,43 @@ func _on_area_entered(area: Area2D) -> void:
 				NeonFx.instance.impact(global_position, _col)
 			return
 		(area as Enemy).take_damage(damage)
-		if NeonFx.instance and randf() < 0.6:
+		if splash_radius > 0.0:
+			_splash(area as Enemy)
+		elif NeonFx.instance and randf() < 0.6:
 			NeonFx.instance.impact(global_position, _col)
 		release()
+
+
+## 追蹤：轉向最近的畫面內敵人
+func _steer(delta: float) -> void:
+	_retarget -= delta
+	if _target == null or not is_instance_valid(_target) or _target.health.dead or _retarget <= 0.0:
+		_retarget = 0.25
+		_target = null
+		var best := 900.0
+		for node in get_tree().get_nodes_in_group(&"enemies"):
+			var e := node as Enemy
+			if e == null or e.health.dead or not e.is_on_screen() or e.is_hazard():
+				continue
+			var d := global_position.distance_to(e.aim_point())
+			if d < best:
+				best = d
+				_target = e
+	if _target:
+		var want := (_target.aim_point() - global_position).angle()
+		var cur := velocity.angle()
+		var ang := cur + clampf(wrapf(want - cur, -PI, PI), -homing * delta, homing * delta)
+		velocity = Vector2.RIGHT.rotated(ang) * velocity.length()
+		sprite.rotation = ang + PI / 2.0
+
+
+## 爆裂：傷害周圍的敵人
+func _splash(hit: Enemy) -> void:
+	if NeonFx.instance:
+		NeonFx.instance.explode(global_position, splash_radius / 90.0)
+	for node in get_tree().get_nodes_in_group(&"enemies"):
+		var e := node as Enemy
+		if e == null or e == hit or e.health.dead:
+			continue
+		if e.global_position.distance_to(global_position) <= splash_radius + e.aim_radius():
+			e.take_damage(splash_damage)

@@ -127,6 +127,10 @@ func _on_bomb_used(at: Vector2) -> void:
 	var fire := FireStorm.new()
 	if GameManager.selected_ship:
 		fire.burn_damage = maxi(1, GameManager.selected_ship.bomb_damage / 10)
+		fire.style = GameManager.selected_ship.bomb_style
+	fire.origin = at
+	if GameManager.selected_ship:
+		fx.pickup(at + Vector2(0, -120), Color(1, 1, 1), GameManager.selected_ship.bomb_name)
 	effects.add_child(fire)
 
 

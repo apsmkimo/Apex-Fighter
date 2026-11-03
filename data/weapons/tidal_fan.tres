@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/player_bubble.png" id="1_tex"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="2_lv"]
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_wd"]
+
+[sub_resource type="Resource" id="lv1"]
+script = ExtResource("2_lv")
+fire_interval = 0.16
+offsets = PackedVector2Array(-10, -30, 0, -34, 10, -30)
+angles_deg = PackedFloat32Array(-12, 0, 12)
+
+[sub_resource type="Resource" id="lv2"]
+script = ExtResource("2_lv")
+fire_interval = 0.16
+offsets = PackedVector2Array(-18, -26, -8, -32, 8, -32, 18, -26)
+angles_deg = PackedFloat32Array(-27, -9, 9, 27)
+
+[sub_resource type="Resource" id="lv3"]
+script = ExtResource("2_lv")
+fire_interval = 0.15
+offsets = PackedVector2Array(-22, -22, -12, -30, 0, -34, 12, -30, 22, -22)
+angles_deg = PackedFloat32Array(-40, -20, 0, 20, 40)
+
+[sub_resource type="Resource" id="lv4"]
+script = ExtResource("2_lv")
+fire_interval = 0.15
+offsets = PackedVector2Array(-26, -18, -16, -26, -6, -32, 6, -32, 16, -26, 26, -18)
+angles_deg = PackedFloat32Array(-55, -33, -11, 11, 33, 55)
+
+[resource]
+script = ExtResource("3_wd")
+id = &"tidal_fan"
+display_name = "Tidal Fan"
+bullet_texture = ExtResource("1_tex")
+bullet_speed = 820.0
+bullet_radius = 13.0
+damage = 2
+levels = Array[ExtResource("2_lv")]([SubResource("lv1"), SubResource("lv2"), SubResource("lv3"), SubResource("lv4")])
+pierce = true

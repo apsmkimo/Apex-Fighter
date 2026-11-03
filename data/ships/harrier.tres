@@ -4,34 +4,37 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/player/ship_harrier.png" id="2_tex"]
 [ext_resource type="Resource" path="res://data/weapons/venom_rail.tres" id="3_wpn"]
 [ext_resource type="Texture2D" path="res://assets/ui/ships/harrier_portrait.png" id="4_portrait"]
-[ext_resource type="Resource" path="res://data/weapons/arc_thunder.tres" id="9_special"]
+[ext_resource type="Resource" path="res://data/weapons/venom_burst.tres" id="9_special"]
 
 [resource]
 script = ExtResource("1_sd")
 id = &"harrier"
 display_name = "HARRIER"
-description = "Rapid-fire striker. Venom Rail has the highest fire rate, with wingtip cannons."
+description = "Rapid-fire striker. Venom Rail has a blazing fire rate. STAR: Venom Burst explosive orbs. BOMB: Toxic Cloud."
 sort_order = 5
 unlocked = true
 texture = ExtResource("2_tex")
 portrait = ExtResource("4_portrait")
 ship_class = "R"
 ui_glow = Color(0.3, 1.0, 0.35, 1)
-stat_maneuver = 0.75
-stat_firepower = 0.7
+stat_maneuver = 0.86
+stat_firepower = 0.88
 bank_amount = 0.9
 thruster_offsets = PackedVector2Array(-15, 36, 0, 38, 15, 36)
 thruster_color = Color(0.3, 1.0, 0.35, 1)
 thruster_width = 9.0
 thruster_length = 24.0
-speed = 560.0
+speed = 580.0
 touch_sensitivity = 1.35
-hitbox_radius = 6.0
-pickup_radius = 44.0
-max_hp = 6
+hitbox_radius = 5.0
+pickup_radius = 54.0
+max_hp = 8
 start_lives = 3
-start_bombs = 3
-max_bombs = 5
-bomb_damage = 70
+start_bombs = 4
+max_bombs = 6
+bomb_damage = 135
 weapon = ExtResource("3_wpn")
 special_weapon = ExtResource("9_special")
+bomb_style = 5
+bomb_name = "TOXIC CLOUD"
+damage_mult = 1.4

@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/player_venom_orb.png" id="1_tex"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="2_lv"]
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_wd"]
+
+[sub_resource type="Resource" id="lv1"]
+script = ExtResource("2_lv")
+fire_interval = 0.15
+offsets = PackedVector2Array(-12, -30, 12, -30)
+angles_deg = PackedFloat32Array(0, 0)
+
+[sub_resource type="Resource" id="lv2"]
+script = ExtResource("2_lv")
+fire_interval = 0.14
+offsets = PackedVector2Array(-16, -28, 0, -38, 16, -28)
+angles_deg = PackedFloat32Array(-4, 0, 4)
+
+[sub_resource type="Resource" id="lv3"]
+script = ExtResource("2_lv")
+fire_interval = 0.13
+offsets = PackedVector2Array(-22, -24, -8, -34, 8, -34, 22, -24)
+angles_deg = PackedFloat32Array(-8, -2, 2, 8)
+
+[sub_resource type="Resource" id="lv4"]
+script = ExtResource("2_lv")
+fire_interval = 0.12
+offsets = PackedVector2Array(-28, -20, -14, -30, 0, -38, 14, -30, 28, -20)
+angles_deg = PackedFloat32Array(-12, -5, 0, 5, 12)
+
+[resource]
+script = ExtResource("3_wd")
+id = &"venom_burst"
+display_name = "Venom Burst"
+bullet_texture = ExtResource("1_tex")
+bullet_speed = 1000.0
+bullet_radius = 12.0
+damage = 2
+levels = Array[ExtResource("2_lv")]([SubResource("lv1"), SubResource("lv2"), SubResource("lv3"), SubResource("lv4")])
+splash_radius = 70.0
+splash_damage = 2

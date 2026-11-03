@@ -148,7 +148,7 @@ func take_damage(amount: int) -> void:
 	if data.max_hp >= BIG_ENEMY_HP and _shake_cd <= 0.0:
 		_shake_cd = 0.18
 		Events.screen_shake.emit(2.5, 0.08)
-	health.take_damage(amount)
+	health.take_damage(GameManager.scale_player_damage(amount))
 
 
 ## 只有在畫面內、而且離玩家不會太近時才開火（避免貼臉彈）。

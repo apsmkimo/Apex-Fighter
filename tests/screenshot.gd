@@ -7,6 +7,7 @@ var t := 0.0
 var _i := 0
 var _boosted := false
 var _hit := false
+var _bombed := false
 
 
 func _ready() -> void:
@@ -30,6 +31,9 @@ func _ready() -> void:
 		b.ult_interval = 1.0
 		stage.boss = b
 	GameManager.start_run(ship, stage)
+	# SHOT_WEAPON 指定開局武器（例如 sunburst_seekers）
+	if OS.get_environment("SHOT_WEAPON") != "":
+		GameManager.weapon = load("res://data/weapons/%s.tres" % OS.get_environment("SHOT_WEAPON"))
 	add_child((load(GameManager.SCENE_STAGE) as PackedScene).instantiate())
 
 
@@ -51,6 +55,13 @@ func _process(delta: float) -> void:
 			p.invincible = 0.0
 			p.take_hit(2)
 			p.invincible = 999.0
+	# SHOT_BOMB_AT=秒數：在那個時間丟炸彈（檢查炸彈特效）
+	var bomb_at := OS.get_environment("SHOT_BOMB_AT")
+	if p and bomb_at != "" and t >= float(bomb_at) and not _bombed:
+		_bombed = true
+		p.invincible = 0.0
+		p.use_bomb()
+		p.invincible = 999.0
 	if _i < SHOTS.size() and t >= SHOTS[_i]:
 		var img := get_viewport().get_texture().get_image()
 		img.save_png("user://shots/shot_%d.png" % _i)

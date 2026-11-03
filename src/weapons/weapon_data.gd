@@ -15,6 +15,11 @@ enum Kind { BULLET, LASER, ARC }
 @export var kind: Kind = Kind.BULLET
 ## 子彈會穿透敵機（每顆子彈對同一隻敵機只打一次）
 @export var pierce := false
+## 追蹤彈：每秒最多轉向幾弧度（0 = 直線）
+@export var homing := 0.0
+## 爆裂彈：打中後對周圍半徑內的敵人造成 splash_damage（0 = 不爆）
+@export var splash_radius := 0.0
+@export var splash_damage := 0
 
 @export_group("Laser")
 ## 各火力等級的光束寬度（像素）
@@ -28,6 +33,10 @@ enum Kind { BULLET, LASER, ARC }
 const MAX_BEAMS := 7
 ## 光束之間的水平間距
 @export var laser_spacing := 20.0
+## 單一巨型光束：只有一條，火力越高越粗、傷害越高
+@export var laser_single := false
+## 光束左右掃動的幅度（像素，0 = 不掃動），相鄰光束反向交叉
+@export var laser_sweep := 0.0
 
 @export_group("Arc")
 ## 連鎖閃電：每隔 arc_interval 秒打一次，從最近的敵人開始往旁邊跳
@@ -76,18 +85,24 @@ func bullet_damage(level: int) -> int:
 
 ## 雷射光束條數：POWER 1 = 1 條，每升一級多 1 條，最多 MAX_BEAMS 條
 func laser_beams(level: int) -> int:
+	if laser_single:
+		return 1
 	return clampi(level + 1, 1, MAX_BEAMS)
 
 
 ## 每條光束寬度（細雷射，隨等級微幅變粗）
 func laser_width(level: int) -> float:
 	var base := laser_widths[0] if not laser_widths.is_empty() else 8.0
+	if laser_single:
+		return base + minf(level, 8) * 7.0
 	return base + minf(level, 6) * 0.5
 
 
 ## 每條光束每次判定的傷害；光束數滿了之後才開始加傷害
 func laser_hit_damage(level: int) -> int:
 	var base := laser_damage[0] if not laser_damage.is_empty() else 1
+	if laser_single:
+		return base + level / 2 + extra_levels(level)
 	return base + extra_levels(level)
 
 

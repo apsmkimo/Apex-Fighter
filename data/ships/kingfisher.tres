@@ -4,34 +4,37 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/player/ship_kingfisher.png" id="2_tex"]
 [ext_resource type="Resource" path="res://data/weapons/tide_twin.tres" id="3_wpn"]
 [ext_resource type="Texture2D" path="res://assets/ui/ships/kingfisher_portrait.png" id="4_portrait"]
-[ext_resource type="Resource" path="res://data/weapons/nova_wave.tres" id="9_special"]
+[ext_resource type="Resource" path="res://data/weapons/tidal_fan.tres" id="9_special"]
 
 [resource]
 script = ExtResource("1_sd")
 id = &"kingfisher"
 display_name = "KINGFISHER"
-description = "Balanced twin-pod fighter. 7 HP and Tide Twin parallel streams with side shots."
+description = "Twin-pod fighter. Tide Twin streams with side shots. STAR: Tidal Fan piercing bubbles. BOMB: Tidal Wave."
 sort_order = 4
 unlocked = true
 texture = ExtResource("2_tex")
 portrait = ExtResource("4_portrait")
 ship_class = "B"
 ui_glow = Color(0.25, 0.6, 1.0, 1)
-stat_maneuver = 0.6
-stat_firepower = 0.65
+stat_maneuver = 0.78
+stat_firepower = 0.82
 bank_amount = 0.8
 thruster_offsets = PackedVector2Array(-14, 38, 13, 38)
 thruster_color = Color(0.2, 0.75, 1.0, 1)
 thruster_width = 12.0
 thruster_length = 26.0
-speed = 500.0
+speed = 560.0
 touch_sensitivity = 1.3
-hitbox_radius = 6.0
-pickup_radius = 46.0
-max_hp = 7
+hitbox_radius = 5.4
+pickup_radius = 52.0
+max_hp = 8
 start_lives = 3
-start_bombs = 3
-max_bombs = 5
-bomb_damage = 80
+start_bombs = 4
+max_bombs = 6
+bomb_damage = 120
 weapon = ExtResource("3_wpn")
 special_weapon = ExtResource("9_special")
+bomb_style = 4
+bomb_name = "TIDAL WAVE"
+damage_mult = 1.32

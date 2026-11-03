@@ -5,33 +5,37 @@
 [ext_resource type="Resource" path="res://data/weapons/thunder_spread.tres" id="3_thndr"]
 
 [ext_resource type="Texture2D" path="res://assets/ui/ships/thunderbird_portrait.png" id="9_portrait"]
-[ext_resource type="Resource" path="res://data/weapons/arc_thunder.tres" id="9_special"]
+[ext_resource type="Resource" path="res://data/weapons/sunburst_seekers.tres" id="9_special"]
 
 [resource]
 script = ExtResource("1_uyvfy")
 id = &"thunderbird"
 display_name = "THUNDERBIRD"
-description = "High-speed interceptor. Fastest ship with the smallest hitbox; Thunder Spread covers the widest arc."
+description = "High-speed interceptor. Thunder Spread covers a wide arc. STAR: Sunburst Seekers homing missiles. BOMB: Thunderstorm."
 sort_order = 2
 unlocked = true
 texture = ExtResource("2_thb")
 portrait = ExtResource("9_portrait")
 ship_class = "S"
 ui_glow = Color(1, 0.85, 0.3, 1)
-stat_maneuver = 0.95
-stat_firepower = 0.7
+stat_maneuver = 0.66
+stat_firepower = 0.68
 bank_amount = 1.25
 thruster_offsets = PackedVector2Array(-8.5, 36, 9, 36)
 thruster_color = Color(1, 0.85, 0.3, 1)
 thruster_width = 9.0
 thruster_length = 28.0
-speed = 620.0
+speed = 530.0
 touch_sensitivity = 1.4
-hitbox_radius = 5.0
-pickup_radius = 40.0
+hitbox_radius = 6.0
+pickup_radius = 48.0
+max_hp = 7
 start_lives = 3
-start_bombs = 2
-max_bombs = 4
-bomb_damage = 70
+start_bombs = 3
+max_bombs = 5
+bomb_damage = 100
 weapon = ExtResource("3_thndr")
 special_weapon = ExtResource("9_special")
+bomb_style = 2
+bomb_name = "THUNDERSTORM"
+damage_mult = 1.16

@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=8 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/player_seeker.png" id="1_tex"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="2_lv"]
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_wd"]
+
+[sub_resource type="Resource" id="lv1"]
+script = ExtResource("2_lv")
+fire_interval = 0.2
+offsets = PackedVector2Array(-14, -10, 14, -10)
+angles_deg = PackedFloat32Array(-25, 25)
+
+[sub_resource type="Resource" id="lv2"]
+script = ExtResource("2_lv")
+fire_interval = 0.19
+offsets = PackedVector2Array(-18, -8, 0, -30, 18, -8)
+angles_deg = PackedFloat32Array(-35, 0, 35)
+
+[sub_resource type="Resource" id="lv3"]
+script = ExtResource("2_lv")
+fire_interval = 0.18
+offsets = PackedVector2Array(-22, -6, -10, -20, 10, -20, 22, -6)
+angles_deg = PackedFloat32Array(-50, -18, 18, 50)
+
+[sub_resource type="Resource" id="lv4"]
+script = ExtResource("2_lv")
+fire_interval = 0.17
+offsets = PackedVector2Array(-26, -4, -14, -18, 0, -30, 14, -18, 26, -4)
+angles_deg = PackedFloat32Array(-60, -30, 0, 30, 60)
+
+[resource]
+script = ExtResource("3_wd")
+id = &"sunburst_seekers"
+display_name = "Sunburst Seekers"
+bullet_texture = ExtResource("1_tex")
+bullet_speed = 760.0
+bullet_radius = 12.0
+damage = 2
+levels = Array[ExtResource("2_lv")]([SubResource("lv1"), SubResource("lv2"), SubResource("lv3"), SubResource("lv4")])
+homing = 7.0

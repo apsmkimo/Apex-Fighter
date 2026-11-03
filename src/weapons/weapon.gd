@@ -88,6 +88,9 @@ func _shoot(offset: Vector2, deg: float, dmg: int) -> void:
 	var b := BulletPool.instance.spawn(global_position + offset, dir * data.bullet_speed,
 			data.bullet_texture, data.bullet_radius, dmg, true)
 	b.pierce = data.pierce
+	b.homing = data.homing
+	b.splash_radius = data.splash_radius
+	b.splash_damage = data.splash_damage
 
 
 # SMCPKG_SUPPORT>>>CursorM9ShotEmit
@@ -107,7 +110,10 @@ func _emit_shot_sfx() -> void:
 # ---------- 雷射：細光束，火力越高條數越多 ----------
 
 func _beam_x(i: int, n: int) -> float:
-	return (i - (n - 1) / 2.0) * data.laser_spacing
+	var x := (i - (n - 1) / 2.0) * data.laser_spacing
+	if data.laser_sweep > 0.0:
+		x += sin(_t * 3.2 + i * 0.7) * data.laser_sweep * (1.0 if i % 2 == 0 else -1.0)
+	return x
 
 
 func _process_laser(delta: float) -> void:

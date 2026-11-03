@@ -4,34 +4,37 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/player/ship_albatross.png" id="2_tex"]
 [ext_resource type="Resource" path="res://data/weapons/halo_lance.tres" id="3_wpn"]
 [ext_resource type="Texture2D" path="res://assets/ui/ships/albatross_portrait.png" id="4_portrait"]
-[ext_resource type="Resource" path="res://data/weapons/nova_wave.tres" id="9_special"]
+[ext_resource type="Resource" path="res://data/weapons/aegis_lance.tres" id="9_special"]
 
 [resource]
 script = ExtResource("1_sd")
 id = &"albatross"
 display_name = "ALBATROSS"
-description = "Armored fortress. Slowest ship with the biggest hitbox, but 8 HP and a Halo Lance that hits for 3."
+description = "Armored fortress. Halo Lance hits hard. STAR: Aegis Lance mega beam. BOMB: Aegis Shockwave."
 sort_order = 3
 unlocked = true
 texture = ExtResource("2_tex")
 portrait = ExtResource("4_portrait")
 ship_class = "D"
 ui_glow = Color(0.75, 0.9, 1.0, 1)
-stat_maneuver = 0.3
-stat_firepower = 0.85
+stat_maneuver = 0.72
+stat_firepower = 0.75
 bank_amount = 0.5
 thruster_offsets = PackedVector2Array(-8, 46, 9, 46, 0, 55)
 thruster_color = Color(0.5, 0.75, 1.0, 1)
 thruster_width = 9.0
 thruster_length = 24.0
-speed = 380.0
+speed = 545.0
 touch_sensitivity = 1.1
-hitbox_radius = 8.0
+hitbox_radius = 5.7
 pickup_radius = 50.0
-max_hp = 8
+max_hp = 7
 start_lives = 3
 start_bombs = 3
-max_bombs = 5
-bomb_damage = 90
+max_bombs = 6
+bomb_damage = 110
 weapon = ExtResource("3_wpn")
 special_weapon = ExtResource("9_special")
+bomb_style = 3
+bomb_name = "AEGIS SHOCKWAVE"
+damage_mult = 1.24

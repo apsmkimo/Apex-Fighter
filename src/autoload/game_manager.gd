@@ -36,6 +36,8 @@ var missile_level := 0
 var drop_counters := {}
 ## 關卡中途調整的敵機血量倍率（中階 Boss 之後 = 2）
 var enemy_hp_mult := 1.0
+## 目前戰機的火力倍率（ShipData.damage_mult），套在所有打到敵人的傷害上
+var player_damage_mult := 1.0
 var last_run_cleared := false
 ## 已依序通過的關卡數（星圖解鎖用，0 = 只有第一關可以打）
 var cleared_stages := 0
@@ -67,6 +69,7 @@ func start_run(ship: ShipData, stage: StageData) -> void:
 	missile_level = 0
 	drop_counters.clear()
 	enemy_hp_mult = 1.0
+	player_damage_mult = ship.damage_mult
 	emit_all()
 
 
@@ -259,3 +262,12 @@ func _add_keys(action: StringName, keys: Array) -> void:
 		var ev := InputEventKey.new()
 		ev.physical_keycode = k
 		InputMap.action_add_event(action, ev)
+
+
+## 依戰機火力倍率換算傷害；小數部分用機率進位，平均值正確
+func scale_player_damage(amount: int) -> int:
+	var v := amount * player_damage_mult
+	var base := int(v)
+	if randf() < v - base:
+		base += 1
+	return maxi(base, 1)

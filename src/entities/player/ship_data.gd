@@ -45,6 +45,12 @@ extends Resource
 @export var start_bombs := 3
 @export var max_bombs := 5
 @export var bomb_damage := 80
+## 炸彈全螢幕特效風格：0 烈焰 1 日冕新星 2 雷暴 3 神盾衝擊波 4 海嘯 5 毒霧 6 虛空坍縮
+@export_range(0, 6) var bomb_style := 0
+## 炸彈名稱（顯示用）
+@export var bomb_name := "FIRESTORM"
+## 火力倍率：所有對敵傷害乘上這個數
+@export var damage_mult := 1.0
 
 @export_group("Weapon")
 @export var weapon: WeaponData

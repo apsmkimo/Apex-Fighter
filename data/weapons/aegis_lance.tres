@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_wd"]
+
+[resource]
+script = ExtResource("3_wd")
+id = &"aegis_lance"
+display_name = "Aegis Lance"
+damage = 2
+kind = 1
+laser_widths = PackedFloat32Array(30)
+laser_damage = PackedInt32Array(2)
+laser_tick = 0.07
+laser_color = Color(0.75, 0.92, 1, 1)
+laser_spacing = 0
+laser_single = true
