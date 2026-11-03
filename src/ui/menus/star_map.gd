@@ -4,17 +4,25 @@ extends Control
 ## 已解鎖的航段有流動的能量脈衝；未解鎖的節點是暗色加鎖。上下拖曳捲動，點節點出擊。
 ## 全部用程式繪製（霓虹科技風），沒有用到任何外部圖。
 
-const MAP_H := 2450.0
-const SLOT_COUNT := 6
+const MAP_H := 3470.0
+const SLOT_COUNT := 9
 const NODE_R := 46.0
 const STEP_Y := 340.0
 const BOTTOM_PAD := 470.0
 const TAP_SLOP := 18.0
 
-const SECTOR_NAMES := ["NEBULA GATE", "CRIMSON RIFT", "VOID ABYSS", "SOLAR FORGE", "IRON HALO", "OMEGA CORE"]
+const SECTOR_NAMES := ["NEBULA GATE", "CRIMSON RIFT", "VOID ABYSS", "SOLAR FORGE", "IRON HALO", "OMEGA CORE", "SCARLET VEIL", "AZURE SPIRAL", "MAGMA WORLD"]
 const SECTOR_COLORS := [
 	Color(0.3, 0.9, 1.0), Color(1.0, 0.3, 0.35), Color(0.7, 0.35, 1.0),
-	Color(1.0, 0.7, 0.25), Color(0.5, 1.0, 0.6), Color(1.0, 0.35, 0.85)]
+	Color(1.0, 0.7, 0.25), Color(0.5, 1.0, 0.6), Color(1.0, 0.35, 0.85),
+	Color(1.0, 0.4, 0.3), Color(0.35, 0.7, 1.0), Color(1.0, 0.5, 0.2)]
+## 每個關卡選項後面的背景圖：1/4/7 星雲、2/5/8 星系、3/6/9 星球（使用者 2026-11-03 提供）
+const SECTOR_BG := [
+	preload("res://assets/sprites/map/bg_0_nebula.png"), preload("res://assets/sprites/map/bg_1_galaxy.png"),
+	preload("res://assets/sprites/map/bg_2_planet.png"), preload("res://assets/sprites/map/bg_3_nebula.png"),
+	preload("res://assets/sprites/map/bg_4_galaxy.png"), preload("res://assets/sprites/map/bg_5_planet.png"),
+	preload("res://assets/sprites/map/bg_6_nebula.png"), preload("res://assets/sprites/map/bg_7_galaxy.png"),
+	preload("res://assets/sprites/map/bg_8_planet.png")]
 
 var _scroll := 0.0
 var _t := 0.0
@@ -55,7 +63,7 @@ func _build_layout() -> void:
 	for i in SLOT_COUNT:
 		# 左右交錯，再加一點固定的錯位，讓航線不像棋盤
 		var x := 230.0 if i % 2 == 0 else 490.0
-		x += [0.0, 20.0, -30.0, 10.0, -15.0, 25.0][i]
+		x += [0.0, 20.0, -30.0, 10.0, -15.0, 25.0, -20.0, 15.0, -10.0][i]
 		_nodes.append(Vector2(x, MAP_H - BOTTOM_PAD - i * STEP_Y))
 	# 用 Catmull-Rom 把節點串成平滑航線
 	_path = PackedVector2Array()
@@ -177,6 +185,9 @@ func _draw_space() -> void:
 		for k in 6:
 			var r := 380.0 - k * 55.0
 			draw_circle(c + Vector2(sin(k * 1.7) * 40.0, cos(k * 2.3) * 30.0), r, Color(col.r * 0.6, col.g * 0.4, col.b * 0.8, 0.025))
+	# 關卡選項後面的星雲／星系／星球
+	for i in SLOT_COUNT:
+		_draw_sector_bg(i)
 	# 星星
 	for s in _stars:
 		var p := _to_screen(s[0] as Vector2)
@@ -194,6 +205,28 @@ func _draw_space() -> void:
 
 
 ## 起點的母星：線框行星（經緯線）＋外環
+func _draw_sector_bg(i: int) -> void:
+	var tex: Texture2D = SECTOR_BG[i]
+	var node := _to_screen(_node_map(i))
+	var card := _boss_rect(i).get_center()
+	var center := node.lerp(card, 0.5)
+	if center.y < -400 or center.y > size.y + 400:
+		return
+	var k := size.x / 720.0
+	var ts := tex.get_size()
+	var is_planet := i % 3 == 2
+	var w := (330.0 if is_planet else 640.0) * k
+	var sz := ts * (w / ts.x)
+	var dim := 0.85 if _is_unlocked(i) else 0.55
+	if is_planet:
+		# 星球外圍加一圈主題色光暈，慢慢浮動
+		center.y += sin(_t * 0.8 + i) * 6.0
+		var col: Color = SECTOR_COLORS[i]
+		draw_circle(center, w * 0.62, Color(col.r, col.g, col.b, 0.05 * dim))
+		draw_circle(center, w * 0.55, Color(col.r, col.g, col.b, 0.06 * dim))
+	draw_texture_rect(tex, Rect2(center - sz * 0.5, sz), false, Color(dim, dim, dim, dim if not is_planet else 0.95 * dim + 0.05))
+
+
 func _draw_home_planet() -> void:
 	var c := _to_screen(Vector2(360, MAP_H + 120))
 	if c.y - 420 > size.y:
