@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="1_ed"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/beetle.png" id="2_tex"]
+[ext_resource type="Resource" path="res://data/patterns/aimed_single.tres" id="3_pat"]
+[ext_resource type="Resource" path="res://data/patterns/move_straight_fast.tres" id="4_mv"]
+[ext_resource type="Script" path="res://src/entities/items/item_data.gd" id="b0_itm"]
+[ext_resource type="Resource" path="res://data/items/missile.tres" id="b_missile"]
+[ext_resource type="Resource" path="res://data/items/weapon_plasma.tres" id="b_weapon_plasma"]
+[ext_resource type="Resource" path="res://data/items/weapon_laser.tres" id="b_weapon_laser"]
+[ext_resource type="Resource" path="res://data/items/shield.tres" id="b_shield"]
+[ext_resource type="Resource" path="res://data/items/special.tres" id="b_special"]
+[ext_resource type="Resource" path="res://data/items/power.tres" id="b_power"]
+
+[resource]
+script = ExtResource("1_ed")
+id = &"beetle"
+texture = ExtResource("2_tex")
+movement = ExtResource("4_mv")
+bullet_pattern = ExtResource("3_pat")
+max_hp = 3
+hit_radius = 26.0
+score = 120
+explosion_scale = 0.9
+fire_interval = 2.2
+first_fire_delay = 0.9
+drop_item = ExtResource("b_power")
+drop_chance = 0.05

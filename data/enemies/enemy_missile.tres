@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="1_ed"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/enemy_missile.png" id="2_tex"]
+
+[resource]
+script = ExtResource("1_ed")
+id = &"enemy_missile"
+texture = ExtResource("2_tex")
+max_hp = 2
+hit_radius = 18.0
+score = 50
+explosion_scale = 0.9
+weak_offset = Vector2(4, 0)
+weak_radius = 11.0
+hazard_kind = &"missile"
+blast_radius = 70.0
+blast_damage = 3
+blast_enemy_damage = 10
+home_speed = 250.0
+home_turn = 1.8
+home_life = 6.5
+bullet_damage = 0
+contact_damage = 0

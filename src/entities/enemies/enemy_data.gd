@@ -24,6 +24,29 @@ extends Resource
 ## weak_radius > 0 時只有打到弱點（發光核心）附近才有傷害，打到其他地方被裝甲擋掉
 @export var weak_offset := Vector2.ZERO
 @export var weak_radius := 0.0
+## 額外的弱點位置（多個發光點，半徑同 weak_radius）
+@export var extra_weak_offsets: PackedVector2Array = PackedVector2Array()
+
+@export_group("Hazard")
+## 非空 = 太空危險物：mine（水雷）或 missile（追蹤飛彈）。不開火，靠爆炸傷人
+@export var hazard_kind: StringName = &""
+## 爆炸範圍內的戰機會受傷
+@export var blast_radius := 110.0
+@export var blast_damage := 3
+## 被玩家打爆時，爆炸對附近敵人的傷害
+@export var blast_enemy_damage := 20
+## 水雷：戰機靠近到這個距離就引爆
+@export var trigger_radius := 80.0
+## 飛彈：速度、轉向速度（弧度/秒）、壽命
+@export var home_speed := 280.0
+@export var home_turn := 2.0
+@export var home_life := 7.0
+
+@export_group("Hazard Drop")
+## 會投放危險物的敵機（例如中兵投放水雷）
+@export var drop_hazard: EnemyData
+@export var drop_hazard_interval := 3.0
+@export var drop_hazard_first := 1.5
 
 @export_group("Death")
 ## 被打爆後掉出來繼續攻擊的單位（例如戰機裡的機器人）

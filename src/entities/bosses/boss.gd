@@ -16,11 +16,21 @@ func _ready() -> void:
 		ultimate.setup(self)
 		add_child(ultimate)
 	if data.weak_radius > 0.0:
-		var mark := WeakPointMarker.new()
-		mark.position = data.weak_offset
-		mark.radius = data.weak_radius
-		mark.color = boss_data().ult_color
-		add_child(mark)
+		if boss_data().reactor_core:
+			var core := ReactorCore.new()
+			core.position = data.weak_offset
+			core.radius = data.weak_radius
+			core.color = boss_data().ult_color
+			add_child(core)
+		var offs: Array[Vector2] = [data.weak_offset]
+		for o in data.extra_weak_offsets:
+			offs.append(o)
+		for o in offs:
+			var mark := WeakPointMarker.new()
+			mark.position = o
+			mark.radius = data.weak_radius
+			mark.color = boss_data().ult_color
+			add_child(mark)
 	_enter_phase(0)
 
 
@@ -129,3 +139,36 @@ class WeakPointMarker extends Node2D:
 			var a := -_t * 0.8 + TAU * i / 4.0
 			var d := Vector2.RIGHT.rotated(a)
 			draw_line(d * (radius + 10.0), d * (radius + 20.0), c, 2.0)
+
+
+## 發光能源爐：在弱點畫一顆脈動的能量核心（中階 Boss 螳螂用）
+class ReactorCore extends Node2D:
+	var radius := 34.0
+	var color := Color(0.4, 1.0, 0.5)
+	var _t := 0.0
+
+	func _ready() -> void:
+		z_index = 3
+		var mat := CanvasItemMaterial.new()
+		mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+		material = mat
+
+	func _process(delta: float) -> void:
+		_t += delta
+		queue_redraw()
+
+	func _draw() -> void:
+		var pulse := 0.5 + 0.5 * sin(_t * 5.0)
+		# 外層光暈
+		for i in 5:
+			var r := radius * (1.6 - i * 0.22) + pulse * 4.0
+			draw_circle(Vector2.ZERO, r, Color(color.r, color.g, color.b, 0.08 + i * 0.05))
+		# 爐心
+		draw_circle(Vector2.ZERO, radius * 0.45 + pulse * 3.0, Color(color.r * 0.6 + 0.4, color.g * 0.6 + 0.4, color.b * 0.6 + 0.4, 0.9))
+		draw_circle(Vector2.ZERO, radius * 0.22, Color(1, 1, 1, 0.95))
+		# 旋轉的能量葉片
+		for i in 6:
+			var a := _t * 2.2 + TAU * i / 6.0
+			var d := Vector2.RIGHT.rotated(a)
+			draw_line(d * radius * 0.5, d * radius * 0.95, Color(color.r, color.g, color.b, 0.7), 3.0)
+		draw_arc(Vector2.ZERO, radius, 0, TAU, 32, Color(color.r, color.g, color.b, 0.6 + 0.3 * pulse), 2.5)

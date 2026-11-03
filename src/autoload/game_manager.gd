@@ -10,8 +10,8 @@ const SCENE_STAGE := "res://src/stages/stage.tscn"
 const SCENE_RESULT := "res://src/ui/menus/result_screen.tscn"
 const SCENE_MAP := "res://src/ui/menus/star_map.tscn"
 
-## 全域平衡（使用者 2026-11-02 要求）：一般敵人防禦 ×3、子彈變少、停留更久
-const ENEMY_DEFENSE_MULT := 3.0
+## 全域平衡：防禦倍率（2026-11-03 使用者要求恢復原本血量 = 1）、子彈變少、停留更久
+const ENEMY_DEFENSE_MULT := 1.0
 const ENEMY_FIRE_INTERVAL_MULT := 1.7
 const BOSS_FIRE_INTERVAL_MULT := 1.35
 ## 一般敵人移動時間倍率（<1 = 動得更慢、在畫面上停更久）

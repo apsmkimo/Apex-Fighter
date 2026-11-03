@@ -27,6 +27,7 @@ var _exhaust_timer := 0.0
 var _last_pos := Vector2.ZERO
 var _entering := false
 
+var _pylons: MissilePylons
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var hurt_shape: CollisionShape2D = $CollisionShape2D
 @onready var pickup_area: Area2D = $PickupArea
@@ -62,6 +63,13 @@ func _ready() -> void:
 	missiles.level = GameManager.missile_level
 	Events.weapon_changed.connect(func(w: Resource) -> void: weapon.data = w as WeaponData)
 	Events.missile_changed.connect(func(lv: int) -> void: missiles.level = lv)
+	# 機翼掛載飛彈：導彈等級越高掛越多（每邊最多 3 枚），顏色依戰機
+	_pylons = MissilePylons.new()
+	_pylons.tex = MissilePylons.texture_for(ship)
+	_pylons.hull = ship.texture.get_size() if ship.texture else Vector2(80, 100)
+	_pylons.count = GameManager.missile_level
+	sprite.add_child(_pylons)
+	Events.missile_changed.connect(func(lv: int) -> void: _pylons.count = lv)
 	FlightVisual.attach(self, sprite, Vector2.UP, ship.bank_amount, maxf(ship.speed * 0.8, 300.0),
 			ship.thruster_offsets, ship.thruster_color, ship.thruster_width, ship.thruster_length)
 	max_hp = ship.max_hp
@@ -156,7 +164,7 @@ func _on_hurt(area: Area2D) -> void:
 		var b := area as Bullet
 		b.release()
 		take_hit(b.damage)
-	elif area is Enemy:
+	elif area is Enemy and not (area as Enemy).is_hazard():
 		take_hit((area as Enemy).data.contact_damage)
 
 
@@ -336,3 +344,38 @@ class WebFx extends Node2D:
 			for i in 11:
 				pts.append(Vector2.RIGHT.rotated(TAU * i / 10.0 + 0.15) * rr * (0.92 + 0.08 * (i % 2)))
 			draw_polyline(pts, col, 1.4)
+
+
+## 機翼下的掛載飛彈
+class MissilePylons extends Node2D:
+	const MAX_PER_SIDE := 3
+	const TEX_RED := preload("res://assets/sprites/player/pylon_missile_red.png")
+	const TEX_YELLOW := preload("res://assets/sprites/player/pylon_missile_yellow.png")
+	const TEX_SILVER := preload("res://assets/sprites/player/pylon_missile_silver.png")
+	var tex: Texture2D
+	var hull := Vector2(80, 100)
+	var count := 0:
+		set(v):
+			count = v
+			queue_redraw()
+
+	static func texture_for(s: ShipData) -> Texture2D:
+		match s.id:
+			&"phoenix":
+				return TEX_RED
+			&"thunderbird":
+				return TEX_YELLOW
+		return TEX_SILVER
+
+	func _draw() -> void:
+		var per_side := mini(count, MAX_PER_SIDE)
+		if per_side <= 0 or tex == null:
+			return
+		var sz := tex.get_size() * (hull.y * 0.36 / tex.get_size().y)
+		for k in per_side:
+			var x := hull.x * 0.17 + k * maxf(sz.x * 1.25, hull.x * 0.1)
+			var y := hull.y * 0.08 + k * 4.0
+			for side: float in [-1.0, 1.0]:
+				var r := Rect2(Vector2(side * x - sz.x * 0.5, y - sz.y * 0.5), sz)
+				draw_rect(Rect2(r.position + Vector2(2, 3), r.size), Color(0, 0, 0, 0.25))
+				draw_texture_rect(tex, r, false)

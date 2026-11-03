@@ -5,6 +5,9 @@ extends Node2D
 
 const LASER_MUZZLE := Vector2(0, -40)
 
+## 連鎖閃電額外多放的閃電數
+const EXTRA_ARCS := 3
+
 var data: WeaponData:
 	set(v):
 		data = v
@@ -125,18 +128,21 @@ func _process_laser(delta: float) -> void:
 		var origin := global_position + LASER_MUZZLE + Vector2(_beam_x(b, n), 0)
 		var target: Enemy = null
 		var best_y := -INF
+		var best_p := Vector2.ZERO
 		for node in enemies:
 			var e := node as Enemy
 			if e == null or e.health.dead or not e.is_on_screen():
 				continue
-			var p := e.aim_point()
-			if p.y >= origin.y:
-				continue
-			if absf(p.x - origin.x) <= half + e.aim_radius() * 0.8 and p.y > best_y:
-				best_y = p.y
-				target = e
+			# 多弱點的敵人：找這條光束對得到的那一個弱點
+			for p: Vector2 in e.aim_points():
+				if p.y >= origin.y:
+					continue
+				if absf(p.x - origin.x) <= half + e.aim_radius() * 0.8 and p.y > best_y:
+					best_y = p.y
+					best_p = p
+					target = e
 		if target:
-			_beam_lens[b] = maxf(origin.y - (target.aim_point().y + target.aim_radius() * 0.5), 0.0)
+			_beam_lens[b] = maxf(origin.y - (best_p.y + target.aim_radius() * 0.5), 0.0)
 			_beam_hits[b] = true
 			if tick:
 				target.take_damage(dmg)
@@ -188,11 +194,34 @@ func _process_arc(delta: float) -> void:
 		hit.append(best)
 		_arcs.append(_bolt(from, best.aim_point()))
 		from = best.aim_point()
-	if hit.is_empty():
-		# 沒有目標：往前放出一小段電弧
-		_arcs.append(_bolt(origin, origin + Vector2(randf_range(-40, 40), -110)))
+	# 額外 3 道閃電（使用者 2026-11-03 要求）：優先打還沒被電到的敵人；
+	# 沒有其他目標時打在主目標上，傷害減半
+	var extra_hits: Array[Enemy] = []
+	for k in EXTRA_ARCS:
+		var best: Enemy = null
+		var best_d := data.arc_range
+		for node in enemies:
+			var e := node as Enemy
+			if e == null or e.health.dead or not e.is_on_screen() or e in hit or e in extra_hits:
+				continue
+			if e.aim_point().y > origin.y + 20.0:
+				continue
+			var d := origin.distance_to(e.aim_point()) - (420.0 if e is Boss else 0.0)
+			if d < best_d:
+				best_d = d
+				best = e
+		if best:
+			extra_hits.append(best)
+			_arcs.append(_bolt(origin, best.aim_point()))
+		elif not hit.is_empty():
+			_arcs.append(_bolt(origin, hit[0].aim_point()))
+			hit[0].take_damage(maxi(dmg / 2, 1))
+	if hit.is_empty() and extra_hits.is_empty():
+		# 沒有目標：往前放出幾段電弧
+		for k in EXTRA_ARCS + 1:
+			_arcs.append(_bolt(origin, origin + Vector2(randf_range(-90, 90), -120)))
 	else:
-		for e in hit:
+		for e in hit + extra_hits:
 			e.take_damage(dmg)
 			if NeonFx.instance:
 				NeonFx.instance.impact(e.aim_point(), data.laser_color)
@@ -228,11 +257,12 @@ func _draw_arcs() -> void:
 		var local := PackedVector2Array()
 		for p in arc:
 			local.append(to_local(p))
-		draw_polyline(local, Color(c.r, c.g, c.b, 0.3 * _arc_fade), 9.0)
-		draw_polyline(local, Color(c.r, c.g, c.b, 0.85 * _arc_fade), 3.5)
-		draw_polyline(local, Color(1, 1, 1, _arc_fade), 1.5)
-		draw_circle(local[local.size() - 1], 10.0, Color(c.r, c.g, c.b, 0.6 * _arc_fade))
-	draw_circle(LASER_MUZZLE, 9.0, Color(c.r, c.g, c.b, 0.7 * _arc_fade))
+		# 閃電線條加粗 3 倍
+		draw_polyline(local, Color(c.r, c.g, c.b, 0.3 * _arc_fade), 27.0)
+		draw_polyline(local, Color(c.r, c.g, c.b, 0.85 * _arc_fade), 10.5)
+		draw_polyline(local, Color(1, 1, 1, _arc_fade), 4.5)
+		draw_circle(local[local.size() - 1], 18.0, Color(c.r, c.g, c.b, 0.6 * _arc_fade))
+	draw_circle(LASER_MUZZLE, 16.0, Color(c.r, c.g, c.b, 0.7 * _arc_fade))
 
 
 func _draw_lasers() -> void:

@@ -63,6 +63,25 @@ extends EnemyData
 @export var ult_feather_charge := 1.6
 @export var ult_feather_texture: Texture2D
 
+@export_subgroup("Missile")
+## 追蹤飛彈：從這些砲口依序發射（打中藍點可以提早引爆）
+@export var ult_missile_data: EnemyData
+@export var ult_missile_points: PackedVector2Array = PackedVector2Array()
+@export var ult_missile_count := 4
+@export var ult_missile_charge := 1.3
+
+@export_subgroup("Time Bomb")
+## 計時炸彈：丟到畫面中下方，停留後爆炸
+@export var ult_bomb_count := 3
+@export var ult_bomb_fuse := 4.0
+@export var ult_bomb_radius := 150.0
+@export var ult_bomb_damage := 3
+@export var ult_bomb_charge := 1.2
+
+@export_group("Look")
+## 在弱點位置畫發光能源爐
+@export var reactor_core := false
+
 @export_subgroup("Web")
 ## 吐絲位置（相對 Boss 中心）
 @export var ult_web_origin := Vector2(0, 90)

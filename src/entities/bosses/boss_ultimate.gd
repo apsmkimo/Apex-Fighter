@@ -7,6 +7,8 @@ extends Node2D
 ##   pincer    左右鉗子充能 → 兩道雷射由內往外張開（中間與兩側留有安全區）
 ##   nova      核心充能 → 數圈擴散衝擊波，每圈有缺口可以鑽過
 ##   feather   雙翼砲台發光 → 大量子彈齊射（一般子彈傷害）
+##   missile   砲口充能 → 依序射出追蹤飛彈（打中藍點可引爆）
+##   timebomb  丟出數顆計時炸彈，停在太空中倒數後爆炸
 ## 雷射類打到玩家扣 BossData.ult_damage（滿血只擋得住一次），一次發射只扣一次。
 
 enum State { IDLE, CHARGE, FIRE }
@@ -33,6 +35,8 @@ var _rings: Array = []
 var _rings_left := 0
 var _ring_cd := 0.0
 var _feather_cd := 0.0
+var _missiles_left := 0
+var _missile_cd := 0.0
 
 
 func setup(b: Boss) -> void:
@@ -95,6 +99,8 @@ func _physics_process(delta: float) -> void:
 					_update_nova(delta)
 				&"feather":
 					_update_feather(delta)
+				&"missile":
+					_update_missiles(delta)
 			var finished := _timer <= 0.0
 			if kind == &"web":
 				finished = _webs.is_empty() or _timer <= 0.0
@@ -126,6 +132,10 @@ func _start_charge() -> void:
 			_timer = bd.ult_nova_charge
 		&"feather":
 			_timer = bd.ult_feather_charge
+		&"missile":
+			_timer = bd.ult_missile_charge
+		&"timebomb":
+			_timer = bd.ult_bomb_charge
 		_:
 			_timer = bd.ult_charge_time
 	_charge_total = _timer
@@ -163,6 +173,13 @@ func _start_fire() -> void:
 		&"feather":
 			_timer = bd.ult_feather_time
 			_feather_cd = 0.0
+		&"missile":
+			_missiles_left = bd.ult_missile_count
+			_missile_cd = 0.0
+			_timer = 0.35 * bd.ult_missile_count + 0.3
+		&"timebomb":
+			_timer = 0.8
+			_throw_bombs()
 		_:
 			_timer = bd.ult_fire_time
 			Events.screen_shake.emit(14.0, 0.4)
@@ -342,6 +359,34 @@ func _update_feather(delta: float) -> void:
 			bd.ult_feather_texture, 8.0, bd.bullet_damage, false)
 	if NeonFx.instance:
 		NeonFx.instance.muzzle(from, bd.ult_color)
+
+
+# ---------- missile / timebomb ----------
+
+func _update_missiles(delta: float) -> void:
+	_missile_cd -= delta
+	if _missiles_left <= 0 or _missile_cd > 0.0 or bd.ult_missile_data == null:
+		return
+	_missile_cd = 0.35
+	var idx := bd.ult_missile_count - _missiles_left
+	_missiles_left -= 1
+	var off := bd.ult_missile_points[idx % bd.ult_missile_points.size()] if not bd.ult_missile_points.is_empty() else bd.ult_origin
+	var m := Enemy.spawn_enemy(bd.ult_missile_data, global_position + off, boss.get_parent())
+	if m:
+		# 先往外側斜下射出，再轉向追蹤
+		m.velocity = Vector2(signf(off.x) * 0.6 if off.x != 0.0 else 0.0, 1.0).normalized() * bd.ult_missile_data.home_speed
+	if NeonFx.instance:
+		NeonFx.instance.muzzle(global_position + off, Color(0.3, 0.8, 1.0))
+
+
+func _throw_bombs() -> void:
+	var size := get_viewport_rect().size
+	for i in bd.ult_bomb_count:
+		var k := (i + 0.5) / bd.ult_bomb_count
+		var to := Vector2(size.x * (0.15 + 0.7 * k) + randf_range(-40, 40), size.y * randf_range(0.42, 0.68))
+		TimeBomb.spawn(boss.get_parent(), global_position + bd.ult_origin, to,
+				bd.ult_bomb_fuse + i * 0.4, bd.ult_bomb_radius, bd.ult_bomb_damage)
+	Events.screen_shake.emit(6.0, 0.2)
 
 
 # ---------- 繪製 ----------

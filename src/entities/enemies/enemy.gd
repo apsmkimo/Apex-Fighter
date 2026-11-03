@@ -17,6 +17,10 @@ var age := 0.0
 var _was_on_screen := false
 var _flash := 0.0
 var _shake_cd := 0.0
+## 危險物（水雷、飛彈）用
+var velocity := Vector2.ZERO
+var _hazard_done := false
+var _drop_cd := 0.0
 ## 血量達到這個值以上的敵機，被打中時畫面會輕微震動
 const BIG_ENEMY_HP := 30
 
@@ -45,6 +49,16 @@ func _ready() -> void:
 		circle.radius = data.weak_radius
 		shape.position = data.weak_offset
 	shape.shape = circle
+	# 多個發光弱點：每個弱點各一個碰撞圓
+	if data.weak_radius > 0.0:
+		for off in data.extra_weak_offsets:
+			var cs := CollisionShape2D.new()
+			var c2 := CircleShape2D.new()
+			c2.radius = data.weak_radius
+			cs.shape = c2
+			cs.position = off
+			add_child(cs)
+	_drop_cd = data.drop_hazard_first
 	var diff := GameManager.difficulty
 	var base_hp := diff.scale_hp(data.max_hp) if diff else data.max_hp
 	var defense := 1.0 if self is Boss else GameManager.ENEMY_DEFENSE_MULT
@@ -64,6 +78,16 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	age += delta
+	if is_hazard():
+		_hazard_process(delta)
+		return
+	if data.drop_hazard and is_on_screen() and global_position.y < get_viewport_rect().size.y * 0.7:
+		_drop_cd -= delta
+		if _drop_cd <= 0.0:
+			_drop_cd = data.drop_hazard_interval
+			var h := spawn_enemy(data.drop_hazard, global_position + Vector2(0, 30), get_parent())
+			if h:
+				h.velocity = Vector2(randf_range(-40.0, 40.0), 110.0)
 	if movement:
 		var off := movement.offset_at(age * move_time_scale)
 		if flip_x:
@@ -88,6 +112,15 @@ func is_on_screen() -> bool:
 ## 武器瞄準的位置：有弱點就是弱點
 func aim_point() -> Vector2:
 	return global_position + data.weak_offset if data.weak_radius > 0.0 else global_position
+
+
+## 所有可以打的位置（多弱點用；雷射會找對得到的那一個）
+func aim_points() -> Array[Vector2]:
+	var out: Array[Vector2] = [aim_point()]
+	if data.weak_radius > 0.0:
+		for off in data.extra_weak_offsets:
+			out.append(global_position + off)
+	return out
 
 
 func aim_radius() -> float:
@@ -121,6 +154,11 @@ func _can_despawn() -> bool:
 
 
 func _on_died() -> void:
+	if is_hazard():
+		# 被玩家打中紅點／藍點 → 原地爆炸，順便炸傷附近的敵人
+		GameManager.add_score(data.score)
+		_explode(true)
+		return
 	GameManager.add_score(data.score)
 	Events.enemy_killed.emit(data, global_position)
 	_try_drop()
@@ -129,12 +167,19 @@ func _on_died() -> void:
 	queue_free()
 
 
-static func _spawn_on_death(d: EnemyData, pos: Vector2, parent: Node) -> void:
-	if parent == null or not is_instance_valid(parent):
-		return
+## 在 parent 底下生出一隻敵機（危險物也用這個）
+static func spawn_enemy(d: EnemyData, pos: Vector2, parent: Node) -> Enemy:
+	if d == null or parent == null or not is_instance_valid(parent):
+		return null
 	var e := (load("res://src/entities/enemies/enemy.tscn") as PackedScene).instantiate() as Enemy
 	e.setup(d, pos)
 	parent.add_child(e)
+	return e
+
+
+static func _spawn_on_death(d: EnemyData, pos: Vector2, parent: Node) -> void:
+	if spawn_enemy(d, pos, parent) == null:
+		return
 	if NeonFx.instance:
 		NeonFx.instance.float_text(pos + Vector2(0, -40), "EJECT!", Color(1.0, 0.35, 0.3))
 
@@ -146,3 +191,72 @@ func _try_drop() -> void:
 		var bonus := GameManager.next_drop(data.id, data.bonus_pool) as ItemData
 		if bonus:
 			Item.spawn(bonus, global_position + Vector2(randf_range(-30, 30), -20), get_parent())
+
+
+# ---------- 危險物：太空水雷、敵方追蹤飛彈 ----------
+
+func is_hazard() -> bool:
+	return data != null and data.hazard_kind != &""
+
+
+func _hazard_process(delta: float) -> void:
+	if _hazard_done:
+		return
+	emitter.enabled = false
+	var p := Player.instance
+	var target := p.global_position if p and p.alive else global_position + Vector2(0, 400)
+	match data.hazard_kind:
+		&"mine":
+			# 慢慢往下飄，左右輕微擺動
+			velocity = velocity.move_toward(Vector2(0, 55), 60.0 * delta)
+			position += (velocity + Vector2(sin(age * 1.7) * 18.0, 0)) * delta
+			sprite.rotation += delta * 0.6
+			if p and p.alive and global_position.distance_to(p.global_position) < data.trigger_radius:
+				_explode(false)
+				return
+		&"missile":
+			if velocity == Vector2.ZERO:
+				velocity = Vector2.DOWN * data.home_speed
+			var want := (target - global_position).angle()
+			var cur := velocity.angle()
+			var diff := wrapf(want - cur, -PI, PI)
+			cur += clampf(diff, -data.home_turn * delta, data.home_turn * delta)
+			velocity = Vector2.RIGHT.rotated(cur) * data.home_speed
+			position += velocity * delta
+			rotation = cur
+			if NeonFx.instance and Engine.get_physics_frames() % 3 == 0:
+				NeonFx.instance.emit(global_position - velocity.normalized() * 40.0, -velocity * 0.2, 0.35, 5.0, Color(0.3, 0.8, 1.0))
+			if p and p.alive and global_position.distance_to(p.global_position) < 34.0:
+				_explode(false)
+				return
+			if age > data.home_life:
+				_explode(false)
+				return
+	if _flash > 0.0:
+		_flash -= delta
+		sprite.modulate = Color(2.5, 2.5, 2.5) if _flash > 0.0 else Color.WHITE
+	if not get_viewport_rect().grow(SCREEN_MARGIN).has_point(global_position) and age > 1.0:
+		queue_free()
+
+
+## 爆炸：範圍內的戰機受傷；by_player = 被玩家打爆，會炸傷附近敵人
+func _explode(by_player: bool) -> void:
+	if _hazard_done:
+		return
+	_hazard_done = true
+	var at := global_position
+	if NeonFx.instance:
+		NeonFx.instance.explode(at, data.explosion_scale)
+		NeonFx.instance.ring(at, 10.0, data.blast_radius, 0.35, Color(1.0, 0.45, 0.3), 5.0)
+	Events.screen_shake.emit(6.0, 0.2)
+	var p := Player.instance
+	if p and p.alive and at.distance_to(p.global_position) < data.blast_radius:
+		p.take_hit(data.blast_damage)
+	if by_player:
+		for node in get_tree().get_nodes_in_group(&"enemies"):
+			var e := node as Enemy
+			if e == null or e == self or e.health.dead or e is Boss:
+				continue
+			if e.global_position.distance_to(at) < data.blast_radius + e.data.hit_radius:
+				e.take_damage(data.blast_enemy_damage)
+	queue_free()
