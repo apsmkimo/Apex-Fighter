@@ -32,7 +32,7 @@ const THROTTLE := {
 	&"enemy_shot_heavy": 0.3,
 	&"asteroid_hit": 0.12,
 	&"turret_explode": 0.2,
-	&"shot_vulcan": 0.11,
+	&"shot_start": 0.11,
 }
 const VOICE_LIMIT := {
 	&"enemy_hit": 3,
@@ -57,7 +57,7 @@ const VOICE_LIMIT := {
 	&"turret_explode": 2,
 	&"ult_mid_boss": 1,
 	&"ult_final_boss": 1,
-	&"shot_vulcan": 2,
+	&"shot_start": 2,
 }
 
 var _linear := {"Master": 0.9, "BGM": 0.7, "SFX": 0.85}
@@ -296,6 +296,11 @@ func _on_stage_cleared() -> void:
 
 
 func _on_weapon_fired(weapon_id: StringName, kind: StringName) -> void:
+	# 每台戰機的初始武器共用同一個射擊音效
+	var ship := GameManager.selected_ship
+	if ship and ship.weapon and ship.weapon.id == weapon_id and _sfx_paths.has(&"shot_start"):
+		_play(&"shot_start", false)
+		return
 	var specific := StringName("shot_%s" % String(weapon_id))
 	if _sfx_paths.has(specific):
 		_play(specific, false)
@@ -416,7 +421,13 @@ func _prepare(src: AudioStream, loop: bool) -> AudioStream:
 
 func _apply_loop(s: AudioStream, loop: bool) -> void:
 	if s is AudioStreamWAV:
-		(s as AudioStreamWAV).loop_mode = AudioStreamWAV.LOOP_FORWARD if loop else AudioStreamWAV.LOOP_DISABLED
+		var w := s as AudioStreamWAV
+		w.loop_mode = AudioStreamWAV.LOOP_FORWARD if loop else AudioStreamWAV.LOOP_DISABLED
+		# 匯入時沒開迴圈，loop_end 會是 0；直接開 LOOP_FORWARD 會讓播放瞬間停止（整首無聲）。
+		# 這裡把迴圈終點補成整首長度（單位：取樣格）。
+		if loop and w.loop_end <= w.loop_begin:
+			w.loop_begin = 0
+			w.loop_end = int(round(w.get_length() * float(w.mix_rate)))
 	elif s is AudioStreamOggVorbis:
 		s.set(&"loop", loop)
 	elif s is AudioStreamMP3:
