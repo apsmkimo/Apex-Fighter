@@ -1,0 +1,61 @@
+[gd_resource type="Resource" script_class="BossData" load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://src/entities/bosses/boss_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_junk_reaper.png" id="tex"]
+[ext_resource type="Script" path="res://src/entities/bosses/boss_phase.gd" id="ph"]
+[ext_resource type="Script" path="res://src/patterns/bullet/bullet_pattern.gd" id="bp"]
+[ext_resource type="Resource" path="res://data/patterns/move_reaper_hover.tres" id="mv"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/mid_boss.wav" id="bgm"]
+[ext_resource type="Resource" path="res://data/patterns/p4_lance3.tres" id="p_p4_lance3"]
+[ext_resource type="Resource" path="res://data/patterns/p4_needle.tres" id="p_p4_needle"]
+[ext_resource type="Resource" path="res://data/patterns/p4_red_ring.tres" id="p_p4_red_ring"]
+[ext_resource type="Resource" path="res://data/patterns/p4_sat_laser.tres" id="p_p4_sat_laser"]
+[ext_resource type="Resource" path="res://data/patterns/p4_sat_laser3.tres" id="p_p4_sat_laser3"]
+[ext_resource type="Resource" path="res://data/patterns/spiral_6.tres" id="p_spiral_6"]
+
+[sub_resource type="Resource" id="ph0"]
+script = ExtResource("ph")
+hp_ratio_end = 0.6
+patterns = Array[ExtResource("bp")]([ExtResource("p_p4_lance3"), ExtResource("p_p4_sat_laser3")])
+intervals = PackedFloat32Array(1.2, 1.0)
+
+[sub_resource type="Resource" id="ph1"]
+script = ExtResource("ph")
+hp_ratio_end = 0.25
+patterns = Array[ExtResource("bp")]([ExtResource("p_spiral_6"), ExtResource("p_p4_needle")])
+intervals = PackedFloat32Array(0.22, 1.0)
+
+[sub_resource type="Resource" id="ph2"]
+script = ExtResource("ph")
+hp_ratio_end = 0.0
+patterns = Array[ExtResource("bp")]([ExtResource("p_p4_red_ring"), ExtResource("p_p4_lance3"), ExtResource("p_p4_sat_laser")])
+intervals = PackedFloat32Array(0.8, 1.1, 0.9)
+
+[resource]
+script = ExtResource("scr")
+boss_name = "JUNK REAPER"
+bgm = ExtResource("bgm")
+entry_time = 3.0
+phases = Array[ExtResource("ph")]([SubResource("ph0"), SubResource("ph1"), SubResource("ph2")])
+id = &"boss_junk_reaper"
+texture = ExtResource("tex")
+movement = ExtResource("mv")
+ult_kinds = Array[StringName]([&"ram"])
+ult_first_delay = 6.0
+ult_interval = 9.0
+ult_damage = 3
+ult_color = Color(0.35, 1, 0.45, 1)
+ult_origin = Vector2(0, 0)
+ult_ram_time = 5.0
+ult_ram_speed = 540.0
+ult_ram_spin = 13.0
+ult_ram_radius = 125.0
+ult_ram_charge = 1.6
+max_hp = 800
+hit_radius = 150.0
+weak_offset = Vector2(-2, 2)
+weak_radius = 40.0
+score = 30000
+explosion_scale = 3.8
+bullet_damage = 2
+contact_damage = 3

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/junk_arrow.png" id="tex"]
+[ext_resource type="Resource" path="res://data/patterns/move_diagonal.tres" id="mv"]
+[ext_resource type="Resource" path="res://data/patterns/p4_lance3.tres" id="pat"]
+
+[resource]
+script = ExtResource("scr")
+id = &"junk_arrow"
+texture = ExtResource("tex")
+max_hp = 6
+hit_radius = 34.0
+score = 200
+explosion_scale = 1.0
+movement = ExtResource("mv")
+bullet_pattern = ExtResource("pat")
+fire_interval = 2.0
+first_fire_delay = 0.7
+thruster_offsets = PackedVector2Array(-14, -46, 14, -46)
+thruster_color = Color(0.4, 1, 0.45, 1)
+thruster_width = 9.0
+thruster_length = 20.0

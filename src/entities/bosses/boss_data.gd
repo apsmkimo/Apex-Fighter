@@ -78,7 +78,26 @@ extends EnemyData
 @export var ult_bomb_damage := 3
 @export var ult_bomb_charge := 1.2
 
+@export_subgroup("Ram")
+## 本體高速旋轉、在戰場上到處衝撞碾壓
+@export var ult_ram_time := 5.0
+@export var ult_ram_speed := 560.0
+## 自轉速度（弧度／秒）
+@export var ult_ram_spin := 14.0
+## 碾壓判定半徑
+@export var ult_ram_radius := 130.0
+@export var ult_ram_charge := 1.6
+
+@export_subgroup("Debris Rain")
+## 報廢衛星雨：從畫面上方隨機落下大量殘骸
+@export var ult_debris: Array[EnemyData] = []
+@export var ult_debris_count := 22
+@export var ult_debris_time := 3.6
+@export var ult_debris_charge := 1.8
+
 @export_group("Look")
+## 弱點標記顏色（透明 = 用 ult_color）
+@export var weak_color := Color(0, 0, 0, 0)
 ## 在弱點位置畫發光能源爐
 @export var reactor_core := false
 

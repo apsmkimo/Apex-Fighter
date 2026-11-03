@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="MoveStraight" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://src/patterns/movement/move_straight.gd" id="scr"]
+
+[resource]
+script = ExtResource("scr")
+velocity = Vector2(22, 105)

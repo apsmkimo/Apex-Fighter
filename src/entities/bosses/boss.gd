@@ -18,11 +18,12 @@ func _ready() -> void:
 		ultimate.setup(self)
 		add_child(ultimate)
 	if data.weak_radius > 0.0:
+		var wc := boss_data().weak_color if boss_data().weak_color.a > 0.0 else boss_data().ult_color
 		if boss_data().reactor_core:
 			var core := ReactorCore.new()
 			core.position = data.weak_offset
 			core.radius = data.weak_radius
-			core.color = boss_data().ult_color
+			core.color = wc
 			add_child(core)
 		var offs: Array[Vector2] = [data.weak_offset]
 		for o in data.extra_weak_offsets:
@@ -31,7 +32,7 @@ func _ready() -> void:
 			var mark := WeakPointMarker.new()
 			mark.position = o
 			mark.radius = data.weak_radius
-			mark.color = boss_data().ult_color
+			mark.color = wc
 			add_child(mark)
 	_enter_phase(0)
 

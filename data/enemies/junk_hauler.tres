@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/junk_hauler.png" id="tex"]
+[ext_resource type="Resource" path="res://data/patterns/move_stop_and_go.tres" id="mv"]
+[ext_resource type="Resource" path="res://data/patterns/p4_rocket_fan.tres" id="pat"]
+[ext_resource type="Resource" path="res://data/enemies/bio_missile.tres" id="dh"]
+[ext_resource type="Script" path="res://src/entities/items/item_data.gd" id="itm"]
+[ext_resource type="Resource" path="res://data/items/missile.tres" id="i_mis"]
+[ext_resource type="Resource" path="res://data/items/shield.tres" id="i_sh"]
+[ext_resource type="Resource" path="res://data/items/special.tres" id="i_sp"]
+[ext_resource type="Resource" path="res://data/items/power.tres" id="i_pw"]
+[ext_resource type="Resource" path="res://data/items/weapon_laser.tres" id="i_wl"]
+
+[resource]
+script = ExtResource("scr")
+id = &"junk_hauler"
+texture = ExtResource("tex")
+max_hp = 30
+hit_radius = 72.0
+score = 800
+explosion_scale = 1.8
+movement = ExtResource("mv")
+bullet_pattern = ExtResource("pat")
+fire_interval = 2.3
+first_fire_delay = 1.0
+drop_hazard = ExtResource("dh")
+drop_hazard_interval = 3.8
+drop_hazard_first = 1.8
+bullet_damage = 2
+contact_damage = 3
+drop_chance = 0.25
+bonus_chance = 0.35
+drop_item = ExtResource("i_pw")
+bonus_pool = Array[ExtResource("itm")]([ExtResource("i_mis"), ExtResource("i_sh"), ExtResource("i_sp"), ExtResource("i_wl")])

@@ -9,6 +9,8 @@ extends Node2D
 ##   feather   雙翼砲台發光 → 大量子彈齊射（一般子彈傷害）
 ##   missile   砲口充能 → 依序射出追蹤飛彈（打中藍點可引爆）
 ##   timebomb  丟出數顆計時炸彈，停在太空中倒數後爆炸
+##   ram       本體加速自轉 → 高速旋轉在戰場上到處衝撞碾壓
+##   debris    核心充能 → 大量報廢衛星從上方落下（可擊落）
 ## 雷射類打到玩家扣 BossData.ult_damage（滿血只擋得住一次），一次發射只扣一次。
 
 enum State { IDLE, CHARGE, FIRE }
@@ -37,6 +39,14 @@ var _ring_cd := 0.0
 var _feather_cd := 0.0
 var _missiles_left := 0
 var _missile_cd := 0.0
+# 碾壓
+var _ram_pos := Vector2.ZERO
+var _ram_vel := Vector2.ZERO
+var _ram_hit_cd := 0.0
+var _spin_back := false
+# 報廢衛星雨
+var _debris_left := 0
+var _debris_cd := 0.0
 
 
 func setup(b: Boss) -> void:
@@ -73,6 +83,12 @@ func _physics_process(delta: float) -> void:
 	_t += delta
 	if boss == null or boss.health.dead:
 		return
+	# 碾壓結束後，本體轉回正面
+	if _spin_back and state != State.FIRE:
+		boss.sprite.rotation = lerp_angle(boss.sprite.rotation, 0.0, minf(1.0, 5.0 * delta))
+		if absf(wrapf(boss.sprite.rotation, -PI, PI)) < 0.01:
+			boss.sprite.rotation = 0.0
+			_spin_back = false
 	_timer -= delta
 	match state:
 		State.IDLE:
@@ -80,6 +96,10 @@ func _physics_process(delta: float) -> void:
 				_start_charge()
 		State.CHARGE:
 			_update_particles(delta)
+			if kind == &"ram":
+				# 蓄力：越轉越快
+				boss.sprite.rotation += bd.ult_ram_spin * _charge_ratio() * delta
+				_spin_back = true
 			if _timer <= 0.0:
 				_start_fire()
 		State.FIRE:
@@ -101,6 +121,10 @@ func _physics_process(delta: float) -> void:
 					_update_feather(delta)
 				&"missile":
 					_update_missiles(delta)
+				&"ram":
+					_update_ram(delta)
+				&"debris":
+					_update_debris(delta)
 			var finished := _timer <= 0.0
 			if kind == &"web":
 				finished = _webs.is_empty() or _timer <= 0.0
@@ -136,6 +160,10 @@ func _start_charge() -> void:
 			_timer = bd.ult_missile_charge
 		&"timebomb":
 			_timer = bd.ult_bomb_charge
+		&"ram":
+			_timer = bd.ult_ram_charge
+		&"debris":
+			_timer = bd.ult_debris_charge
 		_:
 			_timer = bd.ult_charge_time
 	_charge_total = _timer
@@ -180,6 +208,17 @@ func _start_fire() -> void:
 		&"timebomb":
 			_timer = 0.8
 			_throw_bombs()
+		&"ram":
+			_timer = bd.ult_ram_time
+			_ram_pos = boss.global_position
+			_ram_vel = (_player_pos() - _ram_pos).normalized() * bd.ult_ram_speed
+			_ram_hit_cd = 0.0
+			Events.screen_shake.emit(8.0, 0.3)
+		&"debris":
+			_timer = bd.ult_debris_time + 0.4
+			_debris_left = bd.ult_debris_count
+			_debris_cd = 0.0
+			Events.screen_shake.emit(6.0, 0.3)
 		_:
 			_timer = bd.ult_fire_time
 			Events.screen_shake.emit(14.0, 0.4)
@@ -377,6 +416,64 @@ func _update_missiles(delta: float) -> void:
 		m.velocity = Vector2(signf(off.x) * 0.6 if off.x != 0.0 else 0.0, 1.0).normalized() * bd.ult_missile_data.home_speed
 	if NeonFx.instance:
 		NeonFx.instance.muzzle(global_position + off, Color(0.3, 0.8, 1.0))
+
+
+# ---------- ram / debris ----------
+
+func _player_pos() -> Vector2:
+	var pl := Player.instance
+	if pl and pl.alive:
+		return pl.global_position
+	return get_viewport_rect().size * Vector2(0.5, 0.75)
+
+
+## 高速旋轉衝撞：在畫面裡反彈，逐漸轉向玩家；最後一段滑回原本的位置
+func _update_ram(delta: float) -> void:
+	var size := get_viewport_rect().size
+	var r := bd.ult_ram_radius * 0.7
+	boss.sprite.rotation += bd.ult_ram_spin * delta
+	var want := (_player_pos() - _ram_pos).normalized() * bd.ult_ram_speed
+	_ram_vel = _ram_vel.lerp(want, minf(1.0, 0.9 * delta))
+	_ram_pos += _ram_vel * delta
+	if _ram_pos.x < r or _ram_pos.x > size.x - r:
+		_ram_vel.x = -_ram_vel.x
+		_ram_pos.x = clampf(_ram_pos.x, r, size.x - r)
+		Events.screen_shake.emit(6.0, 0.15)
+	if _ram_pos.y < r or _ram_pos.y > size.y - r:
+		_ram_vel.y = -_ram_vel.y
+		_ram_pos.y = clampf(_ram_pos.y, r, size.y - r)
+		Events.screen_shake.emit(6.0, 0.15)
+	# 最後 1 秒滑回懸停位置（boss.global_position 這一幀已由移動模式算好）
+	var home := boss.global_position
+	var k := clampf((1.0 - _timer) / 1.0, 0.0, 1.0) if _timer < 1.0 else 0.0
+	boss.global_position = _ram_pos.lerp(home, ease(k, -2.0))
+	if k > 0.0:
+		_ram_pos = boss.global_position
+	if NeonFx.instance and fmod(_t, 0.08) < delta:
+		NeonFx.instance.muzzle(boss.global_position + Vector2.RIGHT.rotated(randf() * TAU) * bd.ult_ram_radius * 0.8, bd.ult_color)
+	_ram_hit_cd -= delta
+	var pl := Player.instance
+	if _ram_hit_cd <= 0.0 and pl and pl.alive and k < 0.5:
+		if pl.global_position.distance_to(boss.global_position) < bd.ult_ram_radius + pl.ship.hitbox_radius:
+			_ram_hit_cd = 1.2
+			pl.take_hit(bd.ult_damage)
+			Events.screen_shake.emit(12.0, 0.3)
+
+
+## 報廢衛星雨：在畫面上方隨機位置生出殘骸往下掉
+func _update_debris(delta: float) -> void:
+	_debris_cd -= delta
+	if _debris_left <= 0 or _debris_cd > 0.0 or bd.ult_debris.is_empty():
+		return
+	_debris_cd = bd.ult_debris_time / maxf(1.0, float(bd.ult_debris_count))
+	_debris_left -= 1
+	var d: EnemyData = bd.ult_debris[randi() % bd.ult_debris.size()]
+	var size := get_viewport_rect().size
+	var e := (load("res://src/entities/enemies/enemy.tscn") as PackedScene).instantiate() as Enemy
+	e.setup(d, Vector2(randf_range(30.0, size.x - 30.0), -50.0 - randf() * 40.0), null, randf() < 0.5)
+	# 畫在 Boss 前面，掉落時看得清楚
+	e.z_index = 6
+	boss.get_parent().add_child(e)
 
 
 func _throw_bombs() -> void:

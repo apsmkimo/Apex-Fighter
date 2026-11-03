@@ -1,0 +1,70 @@
+[gd_resource type="Resource" script_class="BossData" load_steps=22 format=3]
+
+[ext_resource type="Script" path="res://src/entities/bosses/boss_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_scrap_titan.png" id="tex"]
+[ext_resource type="Script" path="res://src/entities/bosses/boss_phase.gd" id="ph"]
+[ext_resource type="Script" path="res://src/patterns/bullet/bullet_pattern.gd" id="bp"]
+[ext_resource type="Resource" path="res://data/patterns/move_titan_hover.tres" id="mv"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/boss.wav" id="bgm"]
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="eds"]
+[ext_resource type="Resource" path="res://data/enemies/satellite_rain_0.tres" id="r0"]
+[ext_resource type="Resource" path="res://data/enemies/satellite_rain_1.tres" id="r1"]
+[ext_resource type="Resource" path="res://data/enemies/satellite_rain_2.tres" id="r2"]
+[ext_resource type="Resource" path="res://data/enemies/satellite_rain_3.tres" id="r3"]
+[ext_resource type="Resource" path="res://data/patterns/p4_lance3.tres" id="p_p4_lance3"]
+[ext_resource type="Resource" path="res://data/patterns/p4_red_aim.tres" id="p_p4_red_aim"]
+[ext_resource type="Resource" path="res://data/patterns/p4_red_ring.tres" id="p_p4_red_ring"]
+[ext_resource type="Resource" path="res://data/patterns/p4_rocket_fan.tres" id="p_p4_rocket_fan"]
+[ext_resource type="Resource" path="res://data/patterns/p4_sat_laser.tres" id="p_p4_sat_laser"]
+[ext_resource type="Resource" path="res://data/patterns/p4_sat_laser3.tres" id="p_p4_sat_laser3"]
+[ext_resource type="Resource" path="res://data/patterns/spiral_6.tres" id="p_spiral_6"]
+
+[sub_resource type="Resource" id="ph0"]
+script = ExtResource("ph")
+hp_ratio_end = 0.65
+patterns = Array[ExtResource("bp")]([ExtResource("p_p4_red_aim"), ExtResource("p_p4_sat_laser3")])
+intervals = PackedFloat32Array(1.4, 0.9)
+
+[sub_resource type="Resource" id="ph1"]
+script = ExtResource("ph")
+hp_ratio_end = 0.3
+patterns = Array[ExtResource("bp")]([ExtResource("p_spiral_6"), ExtResource("p_p4_rocket_fan"), ExtResource("p_p4_lance3")])
+intervals = PackedFloat32Array(0.2, 2.2, 1.2)
+
+[sub_resource type="Resource" id="ph2"]
+script = ExtResource("ph")
+hp_ratio_end = 0.0
+patterns = Array[ExtResource("bp")]([ExtResource("p_p4_red_ring"), ExtResource("p_p4_red_aim"), ExtResource("p_p4_sat_laser"), ExtResource("p_p4_rocket_fan")])
+intervals = PackedFloat32Array(0.7, 1.1, 0.8, 2.4)
+
+[resource]
+script = ExtResource("scr")
+boss_name = "SCRAP TITAN"
+bgm = ExtResource("bgm")
+entry_time = 3.0
+phases = Array[ExtResource("ph")]([SubResource("ph0"), SubResource("ph1"), SubResource("ph2")])
+id = &"boss_scrap_titan"
+texture = ExtResource("tex")
+movement = ExtResource("mv")
+ult_kinds = Array[StringName]([&"beam", &"debris"])
+ult_first_delay = 6.0
+ult_interval = 9.0
+ult_damage = 4
+ult_color = Color(1, 0.2, 0.2, 1)
+ult_origin = Vector2(0, 280)
+ult_width = 190.0
+ult_charge_time = 2.4
+ult_fire_time = 1.8
+ult_debris = Array[ExtResource("eds")]([ExtResource("r0"), ExtResource("r1"), ExtResource("r2"), ExtResource("r3")])
+ult_debris_count = 24
+ult_debris_time = 3.6
+ult_debris_charge = 1.8
+weak_color = Color(0.35, 1, 0.45, 1)
+max_hp = 1200
+hit_radius = 260.0
+weak_offset = Vector2(-2, -41)
+weak_radius = 46.0
+score = 50000
+explosion_scale = 5.5
+bullet_damage = 3
+contact_damage = 3

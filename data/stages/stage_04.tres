@@ -1,315 +1,652 @@
-[gd_resource type="Resource" script_class="StageData" load_steps=40 format=3]
+[gd_resource type="Resource" script_class="StageData" load_steps=83 format=3]
 
-[ext_resource type="Script" path="res://src/stages/stage_data.gd" id="s_stage"]
+[ext_resource type="Script" path="res://src/stages/stage_data.gd" id="scr"]
 [ext_resource type="Script" path="res://src/stages/wave_data.gd" id="w_wave"]
-[ext_resource type="Resource" path="res://data/enemies/dart.tres" id="e_dart"]
-[ext_resource type="Resource" path="res://data/enemies/juggernaut.tres" id="e_jugg"]
+[ext_resource type="Resource" path="res://data/enemies/junk_arrow.tres" id="e_arrow"]
+[ext_resource type="Resource" path="res://data/enemies/junk_drone.tres" id="e_drone"]
+[ext_resource type="Resource" path="res://data/enemies/junk_hauler.tres" id="e_haul"]
 [ext_resource type="Resource" path="res://data/enemies/dart_power.tres" id="e_pow"]
-[ext_resource type="Resource" path="res://data/enemies/raptor.tres" id="e_raptor"]
-[ext_resource type="Resource" path="res://data/enemies/shade.tres" id="e_shade"]
-[ext_resource type="Resource" path="res://data/patterns/move_sine.tres" id="m_sine"]
-[ext_resource type="Resource" path="res://data/patterns/move_diagonal.tres" id="m_diag"]
-[ext_resource type="Resource" path="res://data/enemies/boss_violet_fortress.tres" id="b_mid"]
-[ext_resource type="Resource" path="res://data/enemies/boss_crimson_widow.tres" id="b_final"]
+[ext_resource type="Resource" path="res://data/enemies/satellite_big_0.tres" id="e_sb0"]
+[ext_resource type="Resource" path="res://data/enemies/satellite_big_1.tres" id="e_sb1"]
+[ext_resource type="Resource" path="res://data/enemies/satellite_big_2.tres" id="e_sb2"]
+[ext_resource type="Resource" path="res://data/enemies/satellite_big_3.tres" id="e_sb3"]
+[ext_resource type="Resource" path="res://data/enemies/satellite_small_0.tres" id="e_ss0"]
+[ext_resource type="Resource" path="res://data/enemies/satellite_small_1.tres" id="e_ss1"]
+[ext_resource type="Resource" path="res://data/enemies/satellite_small_2.tres" id="e_ss2"]
+[ext_resource type="Resource" path="res://data/enemies/satellite_small_3.tres" id="e_ss3"]
+[ext_resource type="Resource" path="res://data/enemies/boss_junk_reaper.tres" id="b_mid"]
+[ext_resource type="Resource" path="res://data/enemies/boss_scrap_titan.tres" id="b_final"]
+[ext_resource type="Texture2D" path="res://assets/sprites/terrain/scrapyard.jpg" id="t_ter"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/satellite_small_0.png" id="d0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/satellite_small_1.png" id="d1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/satellite_small_2.png" id="d2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/satellite_small_3.png" id="d3"]
 
 [sub_resource type="Resource" id="W0"]
 script = ExtResource("w_wave")
-time = 2
-enemy = ExtResource("e_shade")
+time = 1.5
+enemy = ExtResource("e_drone")
 count = 5
-interval = 0.35
-start_x = 0.2
-step_x = 0
-movement_override = ExtResource("m_sine")
+interval = 0.3
+start_x = 0.1
+step_x = 0.07
 mirror = true
 
 [sub_resource type="Resource" id="W1"]
 script = ExtResource("w_wave")
-time = 5
-enemy = ExtResource("e_dart")
-count = 6
-interval = 0.3
-start_x = 0.1
-step_x = 0.16
+time = 2.5
+enemy = ExtResource("e_sb0")
+count = 1
+interval = 0.0
+start_x = 0.2
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="W2"]
 script = ExtResource("w_wave")
-time = 8
-enemy = ExtResource("e_shade")
-count = 6
-interval = 0.3
-start_x = 0.15
-step_x = 0
-movement_override = ExtResource("m_diag")
-mirror = true
+time = 4
+enemy = ExtResource("e_ss1")
+count = 1
+interval = 0.0
+start_x = 0.75
+step_x = 0.0
+mirror = false
 
 [sub_resource type="Resource" id="W3"]
 script = ExtResource("w_wave")
-time = 11
-enemy = ExtResource("e_pow")
-count = 1
-interval = 0
-start_x = 0.5
-step_x = 0
+time = 5
+enemy = ExtResource("e_arrow")
+count = 3
+interval = 0.4
+start_x = 0.3
+step_x = 0.12
 mirror = false
 
 [sub_resource type="Resource" id="W4"]
 script = ExtResource("w_wave")
-time = 12
-enemy = ExtResource("e_dart")
-count = 8
-interval = 0.25
-start_x = 0.1
-step_x = 0.11
+time = 7
+enemy = ExtResource("e_sb1")
+count = 1
+interval = 0.0
+start_x = 0.55
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="W5"]
 script = ExtResource("w_wave")
-time = 16
-enemy = ExtResource("e_raptor")
-count = 1
-interval = 0
-start_x = 0.3
-step_x = 0
-mirror = false
+time = 9
+enemy = ExtResource("e_drone")
+count = 5
+interval = 0.3
+start_x = 0.6
+step_x = 0.07
+mirror = true
 
 [sub_resource type="Resource" id="W6"]
 script = ExtResource("w_wave")
-time = 18
-enemy = ExtResource("e_raptor")
+time = 10
+enemy = ExtResource("e_ss0")
 count = 1
-interval = 0
-start_x = 0.7
-step_x = 0
+interval = 0.0
+start_x = 0.15
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="W7"]
 script = ExtResource("w_wave")
-time = 21
-enemy = ExtResource("e_shade")
-count = 5
-interval = 0.35
-start_x = 0.2
-step_x = 0
-movement_override = ExtResource("m_sine")
-mirror = true
+time = 11
+enemy = ExtResource("e_pow")
+count = 1
+interval = 0.0
+start_x = 0.5
+step_x = 0.0
+mirror = false
 
 [sub_resource type="Resource" id="W8"]
 script = ExtResource("w_wave")
-time = 24
-enemy = ExtResource("e_raptor")
-count = 2
-interval = 0.8
-start_x = 0.25
-step_x = 0.5
+time = 12
+enemy = ExtResource("e_sb2")
+count = 1
+interval = 0.0
+start_x = 0.8
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="W9"]
 script = ExtResource("w_wave")
-time = 29
-enemy = ExtResource("e_jugg")
-count = 1
-interval = 0
-start_x = 0.3
-step_x = 0
+time = 13
+enemy = ExtResource("e_arrow")
+count = 3
+interval = 0.4
+start_x = 0.7
+step_x = 0.12
 mirror = false
 
 [sub_resource type="Resource" id="W10"]
 script = ExtResource("w_wave")
-time = 33
-enemy = ExtResource("e_dart")
-count = 6
-interval = 0.3
-start_x = 0.1
-step_x = 0.16
+time = 15
+enemy = ExtResource("e_ss2")
+count = 1
+interval = 0.0
+start_x = 0.4
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="W11"]
 script = ExtResource("w_wave")
-time = 36
-enemy = ExtResource("e_raptor")
-count = 1
-interval = 0
-start_x = 0.7
-step_x = 0
-mirror = false
+time = 17
+enemy = ExtResource("e_drone")
+count = 5
+interval = 0.3
+start_x = 0.1
+step_x = 0.07
+mirror = true
 
 [sub_resource type="Resource" id="W12"]
 script = ExtResource("w_wave")
-time = 40
-enemy = ExtResource("e_jugg")
+time = 18
+enemy = ExtResource("e_sb3")
 count = 1
-interval = 0
-start_x = 0.7
-step_x = 0
+interval = 0.0
+start_x = 0.85
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="W13"]
 script = ExtResource("w_wave")
-time = 42
-enemy = ExtResource("e_jugg")
+time = 19
+enemy = ExtResource("e_haul")
 count = 1
-interval = 0
+interval = 0.0
 start_x = 0.3
-step_x = 0
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="W14"]
 script = ExtResource("w_wave")
-time = 46
-enemy = ExtResource("e_shade")
-count = 6
-interval = 0.3
-start_x = 0.15
-step_x = 0
-movement_override = ExtResource("m_diag")
-mirror = true
+time = 21
+enemy = ExtResource("e_arrow")
+count = 3
+interval = 0.4
+start_x = 0.3
+step_x = 0.12
+mirror = false
 
 [sub_resource type="Resource" id="W15"]
 script = ExtResource("w_wave")
-time = 49
-enemy = ExtResource("e_pow")
+time = 22
+enemy = ExtResource("e_sb0")
 count = 1
-interval = 0
-start_x = 0.5
-step_x = 0
+interval = 0.0
+start_x = 0.2
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="W16"]
 script = ExtResource("w_wave")
-time = 51
-enemy = ExtResource("e_raptor")
-count = 2
-interval = 0.8
-start_x = 0.25
-step_x = 0.5
+time = 24
+enemy = ExtResource("e_ss3")
+count = 1
+interval = 0.0
+start_x = 0.6
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="W17"]
 script = ExtResource("w_wave")
-time = 55
-enemy = ExtResource("e_dart")
-count = 8
-interval = 0.25
+time = 25
+enemy = ExtResource("e_drone")
+count = 5
+interval = 0.3
+start_x = 0.6
+step_x = 0.07
+mirror = true
+
+[sub_resource type="Resource" id="W18"]
+script = ExtResource("w_wave")
+time = 27
+enemy = ExtResource("e_sb2")
+count = 1
+interval = 0.0
+start_x = 0.35
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W19"]
+script = ExtResource("w_wave")
+time = 28
+enemy = ExtResource("e_pow")
+count = 1
+interval = 0.0
+start_x = 0.5
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W20"]
+script = ExtResource("w_wave")
+time = 29
+enemy = ExtResource("e_ss1")
+count = 1
+interval = 0.0
+start_x = 0.8
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W21"]
+script = ExtResource("w_wave")
+time = 30
+enemy = ExtResource("e_arrow")
+count = 3
+interval = 0.4
+start_x = 0.7
+step_x = 0.12
+mirror = false
+
+[sub_resource type="Resource" id="W22"]
+script = ExtResource("w_wave")
+time = 32
+enemy = ExtResource("e_sb1")
+count = 1
+interval = 0.0
+start_x = 0.55
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W23"]
+script = ExtResource("w_wave")
+time = 33
+enemy = ExtResource("e_drone")
+count = 5
+interval = 0.3
 start_x = 0.1
-step_x = 0.11
+step_x = 0.07
+mirror = true
+
+[sub_resource type="Resource" id="W24"]
+script = ExtResource("w_wave")
+time = 35
+enemy = ExtResource("e_haul")
+count = 1
+interval = 0.0
+start_x = 0.7
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W25"]
+script = ExtResource("w_wave")
+time = 36
+enemy = ExtResource("e_sb0")
+count = 1
+interval = 0.0
+start_x = 0.15
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W26"]
+script = ExtResource("w_wave")
+time = 38
+enemy = ExtResource("e_arrow")
+count = 3
+interval = 0.4
+start_x = 0.3
+step_x = 0.12
+mirror = false
+
+[sub_resource type="Resource" id="W27"]
+script = ExtResource("w_wave")
+time = 39
+enemy = ExtResource("e_ss0")
+count = 1
+interval = 0.0
+start_x = 0.7
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W28"]
+script = ExtResource("w_wave")
+time = 41
+enemy = ExtResource("e_sb2")
+count = 1
+interval = 0.0
+start_x = 0.45
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W29"]
+script = ExtResource("w_wave")
+time = 42
+enemy = ExtResource("e_drone")
+count = 5
+interval = 0.3
+start_x = 0.6
+step_x = 0.07
+mirror = true
+
+[sub_resource type="Resource" id="W30"]
+script = ExtResource("w_wave")
+time = 44
+enemy = ExtResource("e_haul")
+count = 1
+interval = 0.0
+start_x = 0.3
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W31"]
+script = ExtResource("w_wave")
+time = 45
+enemy = ExtResource("e_ss2")
+count = 1
+interval = 0.0
+start_x = 0.85
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W32"]
+script = ExtResource("w_wave")
+time = 46
+enemy = ExtResource("e_arrow")
+count = 3
+interval = 0.4
+start_x = 0.7
+step_x = 0.12
+mirror = false
+
+[sub_resource type="Resource" id="W33"]
+script = ExtResource("w_wave")
+time = 47
+enemy = ExtResource("e_pow")
+count = 1
+interval = 0.0
+start_x = 0.5
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W34"]
+script = ExtResource("w_wave")
+time = 48
+enemy = ExtResource("e_sb3")
+count = 1
+interval = 0.0
+start_x = 0.2
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W35"]
+script = ExtResource("w_wave")
+time = 50
+enemy = ExtResource("e_drone")
+count = 5
+interval = 0.3
+start_x = 0.1
+step_x = 0.07
+mirror = true
+
+[sub_resource type="Resource" id="W36"]
+script = ExtResource("w_wave")
+time = 51
+enemy = ExtResource("e_sb0")
+count = 1
+interval = 0.0
+start_x = 0.5
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W37"]
+script = ExtResource("w_wave")
+time = 52
+enemy = ExtResource("e_haul")
+count = 1
+interval = 0.0
+start_x = 0.7
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W38"]
+script = ExtResource("w_wave")
+time = 54
+enemy = ExtResource("e_arrow")
+count = 3
+interval = 0.4
+start_x = 0.3
+step_x = 0.12
+mirror = false
+
+[sub_resource type="Resource" id="W39"]
+script = ExtResource("w_wave")
+time = 55
+enemy = ExtResource("e_sb2")
+count = 1
+interval = 0.0
+start_x = 0.8
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="W40"]
+script = ExtResource("w_wave")
+time = 57
+enemy = ExtResource("e_drone")
+count = 5
+interval = 0.3
+start_x = 0.6
+step_x = 0.07
+mirror = true
+
+[sub_resource type="Resource" id="W41"]
+script = ExtResource("w_wave")
+time = 58
+enemy = ExtResource("e_ss3")
+count = 1
+interval = 0.0
+start_x = 0.3
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="A0"]
 script = ExtResource("w_wave")
 time = 1.5
-enemy = ExtResource("e_shade")
+enemy = ExtResource("e_drone")
 count = 5
-interval = 0.35
-start_x = 0.2
-step_x = 0
-movement_override = ExtResource("m_sine")
+interval = 0.3
+start_x = 0.1
+step_x = 0.07
 mirror = true
 
 [sub_resource type="Resource" id="A1"]
 script = ExtResource("w_wave")
-time = 4
-enemy = ExtResource("e_dart")
-count = 6
-interval = 0.3
-start_x = 0.1
-step_x = 0.16
+time = 2
+enemy = ExtResource("e_sb2")
+count = 1
+interval = 0.0
+start_x = 0.5
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="A2"]
 script = ExtResource("w_wave")
-time = 7
-enemy = ExtResource("e_raptor")
-count = 2
-interval = 0.8
-start_x = 0.25
-step_x = 0.5
+time = 4
+enemy = ExtResource("e_arrow")
+count = 3
+interval = 0.4
+start_x = 0.3
+step_x = 0.12
 mirror = false
 
 [sub_resource type="Resource" id="A3"]
 script = ExtResource("w_wave")
-time = 11
-enemy = ExtResource("e_shade")
-count = 6
-interval = 0.3
-start_x = 0.15
-step_x = 0
-movement_override = ExtResource("m_diag")
-mirror = true
+time = 6
+enemy = ExtResource("e_sb0")
+count = 1
+interval = 0.0
+start_x = 0.2
+step_x = 0.0
+mirror = false
 
 [sub_resource type="Resource" id="A4"]
 script = ExtResource("w_wave")
-time = 14
-enemy = ExtResource("e_jugg")
+time = 8
+enemy = ExtResource("e_haul")
 count = 1
-interval = 0
+interval = 0.0
 start_x = 0.7
-step_x = 0
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="A5"]
 script = ExtResource("w_wave")
-time = 18
-enemy = ExtResource("e_raptor")
+time = 9
+enemy = ExtResource("e_ss1")
 count = 1
-interval = 0
-start_x = 0.3
-step_x = 0
+interval = 0.0
+start_x = 0.85
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="A6"]
 script = ExtResource("w_wave")
-time = 20
-enemy = ExtResource("e_pow")
-count = 1
-interval = 0
-start_x = 0.5
-step_x = 0
-mirror = false
+time = 10
+enemy = ExtResource("e_drone")
+count = 5
+interval = 0.3
+start_x = 0.6
+step_x = 0.07
+mirror = true
 
 [sub_resource type="Resource" id="A7"]
 script = ExtResource("w_wave")
-time = 23
-enemy = ExtResource("e_jugg")
+time = 12
+enemy = ExtResource("e_sb1")
 count = 1
-interval = 0
-start_x = 0.3
-step_x = 0
+interval = 0.0
+start_x = 0.4
+step_x = 0.0
 mirror = false
 
 [sub_resource type="Resource" id="A8"]
 script = ExtResource("w_wave")
-time = 25
-enemy = ExtResource("e_jugg")
-count = 1
-interval = 0
+time = 13
+enemy = ExtResource("e_arrow")
+count = 3
+interval = 0.4
 start_x = 0.7
-step_x = 0
+step_x = 0.12
 mirror = false
 
 [sub_resource type="Resource" id="A9"]
 script = ExtResource("w_wave")
-time = 29
-enemy = ExtResource("e_dart")
-count = 8
-interval = 0.25
+time = 14
+enemy = ExtResource("e_pow")
+count = 1
+interval = 0.0
+start_x = 0.5
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="A10"]
+script = ExtResource("w_wave")
+time = 15
+enemy = ExtResource("e_sb2")
+count = 1
+interval = 0.0
+start_x = 0.75
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="A11"]
+script = ExtResource("w_wave")
+time = 17
+enemy = ExtResource("e_haul")
+count = 1
+interval = 0.0
+start_x = 0.3
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="A12"]
+script = ExtResource("w_wave")
+time = 19
+enemy = ExtResource("e_drone")
+count = 5
+interval = 0.3
 start_x = 0.1
-step_x = 0.11
+step_x = 0.07
+mirror = true
+
+[sub_resource type="Resource" id="A13"]
+script = ExtResource("w_wave")
+time = 20
+enemy = ExtResource("e_ss0")
+count = 1
+interval = 0.0
+start_x = 0.25
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="A14"]
+script = ExtResource("w_wave")
+time = 22
+enemy = ExtResource("e_arrow")
+count = 3
+interval = 0.4
+start_x = 0.3
+step_x = 0.12
+mirror = false
+
+[sub_resource type="Resource" id="A15"]
+script = ExtResource("w_wave")
+time = 23
+enemy = ExtResource("e_sb0")
+count = 1
+interval = 0.0
+start_x = 0.65
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="A16"]
+script = ExtResource("w_wave")
+time = 25
+enemy = ExtResource("e_haul")
+count = 1
+interval = 0.0
+start_x = 0.5
+step_x = 0.0
+mirror = false
+
+[sub_resource type="Resource" id="A17"]
+script = ExtResource("w_wave")
+time = 27
+enemy = ExtResource("e_drone")
+count = 5
+interval = 0.3
+start_x = 0.6
+step_x = 0.07
+mirror = true
+
+[sub_resource type="Resource" id="A18"]
+script = ExtResource("w_wave")
+time = 28
+enemy = ExtResource("e_sb3")
+count = 1
+interval = 0.0
+start_x = 0.35
+step_x = 0.0
 mirror = false
 
 [resource]
-script = ExtResource("s_stage")
+script = ExtResource("scr")
 id = &"stage_04"
 display_name = "STAGE 4"
 sort_order = 3
-scroll_speed = 185.0
-bg_top_color = Color(0.12, 0.08, 0.02, 1)
-bg_bottom_color = Color(0.22, 0.14, 0.04, 1)
+scroll_speed = 150.0
+bg_top_color = Color(0.12, 0.1, 0.06, 1)
+bg_bottom_color = Color(0.2, 0.16, 0.1, 1)
+terrain = ExtResource("t_ter")
+terrain_tint = Color(0.46, 0.45, 0.43, 1)
+float_decor = Array[Texture2D]([ExtResource("d0"), ExtResource("d1"), ExtResource("d2"), ExtResource("d3")])
 hp_mult = 1.15
-waves = Array[ExtResource("w_wave")]([SubResource("W0"), SubResource("W1"), SubResource("W2"), SubResource("W3"), SubResource("W4"), SubResource("W5"), SubResource("W6"), SubResource("W7"), SubResource("W8"), SubResource("W9"), SubResource("W10"), SubResource("W11"), SubResource("W12"), SubResource("W13"), SubResource("W14"), SubResource("W15"), SubResource("W16"), SubResource("W17")])
+waves = Array[ExtResource("w_wave")]([SubResource("W0"), SubResource("W1"), SubResource("W2"), SubResource("W3"), SubResource("W4"), SubResource("W5"), SubResource("W6"), SubResource("W7"), SubResource("W8"), SubResource("W9"), SubResource("W10"), SubResource("W11"), SubResource("W12"), SubResource("W13"), SubResource("W14"), SubResource("W15"), SubResource("W16"), SubResource("W17"), SubResource("W18"), SubResource("W19"), SubResource("W20"), SubResource("W21"), SubResource("W22"), SubResource("W23"), SubResource("W24"), SubResource("W25"), SubResource("W26"), SubResource("W27"), SubResource("W28"), SubResource("W29"), SubResource("W30"), SubResource("W31"), SubResource("W32"), SubResource("W33"), SubResource("W34"), SubResource("W35"), SubResource("W36"), SubResource("W37"), SubResource("W38"), SubResource("W39"), SubResource("W40"), SubResource("W41")])
 mid_boss = ExtResource("b_mid")
-waves_after_mid = Array[ExtResource("w_wave")]([SubResource("A0"), SubResource("A1"), SubResource("A2"), SubResource("A3"), SubResource("A4"), SubResource("A5"), SubResource("A6"), SubResource("A7"), SubResource("A8"), SubResource("A9")])
+waves_after_mid = Array[ExtResource("w_wave")]([SubResource("A0"), SubResource("A1"), SubResource("A2"), SubResource("A3"), SubResource("A4"), SubResource("A5"), SubResource("A6"), SubResource("A7"), SubResource("A8"), SubResource("A9"), SubResource("A10"), SubResource("A11"), SubResource("A12"), SubResource("A13"), SubResource("A14"), SubResource("A15"), SubResource("A16"), SubResource("A17"), SubResource("A18")])
 after_mid_hp_mult = 1.0
 boss = ExtResource("b_final")
 boss_warning_time = 2.5

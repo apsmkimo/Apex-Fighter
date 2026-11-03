@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/satellite_big_1.png" id="tex"]
+[ext_resource type="Resource" path="res://data/patterns/move_sat_drift_slow.tres" id="mv"]
+[ext_resource type="Resource" path="res://data/items/power.tres" id="pw"]
+
+[resource]
+script = ExtResource("scr")
+id = &"satellite_big_1"
+texture = ExtResource("tex")
+max_hp = 9
+hit_radius = 44.0
+score = 250
+explosion_scale = 1.2
+movement = ExtResource("mv")
+spin = -0.28
+bullet_damage = 2
+contact_damage = 2
+drop_item = ExtResource("pw")
+drop_chance = 0.06
