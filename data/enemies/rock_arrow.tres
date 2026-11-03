@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/rock_arrow.png" id="tex"]
+[ext_resource type="Resource" path="res://data/patterns/move_diagonal.tres" id="mv"]
+[ext_resource type="Resource" path="res://data/patterns/p10_lance.tres" id="pat"]
+
+[resource]
+script = ExtResource("scr")
+id = &"rock_arrow"
+texture = ExtResource("tex")
+max_hp = 4
+hit_radius = 22.0
+score = 140
+explosion_scale = 0.9
+movement = ExtResource("mv")
+bullet_pattern = ExtResource("pat")
+fire_interval = 2.0
+first_fire_delay = 0.7
+thruster_offsets = PackedVector2Array(-8, -36, 8, -36)
+thruster_color = Color(0.4, 1, 0.4, 1)
+thruster_width = 7.0
+thruster_length = 16.0

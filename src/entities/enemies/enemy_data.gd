@@ -32,6 +32,12 @@ extends Resource
 @export var ground := false
 ## 砲身是否轉向戰機（圖的砲口朝上）
 @export var aim_rotate := true
+## 圖上砲口不是朝上時的角度修正（度，順時針為正；例如砲口朝右上 = 45）
+@export var aim_offset_deg := 0.0
+## 不轉向的地面單位每秒自轉幾弧度（飛彈井 0.4，岩石要塞 0）
+@export var ground_spin := 0.4
+## 被摧毀後留在地表的坑洞圖（隨機挑一張），跟著地表捲動
+@export var death_decals: Array[Texture2D] = []
 
 @export_group("Hazard")
 ## 非空 = 太空危險物：mine（水雷）或 missile（追蹤飛彈）。不開火，靠爆炸傷人
@@ -43,6 +49,8 @@ extends Resource
 @export var blast_enemy_damage := 20
 ## 水雷：戰機靠近到這個距離就引爆
 @export var trigger_radius := 80.0
+## 爆炸時往四周放出幾顆子彈（尖刺水雷用，0 = 不放）
+@export var blast_ring := 0
 ## 飛彈：速度、轉向速度（弧度/秒）、壽命
 @export var home_speed := 280.0
 @export var home_turn := 2.0
@@ -57,10 +65,14 @@ extends Resource
 @export_group("Death")
 ## 被打爆後掉出來繼續攻擊的單位（例如戰機裡的機器人）
 @export var death_spawn: EnemyData
+## 一次生出幾個（隕石碎裂用；大於 1 時往左右散開）
+@export var death_spawn_count := 1
 
 @export_group("Movement")
 ## 預設移動方式，波次可以覆寫
 @export var movement: MovePattern
+## 機身自轉速度（弧度/秒，隕石用）
+@export var spin := 0.0
 
 @export_group("Attack")
 ## 子彈打中玩家扣的血（玩家預設 6 血：一般 2 = 可擋 3 發，Boss 3 = 可擋 2 發）

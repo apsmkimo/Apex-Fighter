@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/rock_bulk.png" id="tex"]
+[ext_resource type="Resource" path="res://data/patterns/move_stop_and_go.tres" id="mv"]
+[ext_resource type="Resource" path="res://data/patterns/p10_rocket.tres" id="pat"]
+[ext_resource type="Resource" path="res://data/enemies/spike_mine.tres" id="dh"]
+[ext_resource type="Script" path="res://src/entities/items/item_data.gd" id="itm"]
+[ext_resource type="Resource" path="res://data/items/missile.tres" id="i_mis"]
+[ext_resource type="Resource" path="res://data/items/shield.tres" id="i_sh"]
+[ext_resource type="Resource" path="res://data/items/special.tres" id="i_sp"]
+[ext_resource type="Resource" path="res://data/items/power.tres" id="i_pw"]
+[ext_resource type="Resource" path="res://data/items/weapon_laser.tres" id="i_wl"]
+[ext_resource type="Resource" path="res://data/items/bomb.tres" id="i_bm"]
+
+[resource]
+script = ExtResource("scr")
+id = &"rock_bulk"
+texture = ExtResource("tex")
+max_hp = 22
+hit_radius = 44.0
+score = 500
+explosion_scale = 1.4
+movement = ExtResource("mv")
+bullet_pattern = ExtResource("pat")
+fire_interval = 2.2
+first_fire_delay = 1.0
+drop_hazard = ExtResource("dh")
+drop_hazard_interval = 4.0
+drop_hazard_first = 2.0
+drop_chance = 0.15
+bonus_chance = 0.25
+drop_item = ExtResource("i_pw")
+bonus_pool = Array[ExtResource("itm")]([ExtResource("i_mis"), ExtResource("i_sh"), ExtResource("i_sp"), ExtResource("i_wl")])

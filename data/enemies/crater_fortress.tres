@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/crater_fortress.png" id="tex"]
+[ext_resource type="Resource" path="res://data/patterns/p10_ring_lance.tres" id="pat"]
+[ext_resource type="Resource" path="res://data/enemies/bio_missile.tres" id="dh"]
+[ext_resource type="Texture2D" path="res://assets/sprites/decals/crater_0.png" id="cr0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/decals/crater_1.png" id="cr1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/decals/crater_2.png" id="cr2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/decals/crater_3.png" id="cr3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/decals/crater_4.png" id="cr4"]
+[ext_resource type="Script" path="res://src/entities/items/item_data.gd" id="itm"]
+[ext_resource type="Resource" path="res://data/items/missile.tres" id="i_mis"]
+[ext_resource type="Resource" path="res://data/items/shield.tres" id="i_sh"]
+[ext_resource type="Resource" path="res://data/items/special.tres" id="i_sp"]
+[ext_resource type="Resource" path="res://data/items/power.tres" id="i_pw"]
+[ext_resource type="Resource" path="res://data/items/weapon_laser.tres" id="i_wl"]
+[ext_resource type="Resource" path="res://data/items/bomb.tres" id="i_bm"]
+
+[resource]
+script = ExtResource("scr")
+id = &"crater_fortress"
+texture = ExtResource("tex")
+ground = true
+aim_rotate = false
+ground_spin = 0.0
+max_hp = 170
+hit_radius = 150.0
+score = 5000
+explosion_scale = 3.0
+weak_offset = Vector2(-2, -17)
+weak_radius = 36.0
+extra_weak_offsets = PackedVector2Array(0, 128)
+bullet_pattern = ExtResource("pat")
+fire_interval = 1.5
+first_fire_delay = 1.5
+drop_hazard = ExtResource("dh")
+drop_hazard_interval = 3.5
+drop_hazard_first = 2.0
+bullet_damage = 2
+contact_damage = 0
+death_decals = Array[Texture2D]([ExtResource("cr0"), ExtResource("cr1"), ExtResource("cr2"), ExtResource("cr3"), ExtResource("cr4")])
+drop_chance = 1.0
+bonus_chance = 1.0
+drop_item = ExtResource("i_pw")
+bonus_pool = Array[ExtResource("itm")]([ExtResource("i_mis"), ExtResource("i_sh"), ExtResource("i_sp"), ExtResource("i_wl")])

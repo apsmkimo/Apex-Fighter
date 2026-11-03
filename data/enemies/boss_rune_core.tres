@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="BossData" load_steps=20 format=3]
+
+[ext_resource type="Script" path="res://src/entities/bosses/boss_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_rune_core.png" id="tex"]
+[ext_resource type="Script" path="res://src/entities/bosses/boss_phase.gd" id="ph"]
+[ext_resource type="Script" path="res://src/patterns/bullet/bullet_pattern.gd" id="bp"]
+[ext_resource type="Resource" path="res://data/patterns/move_boss_hover.tres" id="mv"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/boss.wav" id="bgm"]
+[ext_resource type="Resource" path="res://data/enemies/boss_spike_missile.tres" id="msl"]
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/enemy_orb.png" id="orb"]
+[ext_resource type="Resource" path="res://data/patterns/p10_lance.tres" id="p_p10_lance"]
+[ext_resource type="Resource" path="res://data/patterns/p10_needle.tres" id="p_p10_needle"]
+[ext_resource type="Resource" path="res://data/patterns/p10_ring_lance.tres" id="p_p10_ring_lance"]
+[ext_resource type="Resource" path="res://data/patterns/p10_rocket.tres" id="p_p10_rocket"]
+[ext_resource type="Resource" path="res://data/patterns/p10_rocket_fan.tres" id="p_p10_rocket_fan"]
+[ext_resource type="Resource" path="res://data/patterns/p10_split.tres" id="p_p10_split"]
+[ext_resource type="Resource" path="res://data/patterns/ring_20.tres" id="p_ring_20"]
+[ext_resource type="Resource" path="res://data/patterns/spiral_6.tres" id="p_spiral_6"]
+
+[sub_resource type="Resource" id="ph0"]
+script = ExtResource("ph")
+hp_ratio_end = 0.65
+patterns = Array[ExtResource("bp")]([ExtResource("p_p10_ring_lance"), ExtResource("p_p10_split")])
+intervals = PackedFloat32Array(1.0, 1.8)
+
+[sub_resource type="Resource" id="ph1"]
+script = ExtResource("ph")
+hp_ratio_end = 0.3
+patterns = Array[ExtResource("bp")]([ExtResource("p_spiral_6"), ExtResource("p_p10_rocket_fan"), ExtResource("p_p10_needle")])
+intervals = PackedFloat32Array(0.18, 2.0, 1.3)
+
+[sub_resource type="Resource" id="ph2"]
+script = ExtResource("ph")
+hp_ratio_end = 0.0
+patterns = Array[ExtResource("bp")]([ExtResource("p_ring_20"), ExtResource("p_p10_lance"), ExtResource("p_p10_split"), ExtResource("p_p10_rocket")])
+intervals = PackedFloat32Array(0.7, 1.0, 1.6, 2.2)
+
+[resource]
+script = ExtResource("scr")
+boss_name = "RUNE CORE"
+bgm = ExtResource("bgm")
+entry_time = 3.0
+phases = Array[ExtResource("ph")]([SubResource("ph0"), SubResource("ph1"), SubResource("ph2")])
+id = &"boss_rune_core"
+texture = ExtResource("tex")
+movement = ExtResource("mv")
+ult_feather_texture = ExtResource("orb")
+ult_missile_data = ExtResource("msl")
+ult_kinds = Array[StringName]([&"eye_laser", &"timebomb", &"missile"])
+ult_first_delay = 6.0
+ult_interval = 9.0
+ult_damage = 4
+ult_color = Color(0.4, 1, 0.35, 1)
+ult_origin = Vector2(0, -3)
+ult_eye_offset = Vector2(0, -3)
+ult_eye_width = 50.0
+ult_eye_sweep_deg = 40.0
+ult_missile_points = PackedVector2Array(-158, 35, 160, 35, -145, -68, 146, -68)
+ult_missile_count = 6
+ult_bomb_count = 3
+bank_amount = 0.25
+thruster_offsets = PackedVector2Array(-40, -215, 40, -215)
+thruster_color = Color(0.4, 0.9, 1, 1)
+thruster_width = 22.0
+thruster_length = 36.0
+flight_ref_speed = 110.0
+max_hp = 1400
+hit_radius = 200.0
+weak_offset = Vector2(0, -3)
+weak_radius = 32.0
+extra_weak_offsets = PackedVector2Array(160, 35, -158, 35, 146, -68, -145, -68)
+score = 50000
+explosion_scale = 5.0
+bullet_damage = 3
+contact_damage = 3

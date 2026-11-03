@@ -100,6 +100,8 @@ func _physics_process(delta: float) -> void:
 		if flip_x:
 			off.x = -off.x
 		position = spawn_pos + off
+	if data.spin != 0.0:
+		sprite.rotation += data.spin * delta * (-1.0 if flip_x else 1.0)
 	var on := is_on_screen()
 	if on:
 		_was_on_screen = true
@@ -170,8 +172,24 @@ func _on_died() -> void:
 	Events.enemy_killed.emit(data, global_position)
 	_try_drop()
 	if data.death_spawn:
-		_spawn_on_death.call_deferred(data.death_spawn, global_position, get_parent())
+		if data.death_spawn_count > 1:
+			_split_on_death.call_deferred(data.death_spawn, data.death_spawn_count, global_position, get_parent())
+		else:
+			_spawn_on_death.call_deferred(data.death_spawn, global_position, get_parent())
+	if data.ground and not data.death_decals.is_empty():
+		GroundDecal.spawn(data.death_decals.pick_random(), global_position, get_parent())
 	queue_free()
+
+
+## 碎裂：生出 count 個碎片，左右交替散開
+static func _split_on_death(d: EnemyData, count: int, pos: Vector2, parent: Node) -> void:
+	if parent == null or not is_instance_valid(parent):
+		return
+	for i in count:
+		var e := (load("res://src/entities/enemies/enemy.tscn") as PackedScene).instantiate() as Enemy
+		var side := -1.0 if i % 2 == 0 else 1.0
+		e.setup(d, pos + Vector2(side * (12.0 + 10.0 * i), randf_range(-12.0, 12.0)), null, side < 0.0)
+		parent.add_child(e)
 
 
 ## 在 parent 底下生出一隻敵機（危險物也用這個）
@@ -259,6 +277,11 @@ func _explode(by_player: bool) -> void:
 	var p := Player.instance
 	if p and p.alive and at.distance_to(p.global_position) < data.blast_radius:
 		p.take_hit(data.blast_damage)
+	if data.blast_ring > 0 and BulletPool.instance and not by_player:
+		var tex := load("res://assets/sprites/bullets/enemy_orb.png") as Texture2D
+		for i in data.blast_ring:
+			var dir := Vector2.DOWN.rotated(TAU * i / data.blast_ring + age)
+			BulletPool.instance.spawn(at, dir * 210.0, tex, 7.0, 2, false)
 	if by_player:
 		for node in get_tree().get_nodes_in_group(&"enemies"):
 			var e := node as Enemy
@@ -280,7 +303,7 @@ func _ground_process(delta: float) -> void:
 	if data.aim_rotate:
 		var p := Player.instance
 		if p and p.alive:
-			var want := (p.global_position - global_position).angle() + PI / 2.0
+			var want := (p.global_position - global_position).angle() + PI / 2.0 - deg_to_rad(data.aim_offset_deg)
 			sprite.rotation = lerp_angle(sprite.rotation, want, minf(1.0, 4.0 * delta))
 	else:
-		sprite.rotation += delta * 0.4
+		sprite.rotation += delta * data.ground_spin

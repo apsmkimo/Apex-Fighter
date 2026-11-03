@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/quad_cannon.png" id="tex"]
+[ext_resource type="Resource" path="res://data/patterns/p10_needle.tres" id="pat"]
+[ext_resource type="Texture2D" path="res://assets/sprites/decals/crater_0.png" id="cr0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/decals/crater_1.png" id="cr1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/decals/crater_2.png" id="cr2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/decals/crater_3.png" id="cr3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/decals/crater_4.png" id="cr4"]
+[ext_resource type="Script" path="res://src/entities/items/item_data.gd" id="itm"]
+[ext_resource type="Resource" path="res://data/items/missile.tres" id="i_mis"]
+[ext_resource type="Resource" path="res://data/items/shield.tres" id="i_sh"]
+[ext_resource type="Resource" path="res://data/items/special.tres" id="i_sp"]
+[ext_resource type="Resource" path="res://data/items/power.tres" id="i_pw"]
+[ext_resource type="Resource" path="res://data/items/weapon_laser.tres" id="i_wl"]
+[ext_resource type="Resource" path="res://data/items/bomb.tres" id="i_bm"]
+
+[resource]
+script = ExtResource("scr")
+id = &"quad_cannon"
+texture = ExtResource("tex")
+ground = true
+aim_offset_deg = 45.0
+max_hp = 22
+hit_radius = 50.0
+score = 500
+explosion_scale = 1.5
+bullet_pattern = ExtResource("pat")
+fire_interval = 1.7
+first_fire_delay = 1.0
+contact_damage = 0
+death_decals = Array[Texture2D]([ExtResource("cr0"), ExtResource("cr1"), ExtResource("cr2"), ExtResource("cr3"), ExtResource("cr4")])
+drop_chance = 0.12
+bonus_chance = 0.15
+drop_item = ExtResource("i_pw")
+bonus_pool = Array[ExtResource("itm")]([ExtResource("i_mis"), ExtResource("i_sh"), ExtResource("i_sp"), ExtResource("i_wl")])

@@ -4,25 +4,26 @@ extends Control
 ## 已解鎖的航段有流動的能量脈衝；未解鎖的節點是暗色加鎖。上下拖曳捲動，點節點出擊。
 ## 全部用程式繪製（霓虹科技風），沒有用到任何外部圖。
 
-const MAP_H := 3470.0
-const SLOT_COUNT := 9
+const MAP_H := 3810.0
+const SLOT_COUNT := 10
 const NODE_R := 46.0
 const STEP_Y := 340.0
 const BOTTOM_PAD := 470.0
 const TAP_SLOP := 18.0
 
-const SECTOR_NAMES := ["NEBULA GATE", "CRIMSON RIFT", "VOID ABYSS", "SOLAR FORGE", "IRON HALO", "OMEGA CORE", "SCARLET VEIL", "AZURE SPIRAL", "MAGMA WORLD"]
+const SECTOR_NAMES := ["NEBULA GATE", "CRIMSON RIFT", "VOID ABYSS", "SOLAR FORGE", "IRON HALO", "OMEGA CORE", "SCARLET VEIL", "AZURE SPIRAL", "MAGMA WORLD", "ASTEROID BELT"]
 const SECTOR_COLORS := [
 	Color(0.3, 0.9, 1.0), Color(1.0, 0.3, 0.35), Color(0.7, 0.35, 1.0),
 	Color(1.0, 0.7, 0.25), Color(0.5, 1.0, 0.6), Color(1.0, 0.35, 0.85),
-	Color(1.0, 0.4, 0.3), Color(0.35, 0.7, 1.0), Color(1.0, 0.5, 0.2)]
+	Color(1.0, 0.4, 0.3), Color(0.35, 0.7, 1.0), Color(1.0, 0.5, 0.2),
+	Color(0.45, 1.0, 0.35)]
 ## 每個關卡選項後面的背景圖：1/4/7 星雲、2/5/8 星系、3/6/9 星球（使用者 2026-11-03 提供）
 const SECTOR_BG := [
 	preload("res://assets/sprites/map/bg_0_nebula.png"), preload("res://assets/sprites/map/bg_1_galaxy.png"),
 	preload("res://assets/sprites/map/bg_2_planet.png"), preload("res://assets/sprites/map/bg_3_nebula.png"),
 	preload("res://assets/sprites/map/bg_4_galaxy.png"), preload("res://assets/sprites/map/bg_5_planet.png"),
 	preload("res://assets/sprites/map/bg_6_nebula.png"), preload("res://assets/sprites/map/bg_7_galaxy.png"),
-	preload("res://assets/sprites/map/bg_8_planet.png")]
+	preload("res://assets/sprites/map/bg_8_planet.png"), preload("res://assets/sprites/map/bg_9_asteroid.png")]
 
 var _scroll := 0.0
 var _t := 0.0

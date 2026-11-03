@@ -35,6 +35,8 @@ var _speed_k := 1.0
 var _terrain: Texture2D
 var _terrain_tint := Color.WHITE
 var _terrain_y := 0.0
+var _decor_tex: Array[Texture2D] = []
+var _decor: Array = []   # [貼圖, 位置, 角度, 自轉, 大小, 速度倍率]
 var top_color := COL_TOP
 var bottom_color := COL_BOTTOM
 
@@ -54,6 +56,7 @@ func setup(stage: StageData) -> void:
 	scroll_speed = stage.scroll_speed
 	_terrain = stage.terrain
 	_terrain_tint = stage.terrain_tint
+	_decor_tex = stage.float_decor
 	ground_speed = scroll_speed
 	# 關卡顏色只當成色調，和霓虹配色混合，保留每關的個性
 	top_color = COL_TOP.lerp(stage.bg_top_color, 0.25)
@@ -95,6 +98,8 @@ func _process(delta: float) -> void:
 	_speed_k = move_toward(_speed_k, 0.0 if halted else 1.0, delta * 1.2)
 	ground_speed = scroll_speed * _speed_k
 	_terrain_y += ground_speed * delta
+	if not _decor_tex.is_empty():
+		_update_decor(delta)
 	var scroll_speed := self.scroll_speed * maxf(_speed_k, 0.15)
 	# 星星
 	for li in STAR_LAYERS.size():
@@ -185,6 +190,26 @@ func _draw_terrain() -> void:
 		y += th
 	# 上下暗角，讓子彈與敵機更清楚
 	draw_rect(Rect2(Vector2.ZERO, _size), Color(0.0, 0.02, 0.05, 0.28))
+	for d in _decor:
+		var tex: Texture2D = d[0]
+		var sz: Vector2 = tex.get_size() * float(d[4])
+		draw_set_transform(d[1], d[2], Vector2.ONE)
+		draw_texture_rect(tex, Rect2(-sz * 0.5, sz), false, Color(0.55, 0.55, 0.6, 0.85))
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+## 飄浮隕石：最多 7 顆，從上方進來、往下飄、邊轉邊走
+func _update_decor(delta: float) -> void:
+	for i in range(_decor.size() - 1, -1, -1):
+		var d: Array = _decor[i]
+		d[1] += Vector2(0, scroll_speed * float(d[5]) * maxf(_speed_k, 0.25) * delta)
+		d[2] += float(d[3]) * delta
+		if (d[1] as Vector2).y > _size.y + 120.0:
+			_decor.remove_at(i)
+	if _decor.size() < 7 and randf() < delta * 1.2:
+		var k := randf_range(0.35, 0.9)
+		_decor.append([_decor_tex.pick_random(), Vector2(randf() * _size.x, -100.0), randf() * TAU,
+				randf_range(-0.6, 0.6), k, 1.3 + k])
 
 
 ## 發光層（加亮混合）：星雲、近景星、光塵、流星

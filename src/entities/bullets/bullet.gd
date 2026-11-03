@@ -21,6 +21,12 @@ var _retarget := 0.0
 ## 爆裂彈
 var splash_radius := 0.0
 var splash_damage := 0
+## 敵方分裂彈：飛行 split_time 秒後裂成 split_count 顆扇形小彈
+var split_time := 0.0
+var split_count := 0
+var split_spread := 70.0
+var split_tex: Texture2D
+var _age := 0.0
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var shape: CollisionShape2D = $CollisionShape2D
@@ -56,6 +62,9 @@ func activate(pos: Vector2, vel: Vector2, tex: Texture2D, radius: float, dmg: in
 	_retarget = 0.0
 	splash_radius = 0.0
 	splash_damage = 0
+	split_time = 0.0
+	split_count = 0
+	_age = 0.0
 	_hit_ids.clear()
 	sprite.texture = tex
 	sprite.rotation = vel.angle() + PI / 2.0  # 圖片朝上
@@ -96,6 +105,11 @@ func _physics_process(delta: float) -> void:
 	if homing > 0.0:
 		_steer(delta)
 	position += velocity * delta
+	if split_count > 0:
+		_age += delta
+		if _age >= split_time:
+			_split()
+			return
 	if not get_viewport_rect().grow(SCREEN_MARGIN).has_point(global_position):
 		release()
 
@@ -152,3 +166,18 @@ func _splash(hit: Enemy) -> void:
 			continue
 		if e.global_position.distance_to(global_position) <= splash_radius + e.aim_radius():
 			e.take_damage(splash_damage)
+
+
+func _split() -> void:
+	var n := split_count
+	var tex := split_tex
+	var spd := velocity.length() * 1.1
+	var dir := velocity.normalized()
+	var at := global_position
+	var dmg := damage
+	split_count = 0
+	release()
+	if NeonFx.instance:
+		NeonFx.instance.impact(at, Color(0.5, 1.0, 0.4))
+	for d in BulletPattern.fan(dir, n, split_spread):
+		BulletPool.instance.spawn(at, d * spd, tex, 6.0, dmg, false)

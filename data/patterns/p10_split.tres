@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="SplitPattern" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/patterns/bullet/split_pattern.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/enemy_split_missile.png" id="tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/enemy_needle.png" id="ntex"]
+
+[resource]
+script = ExtResource("scr")
+count = 1
+spread_deg = 0.0
+split_time = 0.8
+split_count = 6
+split_spread = 80.0
+split_texture = ExtResource("ntex")
+bullet_texture = ExtResource("tex")
+bullet_speed = 260.0
+bullet_radius = 10.0
+damage = 1
+burst_count = 1
+burst_interval = 0.12

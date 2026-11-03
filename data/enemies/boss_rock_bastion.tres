@@ -1,0 +1,70 @@
+[gd_resource type="Resource" script_class="BossData" load_steps=19 format=3]
+
+[ext_resource type="Script" path="res://src/entities/bosses/boss_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_rock_bastion.png" id="tex"]
+[ext_resource type="Script" path="res://src/entities/bosses/boss_phase.gd" id="ph"]
+[ext_resource type="Script" path="res://src/patterns/bullet/bullet_pattern.gd" id="bp"]
+[ext_resource type="Resource" path="res://data/patterns/move_boss_hover.tres" id="mv"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/mid_boss.wav" id="bgm"]
+[ext_resource type="Resource" path="res://data/enemies/boss_spike_missile.tres" id="msl"]
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/enemy_orb.png" id="orb"]
+[ext_resource type="Resource" path="res://data/patterns/p10_lance.tres" id="p_p10_lance"]
+[ext_resource type="Resource" path="res://data/patterns/p10_needle.tres" id="p_p10_needle"]
+[ext_resource type="Resource" path="res://data/patterns/p10_ring_lance.tres" id="p_p10_ring_lance"]
+[ext_resource type="Resource" path="res://data/patterns/p10_rocket.tres" id="p_p10_rocket"]
+[ext_resource type="Resource" path="res://data/patterns/p10_rocket_fan.tres" id="p_p10_rocket_fan"]
+[ext_resource type="Resource" path="res://data/patterns/p10_split.tres" id="p_p10_split"]
+[ext_resource type="Resource" path="res://data/patterns/spiral_6.tres" id="p_spiral_6"]
+
+[sub_resource type="Resource" id="ph0"]
+script = ExtResource("ph")
+hp_ratio_end = 0.6
+patterns = Array[ExtResource("bp")]([ExtResource("p_p10_needle"), ExtResource("p_p10_rocket")])
+intervals = PackedFloat32Array(1.1, 1.8)
+
+[sub_resource type="Resource" id="ph1"]
+script = ExtResource("ph")
+hp_ratio_end = 0.25
+patterns = Array[ExtResource("bp")]([ExtResource("p_p10_split"), ExtResource("p_spiral_6")])
+intervals = PackedFloat32Array(1.6, 0.2)
+
+[sub_resource type="Resource" id="ph2"]
+script = ExtResource("ph")
+hp_ratio_end = 0.0
+patterns = Array[ExtResource("bp")]([ExtResource("p_p10_ring_lance"), ExtResource("p_p10_lance"), ExtResource("p_p10_rocket_fan")])
+intervals = PackedFloat32Array(0.8, 1.2, 2.0)
+
+[resource]
+script = ExtResource("scr")
+boss_name = "ROCK BASTION"
+bgm = ExtResource("bgm")
+entry_time = 3.0
+phases = Array[ExtResource("ph")]([SubResource("ph0"), SubResource("ph1"), SubResource("ph2")])
+id = &"boss_rock_bastion"
+texture = ExtResource("tex")
+movement = ExtResource("mv")
+ult_feather_texture = ExtResource("orb")
+ult_missile_data = ExtResource("msl")
+ult_kinds = Array[StringName]([&"missile", &"nova"])
+ult_first_delay = 7.0
+ult_interval = 10.0
+ult_damage = 4
+ult_color = Color(1, 0.3, 0.25, 1)
+ult_origin = Vector2(0, -7)
+ult_missile_points = PackedVector2Array(-78, 117, 79, 117, -104, -9, 105, -9)
+ult_missile_count = 6
+bank_amount = 0.3
+thruster_offsets = PackedVector2Array(0, -172, 52, -173, -51, -173)
+thruster_color = Color(0.4, 1, 0.4, 1)
+thruster_width = 20.0
+thruster_length = 34.0
+flight_ref_speed = 110.0
+max_hp = 900
+hit_radius = 170.0
+weak_offset = Vector2(0, -7)
+weak_radius = 28.0
+extra_weak_offsets = PackedVector2Array(-78, 117, 79, 117, 105, -9, -104, -9, 75, -68, -73, -69)
+score = 30000
+explosion_scale = 4.0
+bullet_damage = 3
+contact_damage = 3

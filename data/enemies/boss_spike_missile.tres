@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/boss_spike_missile.png" id="tex"]
+
+[resource]
+script = ExtResource("scr")
+id = &"boss_spike_missile"
+texture = ExtResource("tex")
+max_hp = 4
+hit_radius = 24.0
+score = 80
+explosion_scale = 1.2
+weak_offset = Vector2(12, 0)
+weak_radius = 16.0
+hazard_kind = &"missile"
+blast_radius = 80.0
+blast_damage = 4
+blast_enemy_damage = 10
+home_speed = 260.0
+home_turn = 1.7
+home_life = 6.5
+bullet_damage = 0
+contact_damage = 0

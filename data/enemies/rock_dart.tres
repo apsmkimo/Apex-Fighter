@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/rock_dart.png" id="tex"]
+[ext_resource type="Resource" path="res://data/patterns/move_sine.tres" id="mv"]
+[ext_resource type="Resource" path="res://data/patterns/p10_needle_single.tres" id="pat"]
+
+[resource]
+script = ExtResource("scr")
+id = &"rock_dart"
+texture = ExtResource("tex")
+max_hp = 3
+hit_radius = 18.0
+score = 120
+explosion_scale = 0.8
+movement = ExtResource("mv")
+bullet_pattern = ExtResource("pat")
+fire_interval = 1.8
+first_fire_delay = 0.6
+thruster_offsets = PackedVector2Array(0, -36)
+thruster_color = Color(0.4, 1, 0.4, 1)
+thruster_width = 8.0
+thruster_length = 18.0

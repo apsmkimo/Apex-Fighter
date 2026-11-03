@@ -13,6 +13,8 @@ extends Resource
 ## 星球關卡的地表圖（往下捲動，上下鏡像接起來）。留空 = 太空背景
 @export var terrain: Texture2D
 @export var terrain_tint := Color(0.8, 0.8, 0.8)
+## 地表上方飄過的裝飾（例如隕石），比地表捲得快，做出視差；碰不到
+@export var float_decor: Array[Texture2D] = []
 
 @export_group("Difficulty")
 ## 整關敵人（含 Boss）血量倍率，後面的關卡越硬
