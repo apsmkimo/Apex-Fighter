@@ -94,6 +94,8 @@ extends EnemyData
 @export var ult_debris_count := 22
 @export var ult_debris_time := 3.6
 @export var ult_debris_charge := 1.8
+## 從 Boss 身上掉落的外緣半徑
+@export var ult_debris_edge := 240.0
 
 @export_group("Look")
 ## 弱點標記顏色（透明 = 用 ult_color）

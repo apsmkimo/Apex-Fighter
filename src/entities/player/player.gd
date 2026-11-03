@@ -51,6 +51,8 @@ func _exit_tree() -> void:
 
 
 func _ready() -> void:
+	# 圖層：玩家與自己的武器畫在 Boss（z 3）上面
+	z_index = 4
 	sprite.texture = ship.texture
 	var hurt := CircleShape2D.new()
 	hurt.radius = ship.hitbox_radius

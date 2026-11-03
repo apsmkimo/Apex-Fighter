@@ -33,7 +33,7 @@ func _ready() -> void:
 	shape.shape = c
 	add_child(shape)
 	area_entered.connect(_on_area_entered)
-	z_index = 1
+	z_index = 4   # 玩家導彈畫在 Boss 上面
 
 
 func _physics_process(delta: float) -> void:

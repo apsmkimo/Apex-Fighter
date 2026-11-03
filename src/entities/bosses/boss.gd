@@ -11,6 +11,8 @@ var ultimate: BossUltimate
 
 func _ready() -> void:
 	super._ready()
+	# 圖層：Boss 蓋在敵彈、飛彈、小怪上面，子彈看起來從 Boss 底下飛出（玩家 z 4 仍在最上）
+	z_index = 3
 	Events.boss_spawned.emit(self)
 	health.damaged.connect(_on_damaged)
 	if boss_data().ult_enabled:

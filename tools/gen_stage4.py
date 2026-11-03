@@ -30,8 +30,8 @@ pat('p4_red_aim','AimedPattern',AP,'enemy_laser_red',480.0,6.0,3,0.1,[('count',5
 # ---------- 移動 ----------
 res('data/patterns/move_sat_drift.tres','MoveStraight',MS,[('velocity','Vector2(22, 105)')])
 res('data/patterns/move_sat_drift_slow.tres','MoveStraight',MS,[('velocity','Vector2(-12, 80)')])
-res('data/patterns/move_sat_fall.tres','MoveStraight',MS,[('velocity','Vector2(70, 430)')])
-res('data/patterns/move_sat_fall_fast.tres','MoveStraight',MS,[('velocity','Vector2(-40, 520)')])
+res('data/patterns/move_sat_fall.tres','MoveStraight',MS,[('velocity','Vector2(90, 620)')])
+res('data/patterns/move_sat_fall_fast.tres','MoveStraight',MS,[('velocity','Vector2(-60, 750)')])
 res('data/patterns/move_titan_hover.tres','MoveHover',MH,[('stop_distance',530.0),('enter_time',3.0),('amplitude',85.0),('period',8.0),('y_amplitude',30.0),('y_speed',0.7)])
 res('data/patterns/move_reaper_hover.tres','MoveHover',MH,[('stop_distance',420.0),('enter_time',3.0),('amplitude',160.0),('period',6.0),('y_amplitude',60.0),('y_speed',0.9)])
 
@@ -104,7 +104,7 @@ boss('boss_scrap_titan','boss_scrap_titan','SCRAP TITAN','boss','move_titan_hove
     [(0.65,['p4_red_aim','p4_sat_laser3'],[1.4,0.9]),(0.3,['spiral_6','p4_rocket_fan','p4_lance3'],[0.2,2.2,1.2]),(0.0,['p4_red_ring','p4_red_aim','p4_sat_laser','p4_rocket_fan'],[0.7,1.1,0.8,2.4])],
     [('ult_kinds','Array[StringName]([&"beam", &"debris"])'),('ult_first_delay',6.0),('ult_interval',9.0),('ult_damage',4),('ult_color','Color(1, 0.2, 0.2, 1)'),
      ('ult_origin','Vector2(0, 280)'),('ult_width',190.0),('ult_charge_time',2.4),('ult_fire_time',1.8),
-     ('ult_debris','Array[ExtResource("eds")]([%s])'%', '.join(E(f'r{i}') for i in range(4))),('ult_debris_count',24),('ult_debris_time',3.6),('ult_debris_charge',1.8),
+     ('ult_debris','Array[ExtResource("eds")]([%s])'%', '.join(E(f'r{i}') for i in range(4))),('ult_debris_count',40),('ult_debris_time',3.6),('ult_debris_charge',2.1),('ult_debris_edge',250.0),
      ('weak_color',GREEN),('max_hp',1200),('hit_radius',260.0),('weak_offset','Vector2(-2, -41)'),('weak_radius',46.0),('score',50000),('explosion_scale',5.5),
      ('bullet_damage',3),('contact_damage',3)],RAIN)
 

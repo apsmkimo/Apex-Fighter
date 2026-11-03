@@ -56,6 +56,8 @@ func activate(pos: Vector2, vel: Vector2, tex: Texture2D, radius: float, dmg: in
 	velocity = vel
 	damage = dmg
 	is_player_bullet = player_owned
+	# 圖層：玩家子彈在 Boss 上面；敵彈在 Boss 下面（看起來從 Boss 底下射出）
+	z_index = 4 if player_owned else 0
 	pierce = false
 	homing = 0.0
 	_target = null

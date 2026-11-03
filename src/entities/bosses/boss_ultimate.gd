@@ -47,6 +47,9 @@ var _spin_back := false
 # 報廢衛星雨
 var _debris_left := 0
 var _debris_cd := 0.0
+var _debris_side := false
+# 出招前抖動：已觸發的抖動次數
+var _jolts_done := 0
 
 
 func setup(b: Boss) -> void:
@@ -95,11 +98,14 @@ func _physics_process(delta: float) -> void:
 			if _timer <= 0.0:
 				_start_charge()
 		State.CHARGE:
-			_update_particles(delta)
+			if kind != &"debris":
+				_update_particles(delta)
 			if kind == &"ram":
 				# 蓄力：越轉越快
 				boss.sprite.rotation += bd.ult_ram_spin * _charge_ratio() * delta
 				_spin_back = true
+			elif kind == &"debris":
+				_update_shake()
 			if _timer <= 0.0:
 				_start_fire()
 		State.FIRE:
@@ -164,6 +170,7 @@ func _start_charge() -> void:
 			_timer = bd.ult_ram_charge
 		&"debris":
 			_timer = bd.ult_debris_charge
+			_jolts_done = 0
 		_:
 			_timer = bd.ult_charge_time
 	_charge_total = _timer
@@ -215,6 +222,7 @@ func _start_fire() -> void:
 			_ram_hit_cd = 0.0
 			Events.screen_shake.emit(8.0, 0.3)
 		&"debris":
+			boss.sprite.position = Vector2.ZERO
 			_timer = bd.ult_debris_time + 0.4
 			_debris_left = bd.ult_debris_count
 			_debris_cd = 0.0
@@ -460,20 +468,76 @@ func _update_ram(delta: float) -> void:
 			Events.screen_shake.emit(12.0, 0.3)
 
 
-## 報廢衛星雨：在畫面上方隨機位置生出殘骸往下掉
+## 出招前抖動：一下比一下大力，每抖一下從身上掉碎屑與幾顆小衛星
+const JOLT_AT := [0.12, 0.42, 0.72]     # 佔蓄力時間的比例
+const JOLT_AMP := [6.0, 10.0, 16.0]
+const JOLT_LEN := 0.22                  # 佔蓄力時間的比例
+
+
+func _update_shake() -> void:
+	var k := _charge_ratio()
+	var off := Vector2.ZERO
+	for i in JOLT_AT.size():
+		var s: float = JOLT_AT[i]
+		if k >= s and k < s + JOLT_LEN:
+			var u := (k - s) / JOLT_LEN
+			var amp: float = JOLT_AMP[i] * (1.0 - u)
+			off = Vector2(sin(_t * 70.0) * amp, cos(_t * 53.0) * amp * 0.45)
+	boss.sprite.position = off
+	while _jolts_done < JOLT_AT.size() and k >= JOLT_AT[_jolts_done]:
+		_jolt(_jolts_done)
+		_jolts_done += 1
+
+
+func _jolt(i: int) -> void:
+	Events.screen_shake.emit(5.0 + i * 4.0, 0.25)
+	if NeonFx.instance:
+		for n in 10 + i * 6:
+			var p := _body_edge()
+			var v := Vector2((p.x - boss.global_position.x) * 0.6, randf_range(120.0, 320.0))
+			NeonFx.instance.emit(p, v, randf_range(0.5, 0.9), randf_range(3.0, 7.0), Color(0.9, 0.82, 0.6, 0.9))
+	for n in i + 1:
+		_spawn_debris(true)
+
+
+## Boss 外緣（下半部）隨機一點
+func _body_edge() -> Vector2:
+	var a := randf_range(0.1, PI - 0.1)
+	var r := bd.ult_debris_edge * randf_range(0.75, 1.0)
+	return boss.global_position + Vector2(cos(a) * r, sin(a) * r * 0.8 - 20.0)
+
+
+## 報廢衛星雨：一半從 Boss 身上掉出來（往外散開），一半從畫面上方落下
 func _update_debris(delta: float) -> void:
 	_debris_cd -= delta
 	if _debris_left <= 0 or _debris_cd > 0.0 or bd.ult_debris.is_empty():
 		return
 	_debris_cd = bd.ult_debris_time / maxf(1.0, float(bd.ult_debris_count))
 	_debris_left -= 1
+	_debris_side = not _debris_side
+	_spawn_debris(_debris_side)
+
+
+func _spawn_debris(from_body: bool) -> void:
+	if bd.ult_debris.is_empty():
+		return
 	var d: EnemyData = bd.ult_debris[randi() % bd.ult_debris.size()]
 	var size := get_viewport_rect().size
+	var pos := Vector2(randf_range(30.0, size.x - 30.0), -50.0 - randf() * 40.0)
+	var mirrored := randf() < 0.5
+	if from_body:
+		pos = _body_edge()
+		# 往外側散開：讓水平速度方向和所在的那一側相同
+		var vx := 1.0
+		if d.movement is MoveStraight:
+			vx = signf((d.movement as MoveStraight).velocity.x)
+		mirrored = signf(pos.x - boss.global_position.x) != vx
 	var e := (load("res://src/entities/enemies/enemy.tscn") as PackedScene).instantiate() as Enemy
-	e.setup(d, Vector2(randf_range(30.0, size.x - 30.0), -50.0 - randf() * 40.0), null, randf() < 0.5)
-	# 畫在 Boss 前面，掉落時看得清楚
-	e.z_index = 6
+	e.setup(d, pos, null, mirrored)
+	# 在 Boss 圖層下面（Boss z 3），看起來是從身體底下掉出來
 	boss.get_parent().add_child(e)
+	# 衛星雨不套用一般敵人的減速倍率，照資料的速度落下
+	e.move_time_scale = 1.0
 
 
 func _throw_bombs() -> void:

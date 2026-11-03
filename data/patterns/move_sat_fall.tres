@@ -4,4 +4,4 @@
 
 [resource]
 script = ExtResource("scr")
-velocity = Vector2(70, 430)
+velocity = Vector2(90, 620)
