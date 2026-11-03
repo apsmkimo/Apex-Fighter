@@ -12,6 +12,10 @@ var _time := 0.0
 var _target: Node
 var running := false
 var done := false
+## 砲台封鎖中：時間表暫停，地圖暫停捲動
+var holding := false
+signal hold_started
+var _gate: Array[Enemy] = []
 
 
 func start(stage: StageData, target: Node) -> void:
@@ -39,6 +43,18 @@ func start_waves(waves: Array[WaveData], target: Node) -> void:
 func _physics_process(delta: float) -> void:
 	if not running or done:
 		return
+	_gate = _gate.filter(func(e: Enemy) -> bool: return is_instance_valid(e) and not e.health.dead)
+	var was := holding
+	holding = false
+	for e in _gate:
+		if e.ground_stopped:
+			holding = true
+	if holding and not was:
+		hold_started.emit()
+	if not _gate.is_empty():
+		# 封鎖砲台還沒全滅：不往下排程
+		if holding:
+			return
 	_time += delta
 	while not _queue.is_empty() and _queue[0].t <= _time:
 		_spawn(_queue.pop_front())
@@ -53,4 +69,8 @@ func _spawn(entry: Dictionary) -> void:
 	var pos := Vector2(clampf(entry.x, 0.0, 1.0) * width, SPAWN_Y)
 	var enemy := ENEMY_SCENE.instantiate() as Enemy
 	enemy.setup(wave.enemy, pos, wave.movement_override, entry.flip)
+	if wave.hold:
+		var h := _target.get_viewport().get_visible_rect().size.y
+		enemy.ground_stop_y = h * (0.22 + 0.06 * float(_gate.size() % 2))
+		_gate.append(enemy)
 	_target.add_child(enemy)

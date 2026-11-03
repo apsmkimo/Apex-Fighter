@@ -164,7 +164,7 @@ func _on_hurt(area: Area2D) -> void:
 		var b := area as Bullet
 		b.release()
 		take_hit(b.damage)
-	elif area is Enemy and not (area as Enemy).is_hazard():
+	elif area is Enemy and not (area as Enemy).is_hazard() and not (area as Enemy).data.ground:
 		take_hit((area as Enemy).data.contact_damage)
 
 

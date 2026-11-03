@@ -21,6 +21,9 @@ var _shake_cd := 0.0
 var velocity := Vector2.ZERO
 var _hazard_done := false
 var _drop_cd := 0.0
+## 地面砲台：停在這個高度（INF = 一路跟著地表捲走）
+var ground_stop_y := INF
+var ground_stopped := false
 ## 血量達到這個值以上的敵機，被打中時畫面會輕微震動
 const BIG_ENEMY_HP := 30
 
@@ -63,6 +66,8 @@ func _ready() -> void:
 	var base_hp := diff.scale_hp(data.max_hp) if diff else data.max_hp
 	var defense := 1.0 if self is Boss else GameManager.ENEMY_DEFENSE_MULT
 	health.setup(int(round(base_hp * GameManager.enemy_hp_mult * defense)))
+	if data.ground:
+		z_index = -5
 	if not self is Boss:
 		move_time_scale = GameManager.ENEMY_MOVE_TIME_SCALE
 	health.died.connect(_on_died)
@@ -88,7 +93,9 @@ func _physics_process(delta: float) -> void:
 			var h := spawn_enemy(data.drop_hazard, global_position + Vector2(0, 30), get_parent())
 			if h:
 				h.velocity = Vector2(randf_range(-40.0, 40.0), 110.0)
-	if movement:
+	if data.ground:
+		_ground_process(delta)
+	elif movement:
 		var off := movement.offset_at(age * move_time_scale)
 		if flip_x:
 			off.x = -off.x
@@ -260,3 +267,20 @@ func _explode(by_player: bool) -> void:
 			if e.global_position.distance_to(at) < data.blast_radius + e.data.hit_radius:
 				e.take_damage(data.blast_enemy_damage)
 	queue_free()
+
+
+# ---------- 地面砲台 ----------
+
+func _ground_process(delta: float) -> void:
+	if not ground_stopped:
+		position.y += ScrollBackground.ground_speed * delta
+		if position.y >= ground_stop_y:
+			position.y = ground_stop_y
+			ground_stopped = true
+	if data.aim_rotate:
+		var p := Player.instance
+		if p and p.alive:
+			var want := (p.global_position - global_position).angle() + PI / 2.0
+			sprite.rotation = lerp_angle(sprite.rotation, want, minf(1.0, 4.0 * delta))
+	else:
+		sprite.rotation += delta * 0.4

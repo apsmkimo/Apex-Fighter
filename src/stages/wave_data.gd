@@ -16,3 +16,5 @@ extends Resource
 @export var movement_override: MovePattern
 ## 同時在左右對稱的位置再生一隻（移動也左右相反）
 @export var mirror := false
+## 砲台封鎖：這波的地面砲台停在畫面上方，地圖暫停捲動，全部打掉才會繼續前進
+@export var hold := false

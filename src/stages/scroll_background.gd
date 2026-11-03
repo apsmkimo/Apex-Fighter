@@ -28,6 +28,13 @@ const COL_BOTTOM := Color(0.02, 0.05, 0.15)
 const STAR_TINTS := [Color(0.75, 0.9, 1.0), Color(0.3, 0.9, 1.0), Color(1.0, 0.35, 0.85), Color(1.0, 0.75, 0.3), Color(0.55, 0.6, 1.0)]
 
 var scroll_speed := 160.0
+## 目前地表捲動速度（地面砲台跟著它移動；砲台封鎖時降到 0）
+static var ground_speed := 160.0
+var halted := false
+var _speed_k := 1.0
+var _terrain: Texture2D
+var _terrain_tint := Color.WHITE
+var _terrain_y := 0.0
 var top_color := COL_TOP
 var bottom_color := COL_BOTTOM
 
@@ -45,6 +52,9 @@ var _glow_layer: GlowLayer
 
 func setup(stage: StageData) -> void:
 	scroll_speed = stage.scroll_speed
+	_terrain = stage.terrain
+	_terrain_tint = stage.terrain_tint
+	ground_speed = scroll_speed
 	# 關卡顏色只當成色調，和霓虹配色混合，保留每關的個性
 	top_color = COL_TOP.lerp(stage.bg_top_color, 0.25)
 	bottom_color = COL_BOTTOM.lerp(stage.bg_bottom_color, 0.25)
@@ -81,6 +91,11 @@ func _process(delta: float) -> void:
 	_t += delta
 	_size = get_viewport_rect().size
 	var h := _size.y
+	# 封鎖時平滑停下，解除後再加速
+	_speed_k = move_toward(_speed_k, 0.0 if halted else 1.0, delta * 1.2)
+	ground_speed = scroll_speed * _speed_k
+	_terrain_y += ground_speed * delta
+	var scroll_speed := self.scroll_speed * maxf(_speed_k, 0.15)
 	# 星星
 	for li in STAR_LAYERS.size():
 		var pts := _stars[li]
@@ -135,6 +150,9 @@ func _spawn_meteor() -> void:
 ## 底層：漸層、掃描光帶、遠景星點（一般混合）
 func _draw() -> void:
 	var s := _size
+	if _terrain:
+		_draw_terrain()
+		return
 	draw_polygon(
 		PackedVector2Array([Vector2(-20, -20), Vector2(s.x + 20, -20), s + Vector2(20, 20), Vector2(-20, s.y + 20)]),
 		PackedColorArray([top_color, top_color, bottom_color, bottom_color]))
@@ -155,6 +173,20 @@ func _draw() -> void:
 			draw_rect(Rect2(pts[i].x, pts[i].y, sz, sz), c)
 
 
+## 星球地表：寬度貼齊畫面，往下循環捲動
+func _draw_terrain() -> void:
+	# 地表圖本身已經上下鏡像接好（無縫循環）
+	var ts := _terrain.get_size()
+	var w := _size.x
+	var th := ts.y * (w / ts.x)
+	var y := fmod(_terrain_y, th) - th
+	while y < _size.y:
+		draw_texture_rect(_terrain, Rect2(0, y, w, th), false, _terrain_tint)
+		y += th
+	# 上下暗角，讓子彈與敵機更清楚
+	draw_rect(Rect2(Vector2.ZERO, _size), Color(0.0, 0.02, 0.05, 0.28))
+
+
 ## 發光層（加亮混合）：星雲、近景星、光塵、流星
 class GlowLayer extends Node2D:
 	var bg: ScrollBackground
@@ -169,6 +201,11 @@ class GlowLayer extends Node2D:
 			return
 		var tex := NeonFx.get_glow_tex()
 		var t := bg._t
+		if bg._terrain:
+			# 地表關卡：只留高速光塵
+			for p in bg._dust:
+				draw_line(p, p - Vector2(0, 26), Color(0.7, 0.9, 1.0, 0.12), 1.5)
+			return
 		# 星雲：同一張光點貼圖放大，疊兩次做出不規則形狀
 		for n in bg._nebulae:
 			var p: Vector2 = n[0]

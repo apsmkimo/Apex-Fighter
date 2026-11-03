@@ -50,10 +50,13 @@ func _ready() -> void:
 	# SMCPKG_SUPPORT>>>CursorM9StageMusic
 	Events.music_requested.emit(&"stage")
 	# SMCPKG_SUPPORT<<<CursorM9StageMusicEnd
+	GameManager.enemy_hp_mult = data.hp_mult
+	spawner.hold_started.connect(func() -> void: hud.show_notice("TURRET BLOCKADE", "DESTROY ALL TURRETS TO ADVANCE", NeonDraw.AMBER))
 	spawner.start(data, enemies)
 
 
 func _physics_process(_delta: float) -> void:
+	background.halted = spawner.holding
 	if state == State.WAVES and spawner.done and get_tree().get_nodes_in_group(&"enemies").is_empty():
 		_start_boss_warning()
 
@@ -88,7 +91,7 @@ func _is_mid_boss_fight() -> bool:
 ## 打倒中階 Boss：清彈 → 提示 → 第二段波次（敵機血量加倍）
 func _start_final_phase() -> void:
 	_final_phase = true
-	GameManager.enemy_hp_mult = data.after_mid_hp_mult
+	GameManager.enemy_hp_mult = data.after_mid_hp_mult * data.hp_mult
 	if BulletPool.instance:
 		BulletPool.instance.clear_enemy_bullets()
 	Events.screen_shake.emit(16.0, 0.8)

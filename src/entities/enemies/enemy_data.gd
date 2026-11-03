@@ -27,6 +27,12 @@ extends Resource
 ## 額外的弱點位置（多個發光點，半徑同 weak_radius）
 @export var extra_weak_offsets: PackedVector2Array = PackedVector2Array()
 
+@export_group("Ground")
+## 地面單位（砲台）：跟著地表捲動，戰機撞不到，砲身會轉向戰機
+@export var ground := false
+## 砲身是否轉向戰機（圖的砲口朝上）
+@export var aim_rotate := true
+
 @export_group("Hazard")
 ## 非空 = 太空危險物：mine（水雷）或 missile（追蹤飛彈）。不開火，靠爆炸傷人
 @export var hazard_kind: StringName = &""

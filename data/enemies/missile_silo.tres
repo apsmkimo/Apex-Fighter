@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="1_ed"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/missile_silo.png" id="2_tex"]
+[ext_resource type="Resource" path="res://data/patterns/ring_12.tres" id="3_pat"]
+[ext_resource type="Resource" path="res://data/enemies/enemy_missile.tres" id="5_msl"]
+[ext_resource type="Script" path="res://src/entities/items/item_data.gd" id="b0_itm"]
+[ext_resource type="Resource" path="res://data/items/missile.tres" id="b_missile"]
+[ext_resource type="Resource" path="res://data/items/weapon_plasma.tres" id="b_weapon_plasma"]
+[ext_resource type="Resource" path="res://data/items/weapon_laser.tres" id="b_weapon_laser"]
+[ext_resource type="Resource" path="res://data/items/shield.tres" id="b_shield"]
+[ext_resource type="Resource" path="res://data/items/special.tres" id="b_special"]
+[ext_resource type="Resource" path="res://data/items/power.tres" id="b_power"]
+
+[resource]
+script = ExtResource("1_ed")
+id = &"missile_silo"
+texture = ExtResource("2_tex")
+bullet_pattern = ExtResource("3_pat")
+ground = true
+contact_damage = 0
+max_hp = 48
+hit_radius = 64.0
+score = 1200
+explosion_scale = 2.4
+fire_interval = 3.6
+first_fire_delay = 2.0
+aim_rotate = false
+drop_hazard = ExtResource("5_msl")
+drop_hazard_interval = 4.0
+drop_hazard_first = 1.5
+drop_item = ExtResource("b_power")
+drop_chance = 0.3
+bonus_pool = Array[ExtResource("b0_itm")]([ExtResource("b_weapon_plasma"), ExtResource("b_shield")])
+bonus_chance = 0.3
