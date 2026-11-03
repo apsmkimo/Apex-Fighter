@@ -27,6 +27,12 @@ const THROTTLE := {
 	&"power": 0.08,
 	&"player_hit": 0.08,
 	&"shield_block": 0.08,
+	&"enemy_shot_small": 0.09,
+	&"enemy_shot_medium": 0.12,
+	&"enemy_shot_heavy": 0.3,
+	&"asteroid_hit": 0.12,
+	&"turret_explode": 0.2,
+	&"shot_vulcan": 0.11,
 }
 const VOICE_LIMIT := {
 	&"enemy_hit": 3,
@@ -44,6 +50,14 @@ const VOICE_LIMIT := {
 	&"ultimate": 1,
 	&"power": 1,
 	&"shield": 1,
+	&"enemy_shot_small": 2,
+	&"enemy_shot_medium": 2,
+	&"enemy_shot_heavy": 1,
+	&"asteroid_hit": 2,
+	&"turret_explode": 2,
+	&"ult_mid_boss": 1,
+	&"ult_final_boss": 1,
+	&"shot_vulcan": 2,
 }
 
 var _linear := {"Master": 0.9, "BGM": 0.7, "SFX": 0.85}
@@ -239,6 +253,9 @@ func _connect_events() -> void:
 	Events.shield_blocked.connect(func(_at: Vector2) -> void: _play(&"shield_block", false))
 	Events.boss_phase_changed.connect(func(_i: int) -> void: _play(&"boss_phase", false))
 	Events.boss_ultimate.connect(_on_boss_ultimate)
+	Events.boss_spawned.connect(func(b: Node) -> void: _boss_is_mid = bool(b.get(&"is_mid")))
+	Events.enemy_fired.connect(func(sz: int) -> void:
+		_play([&"enemy_shot_small", &"enemy_shot_medium", &"enemy_shot_heavy"][clampi(sz, 0, 2)], false))
 	Events.stage_warning.connect(func(_t: String) -> void: _play(&"warning", false))
 	Events.ui_pressed.connect(func() -> void: _play(&"ui", true))
 	Events.ship_selected.connect(func() -> void: _play(&"ship_select", true))
@@ -292,7 +309,14 @@ func _on_enemy_killed(data: Resource, _at: Vector2) -> void:
 		return
 	var scale := 1.0
 	if data is EnemyData:
-		scale = (data as EnemyData).explosion_scale
+		var ed := data as EnemyData
+		scale = ed.explosion_scale
+		if String(ed.id).begins_with("asteroid"):
+			_play(&"asteroid_hit", false)
+			return
+		if ed.ground:
+			_play(&"turret_explode", false)
+			return
 	_play((&"explode_large" if scale >= 1.4 else &"explode_small"), false)
 
 
@@ -308,9 +332,15 @@ func _on_item_picked(item_type: int) -> void:
 			_play(&"item", false)
 
 
+var _boss_is_mid := false
+
+
+## 大絕招：蓄力時警示音，發射時中 Boss 雷射／最終 Boss 殲滅砲
 func _on_boss_ultimate(state: String) -> void:
 	if state == "charge":
 		_play(&"ultimate", false)
+	elif state == "fire":
+		_play(&"ult_mid_boss" if _boss_is_mid else &"ult_final_boss", false)
 
 
 func _play_context(context: StringName, fade: float) -> void:

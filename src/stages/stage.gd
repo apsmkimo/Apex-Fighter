@@ -74,6 +74,7 @@ func _start_boss_warning() -> void:
 	var bd := _current_boss_data()
 	var boss := BOSS_SCENE.instantiate() as Boss
 	boss.setup(bd, Vector2(get_viewport_rect().size.x / 2.0, -160.0))
+	boss.is_mid = _is_mid_boss_fight()
 	enemies.add_child(boss)
 
 

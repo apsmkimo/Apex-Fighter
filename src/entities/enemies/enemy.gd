@@ -75,6 +75,15 @@ func _ready() -> void:
 	emitter.configure(data.bullet_pattern, fire_iv, data.first_fire_delay)
 	emitter.enabled = false
 	emitter.bullet_damage = data.bullet_damage
+	# 開火音效：依敵人大小分小兵／中兵／大兵（Boss 用中兵聲，避免太吵）
+	if self is Boss:
+		emitter.sfx_size = 1
+	elif data.max_hp < 10:
+		emitter.sfx_size = 0
+	elif data.max_hp < 30 and data.explosion_scale < 1.7:
+		emitter.sfx_size = 1
+	else:
+		emitter.sfx_size = 2
 	if data.bank_amount > 0.0 or not data.thruster_offsets.is_empty():
 		# 敵機機頭朝下
 		FlightVisual.attach(self, sprite, Vector2.DOWN, data.bank_amount, data.flight_ref_speed,

@@ -2,6 +2,8 @@ class_name Boss
 extends Enemy
 ## Boss：多階段彈幕、進場無敵、血條、換階段清彈。
 
+## 中階 Boss（大絕招音效用）
+var is_mid := false
 var phase_index := -1
 var _phase_emitters: Array[BulletEmitter] = []
 var ultimate: BossUltimate
@@ -98,6 +100,8 @@ func _enter_phase(index: int) -> void:
 		e.configure(phase.patterns[i], iv, 0.6 + 0.2 * i)
 		e.enabled = false
 		e.bullet_damage = data.bullet_damage
+		# 只讓第一個彈幕出聲，避免 Boss 同時好幾組一起響
+		e.sfx_size = 1 if _phase_emitters.is_empty() else -1
 		add_child(e)
 		_phase_emitters.append(e)
 

@@ -14,6 +14,9 @@ var _burst_left := 0
 var _burst_timer := 0.0
 
 
+## 開火音效大小（-1 = 不出聲）
+var sfx_size := -1
+
 func configure(p: BulletPattern, fire_interval: float, first_delay: float) -> void:
 	pattern = p
 	interval = fire_interval
@@ -44,4 +47,6 @@ func _shoot() -> void:
 	if Player.instance and Player.instance.alive:
 		target = Player.instance.global_position
 	pattern.fire(global_position, target, _shot_index, bullet_damage)
+	if sfx_size >= 0:
+		Events.enemy_fired.emit(sfx_size)
 	_shot_index += 1

@@ -42,6 +42,8 @@ signal boss_hp_changed(ratio: float)
 signal boss_defeated
 ## Boss 大絕招：state = "charge" / "fire" / "end"
 signal boss_ultimate(state: String)
+## 敵機開火（音效用）：size 0 小兵、1 中兵、2 大兵／重砲
+signal enemy_fired(size: int)
 
 signal stage_warning(text: String)
 signal stage_cleared
