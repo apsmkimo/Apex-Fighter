@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="MuzzlePattern" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/patterns/bullet/muzzle_pattern.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/fx_laser_red.png" id="tex"]
+
+[resource]
+script = ExtResource("scr")
+muzzles = PackedVector2Array(-93, 5, 94, 5)
+aim = true
+bullet_texture = ExtResource("tex")
+bullet_speed = 400.0
+bullet_radius = 5.0
+damage = 1
+burst_count = 2
+burst_interval = 0.14

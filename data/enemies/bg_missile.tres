@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/bg_missile.png" id="tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/terrain/bg_lava_pit.png" id="pit"]
+
+[resource]
+script = ExtResource("scr")
+id = &"bg_missile"
+texture = ExtResource("tex")
+max_hp = 3
+hit_radius = 20.0
+score = 60
+explosion_scale = 0.9
+hazard_kind = &"missile"
+blast_radius = 80.0
+blast_damage = 2
+blast_enemy_damage = 10
+home_speed = 250.0
+home_turn = 2.3
+home_life = 5.5
+hazard_color = Color(1, 0.18, 0.15, 1)
+death_pit = ExtResource("pit")
+death_pit_size = 80.0
+bullet_damage = 0
+contact_damage = 0

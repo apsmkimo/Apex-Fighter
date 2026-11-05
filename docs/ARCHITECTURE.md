@@ -94,3 +94,15 @@ res://
 - 子彈：每顆子彈多一個共用貼圖與材質的光暈 Sprite（玩家為拖尾、敵人為圓形光暈），可合批。
 - HUD：`src/ui/hud/` 下的 `neon_draw.gd`（繪圖工具與圖示）、`status_panel.gd`（左下分段 HP 與圖示數字）、`bomb_button.gd`、`stage_banner.gd`（STAGE／WARNING／CLEAR 動畫）。
 - 截圖測試：`xvfb-run godot --rendering-method gl_compatibility --resolution 720x1280 --path . res://tests/screenshot.tscn`，圖存到 user://shots/。
+
+## 第 6 關 BLACK GOLD 新增的系統
+- `EnemyBehavior`（`src/entities/enemies/enemy_behavior.gd`）：`EnemyData.behavior` 不為空時掛在敵機底下，可接管移動。
+  `kamikaze` 低血自爆衝鋒、`sword` 劍氣＋突刺殘影、`artillery` 拋物線重砲（落點預警圈、濺射、岩漿坑）、`gatling` 預判速射＋過熱連射、
+  `focus_laser` 聚焦環蓄力＋旋轉雷射＋燒痕、`vlauncher` 紅光蒸氣＋垂直升空追蹤飛彈、`orbit` 繞場衛星＋脈衝環。
+- `LavaPit`（`src/effects/lava_pit.gd`）：跟著地表捲動的岩漿坑，每秒灼燒；`spawn_scorch` 是不傷人的燒痕。`EnemyData.death_pit` 讓敵機或危險物爆炸時留坑。
+- 敵人護盾：`EnemyData.shield_texture` / `shield_ratio`，受擊時顯示，先吸收傷害，破裂時碎成香檳金碎片。
+- `MuzzlePattern`：多砲口齊射（各自瞄準或沿砲管方向掃射）。
+- `FloatCannonRig`：Boss 的浮游砲，每座都是獨立 Enemy（`persistent`、`hold_fire`），絕招時可被接管位置。
+- `BlackGoldUlt`（`boss_ult_blackgold.gd`）：`x_strike`、`focus_ring`、`annihilate`，由 `BossUltimate` 轉呼叫。
+- `BossData.core_reveal_ratio`：核心先被裝甲板蓋住（整個機身可打、傷害打折），血量到比例時炸開露出弱點。
+- `StageData.terrain_far*`：地表下面的遠景視差層。

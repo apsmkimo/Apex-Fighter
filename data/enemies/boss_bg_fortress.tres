@@ -1,0 +1,76 @@
+[gd_resource type="Resource" script_class="BossData" load_steps=23 format=3]
+
+[ext_resource type="Script" path="res://src/entities/bosses/boss_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_bg_fortress.png" id="tex"]
+[ext_resource type="Script" path="res://src/entities/bosses/boss_phase.gd" id="ph"]
+[ext_resource type="Script" path="res://src/patterns/bullet/bullet_pattern.gd" id="bp"]
+[ext_resource type="Resource" path="res://data/patterns/move_fortress_hover.tres" id="mv"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/boss.wav" id="bgm"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/bg_focus_orb.png" id="orb"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/bg_annihilation_beam.png" id="beam"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/bg_blackhole.png" id="hole"]
+[ext_resource type="Resource" path="res://data/enemies/bg_float_cannon.tres" id="fc"]
+[ext_resource type="Texture2D" path="res://assets/sprites/terrain/bg_lava_pit.png" id="pit"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/boss_blast_0.png" id="bl0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/boss_blast_1.png" id="bl1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/asteroid_big_0.png" id="cv0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/asteroid_big_1.png" id="cv1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/asteroid_big_2.png" id="cv2"]
+[ext_resource type="Resource" path="res://data/patterns/p6_fort_ring.tres" id="p_p6_fort_ring"]
+[ext_resource type="Resource" path="res://data/patterns/p6_fort_spiral.tres" id="p_p6_fort_spiral"]
+[ext_resource type="Resource" path="res://data/patterns/p6_super.tres" id="p_p6_super"]
+
+[sub_resource type="Resource" id="ph0"]
+script = ExtResource("ph")
+hp_ratio_end = 0.65
+patterns = Array[ExtResource("bp")]([ExtResource("p_p6_super"), ExtResource("p_p6_fort_ring")])
+intervals = PackedFloat32Array(1.8, 2.1)
+
+[sub_resource type="Resource" id="ph1"]
+script = ExtResource("ph")
+hp_ratio_end = 0.3
+patterns = Array[ExtResource("bp")]([ExtResource("p_p6_super"), ExtResource("p_p6_fort_spiral")])
+intervals = PackedFloat32Array(1.5, 1.3)
+
+[sub_resource type="Resource" id="ph2"]
+script = ExtResource("ph")
+hp_ratio_end = 0.0
+patterns = Array[ExtResource("bp")]([ExtResource("p_p6_super"), ExtResource("p_p6_fort_ring"), ExtResource("p_p6_fort_spiral")])
+intervals = PackedFloat32Array(1.3, 1.7, 1.2)
+
+[resource]
+script = ExtResource("scr")
+boss_name = "BLACK GOLD FORTRESS"
+bgm = ExtResource("bgm")
+entry_time = 3.0
+phases = Array[ExtResource("ph")]([SubResource("ph0"), SubResource("ph1"), SubResource("ph2")])
+id = &"boss_bg_fortress"
+texture = ExtResource("tex")
+movement = ExtResource("mv")
+ult_kinds = Array[StringName]([&"focus_ring", &"annihilate"])
+ult_first_delay = 6.0
+ult_interval = 7.5
+ult_damage = 4
+ult_color = Color(1, 0.18, 0.15, 1)
+ult_orb_texture = ExtResource("orb")
+ult_pit_texture = ExtResource("pit")
+ult_focus_radius = 210.0
+ult_beam_texture = ExtResource("beam")
+ult_hole_texture = ExtResource("hole")
+ult_cover_textures = Array[Texture2D]([ExtResource("cv0"), ExtResource("cv1"), ExtResource("cv2")])
+ult_annihilate_width = 300.0
+ult_annihilate_sweep_deg = 64.0
+ult_annihilate_time = 5.0
+float_cannon = ExtResource("fc")
+float_slots = PackedVector2Array(-205, -198, -140, -256, -61, -287, 61, -287, 140, -256, 206, -198)
+death_blasts = Array[Texture2D]([ExtResource("bl0"), ExtResource("bl1")])
+death_blast_size = 760.0
+weak_color = Color(1, 0.18, 0.15, 1)
+max_hp = 1600
+hit_radius = 240.0
+weak_offset = Vector2(0, -53)
+weak_radius = 54.0
+score = 60000
+explosion_scale = 5.5
+bullet_damage = 3
+contact_damage = 3

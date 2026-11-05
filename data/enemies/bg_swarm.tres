@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/bg_swarm.png" id="tex"]
+[ext_resource type="Resource" path="res://data/patterns/move_swarm.tres" id="mv"]
+[ext_resource type="Resource" path="res://data/patterns/p6_swarm2.tres" id="pat"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/bg_shield.png" id="shd"]
+
+[resource]
+script = ExtResource("scr")
+id = &"bg_swarm"
+texture = ExtResource("tex")
+max_hp = 5
+hit_radius = 30.0
+score = 140
+explosion_scale = 0.8
+movement = ExtResource("mv")
+bullet_pattern = ExtResource("pat")
+fire_interval = 1.8
+first_fire_delay = 0.5
+behavior = &"kamikaze"
+behavior_color = Color(1, 0.18, 0.15, 1)
+kamikaze_ratio = 0.3
+kamikaze_speed = 470.0
+contact_damage = 2
+shield_texture = ExtResource("shd")
+shield_ratio = 0.5

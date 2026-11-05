@@ -24,6 +24,16 @@ var _drop_cd := 0.0
 ## 地面砲台：停在這個高度（INF = 一路跟著地表捲走）
 var ground_stop_y := INF
 var ground_stopped := false
+## 不會因離開畫面或存活太久而消失（Boss 的浮游砲）
+var persistent := false
+## 暫停開火（浮游砲被絕招接管時）
+var hold_fire := false
+## 護盾剩餘值與顯示時間
+var shield_hp := 0
+var _shield_show := 0.0
+var _shield_spr: Sprite2D
+## 特殊行為節點
+var behavior: EnemyBehavior
 ## 血量達到這個值以上的敵機，被打中時畫面會輕微震動
 const BIG_ENEMY_HP := 30
 
@@ -68,6 +78,20 @@ func _ready() -> void:
 	health.setup(int(round(base_hp * GameManager.enemy_hp_mult * defense)))
 	if data.ground:
 		z_index = -5
+	if data.shield_texture and data.shield_ratio > 0.0 and not is_hazard():
+		shield_hp = maxi(1, int(round(health.max_hp * data.shield_ratio)))
+		_shield_spr = Sprite2D.new()
+		_shield_spr.texture = data.shield_texture
+		_shield_spr.position = data.weak_offset if data.weak_radius > 0.0 else Vector2.ZERO
+		var r := (data.weak_radius if data.weak_radius > 0.0 else data.hit_radius) * 2.7
+		_shield_spr.set_meta(&"base", r / maxf(data.shield_texture.get_width(), 1.0))
+		_shield_spr.visible = false
+		_shield_spr.z_index = 1
+		add_child(_shield_spr)
+	if data.behavior != &"":
+		behavior = EnemyBehavior.new()
+		behavior.enemy = self
+		add_child(behavior)
 	if not self is Boss:
 		move_time_scale = GameManager.ENEMY_MOVE_TIME_SCALE
 	health.died.connect(_on_died)
@@ -102,7 +126,9 @@ func _physics_process(delta: float) -> void:
 			var h := spawn_enemy(data.drop_hazard, global_position + Vector2(0, 30), get_parent())
 			if h:
 				h.velocity = Vector2(randf_range(-40.0, 40.0), 110.0)
-	if data.ground:
+	if behavior and behavior.overrides_movement():
+		pass
+	elif data.ground:
 		_ground_process(delta)
 	elif movement:
 		var off := movement.offset_at(age * move_time_scale)
@@ -114,8 +140,10 @@ func _physics_process(delta: float) -> void:
 	var on := is_on_screen()
 	if on:
 		_was_on_screen = true
-	emitter.enabled = _can_fire()
+	emitter.enabled = _can_fire() and not hold_fire
 	_shake_cd -= delta
+	if _shield_spr:
+		_update_shield(delta)
 	if _flash > 0.0:
 		_flash -= delta
 		sprite.modulate = Color(2.5, 2.5, 2.5) if _flash > 0.0 else Color.WHITE
@@ -159,7 +187,49 @@ func take_damage(amount: int) -> void:
 	if data.max_hp >= BIG_ENEMY_HP and _shake_cd <= 0.0:
 		_shake_cd = 0.18
 		Events.screen_shake.emit(2.5, 0.08)
-	health.take_damage(GameManager.scale_player_damage(amount))
+	var dmg := GameManager.scale_player_damage(amount)
+	if shield_hp > 0:
+		# 護盾先吸收；打破的那一下多出來的傷害不會穿透
+		shield_hp -= dmg
+		if _shield_show <= 0.05:
+			_shield_show = 0.5
+		else:
+			_shield_show = maxf(_shield_show, 0.3)
+		if shield_hp <= 0:
+			_break_shield()
+		return
+	health.take_damage(dmg)
+
+
+## 護盾受擊動畫：黑金邊框先亮（從小撐開），內部紅光網格接著展開，然後淡出
+func _update_shield(delta: float) -> void:
+	if _shield_show <= 0.0:
+		_shield_spr.visible = false
+		return
+	_shield_show -= delta
+	var k := 1.0 - clampf(_shield_show / 0.5, 0.0, 1.0)     # 0 → 1
+	var base: float = _shield_spr.get_meta(&"base")
+	_shield_spr.visible = true
+	_shield_spr.scale = Vector2.ONE * base * lerpf(0.82, 1.0, ease(minf(k / 0.25, 1.0), 0.4))
+	var bright := 1.6 - 0.6 * minf(k / 0.3, 1.0)
+	_shield_spr.modulate = Color(bright, bright, bright, 0.9 * (1.0 - ease(k, 2.5)))
+	_shield_spr.rotation += delta * 0.8
+
+
+func _break_shield() -> void:
+	shield_hp = 0
+	_shield_show = 0.0
+	if _shield_spr:
+		_shield_spr.visible = false
+	var at := global_position + (_shield_spr.position if _shield_spr else Vector2.ZERO)
+	var r := (data.weak_radius if data.weak_radius > 0.0 else data.hit_radius) * 1.3
+	if NeonFx.instance:
+		NeonFx.instance.ring(at, r * 0.8, r * 1.8, 0.35, Color(1.0, 0.85, 0.5), 4.0)
+		# 香檳金碎片
+		for i in 16:
+			var dir := Vector2.RIGHT.rotated(TAU * i / 16.0 + randf() * 0.3)
+			var c := Color(1.0, 0.86, 0.55) if i % 3 else Color(1.0, 0.3, 0.2)
+			NeonFx.instance.emit(at + dir * r, dir * randf_range(160.0, 340.0), randf_range(0.35, 0.6), randf_range(2.5, 4.0), c, NeonFx.Kind.SPARK, 2.5)
 
 
 ## 只有在畫面內、而且離玩家不會太近時才開火（避免貼臉彈）。
@@ -168,7 +238,7 @@ func _can_fire() -> bool:
 
 
 func _can_despawn() -> bool:
-	return true
+	return not persistent
 
 
 func _on_died() -> void:
@@ -187,6 +257,8 @@ func _on_died() -> void:
 			_spawn_on_death.call_deferred(data.death_spawn, global_position, get_parent())
 	if data.ground and not data.death_decals.is_empty():
 		GroundDecal.spawn(data.death_decals.pick_random(), global_position, get_parent())
+	if data.death_pit and data.death_pit_size > 0.0:
+		LavaPit.spawn(get_parent(), global_position, data.death_pit, data.death_pit_size)
 	queue_free()
 
 
@@ -289,6 +361,8 @@ func _explode(by_player: bool) -> void:
 	var p := Player.instance
 	if p and p.alive and at.distance_to(p.global_position) < data.blast_radius:
 		p.take_hit(data.blast_damage)
+	if data.death_pit and data.death_pit_size > 0.0:
+		LavaPit.spawn(get_parent(), at, data.death_pit, data.death_pit_size)
 	if data.blast_ring > 0 and BulletPool.instance and not by_player:
 		var tex := load("res://assets/sprites/bullets/enemy_orb.png") as Texture2D
 		for i in data.blast_ring:

@@ -1,0 +1,65 @@
+[gd_resource type="Resource" script_class="BossData" load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://src/entities/bosses/boss_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_bg_warship.png" id="tex"]
+[ext_resource type="Script" path="res://src/entities/bosses/boss_phase.gd" id="ph"]
+[ext_resource type="Script" path="res://src/patterns/bullet/bullet_pattern.gd" id="bp"]
+[ext_resource type="Resource" path="res://data/patterns/move_warship_hover.tres" id="mv"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/mid_boss.wav" id="bgm"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/bg_x_strike.png" id="xt"]
+[ext_resource type="Texture2D" path="res://assets/sprites/terrain/bg_lava_pit.png" id="pit"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/boss_blast_0.png" id="bl0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/boss_blast_1.png" id="bl1"]
+[ext_resource type="Resource" path="res://data/patterns/p6_mid_aim.tres" id="p_p6_mid_aim"]
+[ext_resource type="Resource" path="res://data/patterns/p6_mid_sweep.tres" id="p_p6_mid_sweep"]
+[ext_resource type="Resource" path="res://data/patterns/p6_mid_volley.tres" id="p_p6_mid_volley"]
+
+[sub_resource type="Resource" id="ph0"]
+script = ExtResource("ph")
+hp_ratio_end = 0.6
+patterns = Array[ExtResource("bp")]([ExtResource("p_p6_mid_volley"), ExtResource("p_p6_mid_sweep")])
+intervals = PackedFloat32Array(1.7, 2.3)
+
+[sub_resource type="Resource" id="ph1"]
+script = ExtResource("ph")
+hp_ratio_end = 0.3
+patterns = Array[ExtResource("bp")]([ExtResource("p_p6_mid_sweep"), ExtResource("p_p6_mid_aim")])
+intervals = PackedFloat32Array(1.7, 1.9)
+
+[sub_resource type="Resource" id="ph2"]
+script = ExtResource("ph")
+hp_ratio_end = 0.0
+patterns = Array[ExtResource("bp")]([ExtResource("p_p6_mid_volley"), ExtResource("p_p6_mid_aim"), ExtResource("p_p6_mid_sweep")])
+intervals = PackedFloat32Array(1.5, 1.7, 2.0)
+
+[resource]
+script = ExtResource("scr")
+boss_name = "BLACK GOLD WARSHIP"
+bgm = ExtResource("bgm")
+entry_time = 3.0
+phases = Array[ExtResource("ph")]([SubResource("ph0"), SubResource("ph1"), SubResource("ph2")])
+id = &"boss_bg_warship"
+texture = ExtResource("tex")
+movement = ExtResource("mv")
+ult_kinds = Array[StringName]([&"x_strike"])
+ult_first_delay = 5.0
+ult_interval = 8.0
+ult_damage = 3
+ult_color = Color(1, 0.18, 0.15, 1)
+ult_feather_points = PackedVector2Array(-161, -150, -186, -85, -206, 4, -176, 102, -118, 208, 161, -150, 186, -85, 206, 4, 176, 102, 118, 208)
+ult_x_texture = ExtResource("xt")
+ult_x_size = 640.0
+ult_pit_texture = ExtResource("pit")
+core_reveal_ratio = 0.5
+armor_damage_mult = 0.6
+death_blasts = Array[Texture2D]([ExtResource("bl0"), ExtResource("bl1")])
+death_blast_size = 460.0
+weak_color = Color(1, 0.18, 0.15, 1)
+max_hp = 900
+hit_radius = 190.0
+weak_offset = Vector2(0, 2)
+weak_radius = 44.0
+score = 34000
+explosion_scale = 4.0
+bullet_damage = 2
+contact_damage = 3

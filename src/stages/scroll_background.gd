@@ -35,6 +35,9 @@ var _speed_k := 1.0
 var _terrain: Texture2D
 var _terrain_tint := Color.WHITE
 var _terrain_y := 0.0
+var _far: Texture2D
+var _far_tint := Color.WHITE
+var _far_speed := 0.4
 var _decor_tex: Array[Texture2D] = []
 var _decor: Array = []   # [貼圖, 位置, 角度, 自轉, 大小, 速度倍率]
 var top_color := COL_TOP
@@ -56,6 +59,9 @@ func setup(stage: StageData) -> void:
 	scroll_speed = stage.scroll_speed
 	_terrain = stage.terrain
 	_terrain_tint = stage.terrain_tint
+	_far = stage.terrain_far
+	_far_tint = stage.terrain_far_tint
+	_far_speed = stage.terrain_far_speed
 	_decor_tex = stage.float_decor
 	ground_speed = scroll_speed
 	# 關卡顏色只當成色調，和霓虹配色混合，保留每關的個性
@@ -161,6 +167,9 @@ func _draw() -> void:
 	draw_polygon(
 		PackedVector2Array([Vector2(-20, -20), Vector2(s.x + 20, -20), s + Vector2(20, 20), Vector2(-20, s.y + 20)]),
 		PackedColorArray([top_color, top_color, bottom_color, bottom_color]))
+	# 遠景視差層（第 6 關）：先畫遠景，再疊半透明的主背景
+	if _far:
+		_draw_loop(_far, _terrain_y * _far_speed, _far_tint)
 	# 半透明地表（第 5 關 50%）：漸層上面疊地表
 	if _terrain:
 		_draw_terrain()
@@ -185,13 +194,7 @@ func _draw() -> void:
 ## 星球地表：寬度貼齊畫面，往下循環捲動
 func _draw_terrain() -> void:
 	# 地表圖本身已經上下鏡像接好（無縫循環）
-	var ts := _terrain.get_size()
-	var w := _size.x
-	var th := ts.y * (w / ts.x)
-	var y := fmod(_terrain_y, th) - th
-	while y < _size.y:
-		draw_texture_rect(_terrain, Rect2(0, y, w, th), false, _terrain_tint)
-		y += th
+	_draw_loop(_terrain, _terrain_y, _terrain_tint)
 	# 上下暗角，讓子彈與敵機更清楚
 	draw_rect(Rect2(Vector2.ZERO, _size), Color(0.0, 0.02, 0.05, 0.28))
 	for d in _decor:
@@ -200,6 +203,16 @@ func _draw_terrain() -> void:
 		draw_set_transform(d[1], d[2], Vector2.ONE)
 		draw_texture_rect(tex, Rect2(-sz * 0.5, sz), false, Color(0.55, 0.55, 0.6, 0.85))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
+func _draw_loop(tex: Texture2D, offset: float, tint: Color) -> void:
+	var ts := tex.get_size()
+	var w := _size.x
+	var th := ts.y * (w / ts.x)
+	var y := fmod(offset, th) - th
+	while y < _size.y:
+		draw_texture_rect(tex, Rect2(0, y, w, th), false, tint)
+		y += th
 
 
 ## 飄浮隕石：最多 7 顆，從上方進來、往下飄、邊轉邊走

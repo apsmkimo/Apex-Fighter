@@ -7,6 +7,11 @@ var is_mid := false
 var phase_index := -1
 var _phase_emitters: Array[BulletEmitter] = []
 var ultimate: BossUltimate
+var float_rig: FloatCannonRig
+## 核心尚未露出（第二階段才露出）
+var core_hidden := false
+var _armor_acc := 0.0
+var _armor_plate: ArmorPlate
 
 
 func _ready() -> void:
@@ -15,10 +20,29 @@ func _ready() -> void:
 	z_index = 3
 	Events.boss_spawned.emit(self)
 	health.damaged.connect(_on_damaged)
+	if boss_data().float_cannon and not boss_data().float_slots.is_empty():
+		float_rig = FloatCannonRig.new()
+		float_rig.boss = self
+		add_child(float_rig)
 	if boss_data().ult_enabled:
 		ultimate = BossUltimate.new()
 		ultimate.setup(self)
 		add_child(ultimate)
+	if data.weak_radius > 0.0 and boss_data().core_reveal_ratio > 0.0:
+		# 核心被裝甲蓋住：先打整個機身
+		core_hidden = true
+		(shape.shape as CircleShape2D).radius = data.hit_radius
+		shape.position = Vector2.ZERO
+		_armor_plate = ArmorPlate.new()
+		_armor_plate.position = data.weak_offset
+		_armor_plate.radius = data.weak_radius * 1.15
+		add_child(_armor_plate)
+	elif data.weak_radius > 0.0:
+		_add_weak_markers()
+	_enter_phase(0)
+
+
+func _add_weak_markers() -> void:
 	if data.weak_radius > 0.0:
 		var wc := boss_data().weak_color if boss_data().weak_color.a > 0.0 else boss_data().ult_color
 		if boss_data().reactor_core:
@@ -36,7 +60,27 @@ func _ready() -> void:
 			mark.radius = data.weak_radius
 			mark.color = wc
 			add_child(mark)
-	_enter_phase(0)
+
+
+## 第二階段：裝甲炸開，露出核心弱點
+func _reveal_core() -> void:
+	if health.dead:
+		return
+	(shape.shape as CircleShape2D).radius = data.weak_radius
+	shape.position = data.weak_offset
+	_add_weak_markers()
+	var at := global_position + data.weak_offset
+	if _armor_plate:
+		_armor_plate.queue_free()
+		_armor_plate = null
+	if NeonFx.instance:
+		NeonFx.instance.explode(at, 2.4)
+		NeonFx.instance.ring(at, 20.0, 220.0, 0.5, Color(1.0, 0.85, 0.5), 6.0)
+		for i in 24:
+			var dir := Vector2.RIGHT.rotated(TAU * i / 24.0)
+			NeonFx.instance.emit(at + dir * 30.0, dir * randf_range(200.0, 420.0), 0.6, 3.5, Color(1.0, 0.86, 0.55), NeonFx.Kind.SPARK, 2.0)
+		NeonFx.instance.float_text(at + Vector2(0, -80), "CORE EXPOSED!", Color(1.0, 0.4, 0.3))
+	Events.screen_shake.emit(14.0, 0.5)
 
 
 func boss_data() -> BossData:
@@ -46,6 +90,14 @@ func boss_data() -> BossData:
 func take_damage(amount: int) -> void:
 	if age < boss_data().entry_time:
 		return  # 進場中無敵
+	if core_hidden:
+		# 裝甲：只吃一部分傷害（累積小數，不會整發被吃掉）
+		_armor_acc += amount * boss_data().armor_damage_mult
+		var d := int(_armor_acc)
+		_armor_acc -= d
+		if d <= 0:
+			return
+		amount = d
 	super.take_damage(amount)
 
 
@@ -70,6 +122,9 @@ func _can_despawn() -> bool:
 func _on_damaged(_amount: int, _current: int) -> void:
 	var ratio := health.ratio()
 	Events.boss_hp_changed.emit(ratio)
+	if core_hidden and ratio <= boss_data().core_reveal_ratio and not health.dead:
+		core_hidden = false
+		_reveal_core.call_deferred()
 	var phases := boss_data().phases
 	var next := phase_index
 	while next < phases.size() - 1 and ratio <= phases[next].hp_ratio_end:
@@ -124,6 +179,36 @@ func _on_died() -> void:
 		Events.screen_shake.emit(18.0, 1.0)
 	Events.boss_defeated.emit()
 	queue_free()
+
+
+## 蓋住核心的黑金裝甲板（第二階段炸開）
+class ArmorPlate extends Node2D:
+	var radius := 46.0
+	var _t := 0.0
+
+	func _ready() -> void:
+		z_index = 1
+
+	func _process(delta: float) -> void:
+		_t += delta
+		queue_redraw()
+
+	func _draw() -> void:
+		var pts := PackedVector2Array()
+		for i in 7:
+			pts.append(Vector2.RIGHT.rotated(TAU * i / 6.0 + PI / 6.0) * radius)
+		draw_colored_polygon(pts.slice(0, 6), Color(0.07, 0.06, 0.06, 0.96))
+		draw_polyline(pts, Color(0.95, 0.8, 0.5, 0.95), 3.0)
+		var inner := PackedVector2Array()
+		for i in 7:
+			inner.append(Vector2.RIGHT.rotated(TAU * i / 6.0 + PI / 6.0) * radius * 0.62)
+		draw_polyline(inner, Color(0.8, 0.62, 0.35, 0.8), 2.0)
+		for i in 6:
+			var d := Vector2.RIGHT.rotated(TAU * i / 6.0 + PI / 6.0)
+			draw_line(d * radius * 0.62, d * radius, Color(0.75, 0.6, 0.35, 0.8), 2.0)
+		# 縫隙透出的紅光
+		var pulse := 0.5 + 0.5 * sin(_t * 4.0)
+		draw_circle(Vector2.ZERO, radius * 0.18, Color(1.0, 0.15, 0.1, 0.5 + 0.4 * pulse))
 
 
 ## 弱點提示：在發光核心外圍畫旋轉的虛線瞄準圈，提醒玩家只有打這裡才有效

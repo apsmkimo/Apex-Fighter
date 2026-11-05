@@ -88,6 +88,43 @@ extends Resource
 @export var fire_interval := 1.5
 @export var first_fire_delay := 0.8
 
+@export_group("Behavior")
+## 特殊行為（EnemyBehavior）：
+##   kamikaze    血量低於 kamikaze_ratio 時加速撞向玩家
+##   sword       蓄力後射出細長穿透劍氣，接著重劍突刺（留下紅光殘影）
+##   artillery   砲口輪流齊射慢速重砲，落點爆炸濺射並留下岩漿坑
+##   gatling     加特林速射＋預判；過熱後紅光膨脹進入連射模式
+##   focus_laser 聚焦環亮起蓄力 → 持續雷射旋轉掃場，地板留下燒痕
+##   vlauncher   巢口冒紅光蒸氣 → 同時垂直升空多枚飛彈，升空後追蹤
+##   orbit       繞場旋轉、紅光脈衝環，間歇散射
+@export var behavior: StringName = &""
+## 砲口位置（相對機身中心；地面砲台會跟著砲身旋轉）
+@export var behavior_points: PackedVector2Array = PackedVector2Array()
+## 砲彈、劍氣等貼圖
+@export var behavior_texture: Texture2D
+@export var behavior_color := Color(1.0, 0.18, 0.15)
+## 行為的循環間隔（秒）
+@export var behavior_interval := 3.0
+@export var behavior_damage := 2
+## 低血自爆：比例與衝刺速度
+@export var kamikaze_ratio := 0.3
+@export var kamikaze_speed := 460.0
+## 垂直飛彈巢：發射的飛彈與數量
+@export var behavior_missile: EnemyData
+@export var behavior_count := 6
+## 重砲落點留下的岩漿坑大小（貼圖用 death_pit）
+@export var behavior_pit_size := 0.0
+
+@export_group("Shield")
+## 護盾：先吸收 血量 × shield_ratio 的傷害，受擊時顯示，打破時碎成香檳金碎片
+@export var shield_texture: Texture2D
+@export var shield_ratio := 0.0
+
+@export_group("Lava Pit")
+## 被擊破（或危險物爆炸）時留下紅光岩漿坑，持續灼燒
+@export var death_pit: Texture2D
+@export var death_pit_size := 0.0
+
 @export_group("Drop")
 @export var drop_item: ItemData
 @export_range(0.0, 1.0) var drop_chance := 0.0

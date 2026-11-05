@@ -67,6 +67,8 @@ var _fb_live := false
 var _normal_tex: Texture2D
 var _under: DevourLayer
 var _over: DevourLayer
+## 第六關黑金絕招（x_strike / focus_ring / annihilate）
+var bg: BlackGoldUlt
 
 
 func setup(b: Boss) -> void:
@@ -80,6 +82,12 @@ func _ready() -> void:
 	var mat := CanvasItemMaterial.new()
 	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	material = mat
+	for k in bd.ult_kinds:
+		if BlackGoldUlt.handles(k):
+			bg = BlackGoldUlt.new()
+			bg.setup(self)
+			add_child(bg)
+			break
 	if &"devour" in bd.ult_kinds:
 		# 吞噬用的兩層（一般混合）：下層＝變暗＋旋渦（在子彈下面），上層＝殘骸＋火球
 		_under = DevourLayer.new()
@@ -116,6 +124,8 @@ func cancel() -> void:
 	_dv_dark = 0.0
 	if _normal_tex and boss:
 		boss.sprite.texture = _normal_tex
+	if bg:
+		bg.cancel()
 	if _under:
 		_under.queue_redraw()
 		_over.queue_redraw()
@@ -141,8 +151,14 @@ func _physics_process(delta: float) -> void:
 		_dv_spin += delta * (1.2 + 2.5 * (1.0 if state == State.FIRE and _dv_step == 0 else 0.0))
 		_under.queue_redraw()
 		_over.queue_redraw()
+	if bg and BlackGoldUlt.handles(kind) and state != State.IDLE:
+		_bg_process(delta)
+		queue_redraw()
+		return
 	match state:
 		State.IDLE:
+			if bg:
+				bg.idle_update(delta)
 			if _timer <= 0.0:
 				_start_charge()
 		State.CHARGE:
@@ -205,10 +221,36 @@ func _physics_process(delta: float) -> void:
 
 # ---------- 狀態切換 ----------
 
+func _bg_process(delta: float) -> void:
+	if state == State.CHARGE:
+		bg.update_charge(delta)
+		if _timer <= 0.0:
+			state = State.FIRE
+			_timer = bg.start_fire()
+			Events.boss_ultimate.emit("fire")
+	else:
+		bg.update_fire(delta)
+		if bg.is_done():
+			state = State.IDLE
+			_timer = bd.ult_interval
+			Events.boss_ultimate.emit("end")
+
 func _start_charge() -> void:
 	kind = bd.ult_kinds[_kind_index % bd.ult_kinds.size()] if not bd.ult_kinds.is_empty() else &"beam"
 	_kind_index += 1
+	# 用不了的絕招跳過（例如浮游砲全滅時不能聚焦）
+	var tries := bd.ult_kinds.size()
+	while bg and BlackGoldUlt.handles(kind) and not bg.can_use(kind) and tries > 0:
+		kind = bd.ult_kinds[_kind_index % bd.ult_kinds.size()]
+		_kind_index += 1
+		tries -= 1
 	state = State.CHARGE
+	if bg and BlackGoldUlt.handles(kind):
+		_timer = bg.start_charge(kind)
+		_charge_total = _timer
+		_particles.clear()
+		Events.boss_ultimate.emit("charge")
+		return
 	match kind:
 		&"eye_laser":
 			_timer = bd.ult_eye_charge
@@ -806,7 +848,7 @@ func _throw_bombs() -> void:
 # ---------- 繪製 ----------
 
 func _draw() -> void:
-	if bd == null:
+	if bd == null or (bg and BlackGoldUlt.handles(kind) and state != State.IDLE):
 		return
 	var c := bd.ult_color
 	match state:

@@ -14,6 +14,10 @@ extends Resource
 @export var terrain: Texture2D
 @export var terrain_tint := Color(0.8, 0.8, 0.8)
 ## 地表上方飄過的裝飾（例如隕石），比地表捲得快，做出視差；碰不到
+## 遠景視差層（畫在地表下面，捲得比較慢）
+@export var terrain_far: Texture2D
+@export var terrain_far_tint := Color(0.6, 0.6, 0.6)
+@export var terrain_far_speed := 0.4
 @export var float_decor: Array[Texture2D] = []
 
 @export_group("Difficulty")

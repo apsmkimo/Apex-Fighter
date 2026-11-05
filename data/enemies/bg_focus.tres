@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/bg_focus.png" id="tex"]
+[ext_resource type="Script" path="res://src/entities/items/item_data.gd" id="itm"]
+[ext_resource type="Resource" path="res://data/items/missile.tres" id="i_mis"]
+[ext_resource type="Resource" path="res://data/items/shield.tres" id="i_sh"]
+[ext_resource type="Resource" path="res://data/items/special.tres" id="i_sp"]
+[ext_resource type="Resource" path="res://data/items/power.tres" id="i_pw"]
+[ext_resource type="Resource" path="res://data/items/weapon_plasma.tres" id="i_wp"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/bg_shield.png" id="shd"]
+
+[resource]
+script = ExtResource("scr")
+id = &"bg_focus"
+texture = ExtResource("tex")
+ground = true
+aim_rotate = false
+ground_spin = 0.0
+contact_damage = 0
+ground_spin = 0.25
+max_hp = 30
+hit_radius = 52.0
+score = 620
+explosion_scale = 1.7
+first_fire_delay = 1.4
+behavior = &"focus_laser"
+behavior_color = Color(1, 0.18, 0.15, 1)
+behavior_interval = 4.6
+behavior_damage = 3
+drop_chance = 0.15
+bonus_chance = 0.2
+shield_texture = ExtResource("shd")
+shield_ratio = 0.5
+drop_item = ExtResource("i_pw")
+bonus_pool = Array[ExtResource("itm")]([ExtResource("i_mis"), ExtResource("i_sh"), ExtResource("i_sp"), ExtResource("i_wp")])

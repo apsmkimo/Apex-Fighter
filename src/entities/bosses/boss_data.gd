@@ -123,6 +123,33 @@ extends EnemyData
 @export var ult_fireball_speed := 230.0
 @export var ult_fireball_ring := 18
 
+@export_subgroup("Black Gold")
+## 第六關黑金機甲用的絕招：
+##   x_strike   全砲口聚能（ult_feather_points）→ 十道紅光砲在地面交織成巨大 X，踩到持續扣血，2 秒後引爆
+##   focus_ring 浮游砲飛到空中圍成圓 → 六道雷射聚焦成超巨型紅光球 → 炸開全場衝擊波＋岩漿坑；每打掉一片傷害減 1/6
+##   annihilate 核心打開露出紅光黑洞 → 超寬湮滅光柱緩慢橫掃全場；躲在飄進來的隕石後面才安全
+@export var ult_x_texture: Texture2D
+@export var ult_x_size := 640.0
+@export var ult_pit_texture: Texture2D
+@export var ult_orb_texture: Texture2D
+@export var ult_focus_radius := 210.0
+@export var ult_beam_texture: Texture2D
+@export var ult_hole_texture: Texture2D
+@export var ult_cover_textures: Array[Texture2D] = []
+@export var ult_annihilate_width := 300.0
+@export var ult_annihilate_sweep_deg := 64.0
+@export var ult_annihilate_time := 5.0
+
+@export_group("Float Cannons")
+## 浮游砲：在這些位置（相對 Boss 中心）各放一座，自動追蹤玩家射擊，可以被打掉
+@export var float_cannon: EnemyData
+@export var float_slots: PackedVector2Array = PackedVector2Array()
+
+@export_group("Core Reveal")
+## 血量降到這個比例才露出核心弱點（0 = 一開始就露出）。露出前整個機身都打得到，但裝甲只吃 armor_damage_mult 的傷害
+@export var core_reveal_ratio := 0.0
+@export var armor_damage_mult := 0.6
+
 @export_group("Look")
 ## 被打倒時依序播放的大型爆炸圖（第一張先爆、第二張接著擴大）
 @export var death_blasts: Array[Texture2D] = []

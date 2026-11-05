@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/bg_float_cannon.png" id="tex"]
+[ext_resource type="Resource" path="res://data/patterns/p6_drone.tres" id="pat"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/bg_shield.png" id="shd"]
+
+[resource]
+script = ExtResource("scr")
+id = &"bg_float_cannon"
+texture = ExtResource("tex")
+max_hp = 50
+hit_radius = 34.0
+score = 600
+explosion_scale = 1.4
+bullet_pattern = ExtResource("pat")
+fire_interval = 1.7
+first_fire_delay = 1.0
+bullet_damage = 2
+contact_damage = 2
+shield_texture = ExtResource("shd")
+shield_ratio = 0.3
