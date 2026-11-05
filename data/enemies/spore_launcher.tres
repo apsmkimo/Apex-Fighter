@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/spore_launcher.png" id="tex"]
+[ext_resource type="Resource" path="res://data/patterns/p5_spore_ring8.tres" id="pat"]
+[ext_resource type="Resource" path="res://data/enemies/spore_missile.tres" id="dh"]
+[ext_resource type="Texture2D" path="res://assets/sprites/terrain/spore_crater.png" id="crt"]
+[ext_resource type="Script" path="res://src/entities/items/item_data.gd" id="itm"]
+[ext_resource type="Resource" path="res://data/items/missile.tres" id="i_mis"]
+[ext_resource type="Resource" path="res://data/items/shield.tres" id="i_sh"]
+[ext_resource type="Resource" path="res://data/items/special.tres" id="i_sp"]
+[ext_resource type="Resource" path="res://data/items/power.tres" id="i_pw"]
+[ext_resource type="Resource" path="res://data/items/weapon_plasma.tres" id="i_wp"]
+
+[resource]
+script = ExtResource("scr")
+id = &"spore_launcher"
+texture = ExtResource("tex")
+ground = true
+aim_offset_deg = 46.0
+max_hp = 40
+hit_radius = 58.0
+score = 1100
+explosion_scale = 2.2
+bullet_pattern = ExtResource("pat")
+fire_interval = 3.4
+first_fire_delay = 1.8
+drop_hazard = ExtResource("dh")
+drop_hazard_interval = 3.6
+drop_hazard_first = 1.4
+contact_damage = 0
+death_decals = Array[Texture2D]([ExtResource("crt")])
+drop_chance = 0.3
+bonus_chance = 0.3
+drop_item = ExtResource("i_pw")
+bonus_pool = Array[ExtResource("itm")]([ExtResource("i_mis"), ExtResource("i_sh"), ExtResource("i_sp"), ExtResource("i_wp")])

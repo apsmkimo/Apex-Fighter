@@ -1,0 +1,94 @@
+[gd_resource type="Resource" script_class="BossData" load_steps=30 format=3]
+
+[ext_resource type="Script" path="res://src/entities/bosses/boss_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_brood_mother.png" id="tex"]
+[ext_resource type="Script" path="res://src/entities/bosses/boss_phase.gd" id="ph"]
+[ext_resource type="Script" path="res://src/patterns/bullet/bullet_pattern.gd" id="bp"]
+[ext_resource type="Resource" path="res://data/patterns/move_brood_hover.tres" id="mv"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/boss.wav" id="bgm"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_brood_mother_open.png" id="open"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/brood_vortex.png" id="vtx"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/spore_fireball.png" id="fb"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/spore_burst.png" id="fbx"]
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/fx_orb_spore.png" id="orb"]
+[ext_resource type="Resource" path="res://data/enemies/spore_missile.tres" id="dh"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/boss_blast_0.png" id="bl0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/boss_blast_1.png" id="bl1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/satellite_small_0.png" id="db0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/satellite_small_1.png" id="db1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/satellite_small_2.png" id="db2"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/satellite_small_3.png" id="db3"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/spore_pod.png" id="db4"]
+[ext_resource type="Resource" path="res://data/patterns/p5_green_fan3.tres" id="p_p5_green_fan3"]
+[ext_resource type="Resource" path="res://data/patterns/p5_red_aim5.tres" id="p_p5_red_aim5"]
+[ext_resource type="Resource" path="res://data/patterns/p5_spore_ring16.tres" id="p_p5_spore_ring16"]
+[ext_resource type="Resource" path="res://data/patterns/p5_spore_ring8.tres" id="p_p5_spore_ring8"]
+[ext_resource type="Resource" path="res://data/patterns/p5_spore_spiral.tres" id="p_p5_spore_spiral"]
+[ext_resource type="Resource" path="res://data/patterns/p5_twin_red.tres" id="p_p5_twin_red"]
+[ext_resource type="Resource" path="res://data/patterns/p5_violet_rain.tres" id="p_p5_violet_rain"]
+
+[sub_resource type="Resource" id="ph0"]
+script = ExtResource("ph")
+hp_ratio_end = 0.65
+patterns = Array[ExtResource("bp")]([ExtResource("p_p5_red_aim5"), ExtResource("p_p5_spore_ring8")])
+intervals = PackedFloat32Array(1.4, 1.5)
+
+[sub_resource type="Resource" id="ph1"]
+script = ExtResource("ph")
+hp_ratio_end = 0.3
+patterns = Array[ExtResource("bp")]([ExtResource("p_p5_spore_spiral"), ExtResource("p_p5_twin_red"), ExtResource("p_p5_violet_rain")])
+intervals = PackedFloat32Array(0.8, 1.6, 1.1)
+
+[sub_resource type="Resource" id="ph2"]
+script = ExtResource("ph")
+hp_ratio_end = 0.0
+patterns = Array[ExtResource("bp")]([ExtResource("p_p5_spore_ring16"), ExtResource("p_p5_red_aim5"), ExtResource("p_p5_spore_spiral"), ExtResource("p_p5_green_fan3")])
+intervals = PackedFloat32Array(0.9, 1.2, 0.9, 1.4)
+
+[resource]
+script = ExtResource("scr")
+boss_name = "BROOD MOTHER"
+bgm = ExtResource("bgm")
+entry_time = 3.0
+phases = Array[ExtResource("ph")]([SubResource("ph0"), SubResource("ph1"), SubResource("ph2")])
+id = &"boss_brood_mother"
+texture = ExtResource("tex")
+movement = ExtResource("mv")
+ult_kinds = Array[StringName]([&"eye_laser", &"devour"])
+ult_first_delay = 5.5
+ult_interval = 8.0
+ult_damage = 4
+ult_color = Color(1, 0.18, 0.15, 1)
+ult_eye_offset = Vector2(205, 185)
+ult_eye_width = 150.0
+ult_eye_sweep_deg = 110.0
+ult_eye_charge = 2.2
+ult_eye_fire = 2.4
+ult_eye_missiles = 4
+ult_missile_data = ExtResource("dh")
+ult_missile_points = PackedVector2Array(-150, 190, 150, 190, -90, 230, 90, 230)
+ult_devour_texture = ExtResource("open")
+ult_vortex_texture = ExtResource("vtx")
+ult_fireball_texture = ExtResource("fb")
+ult_fireball_burst = ExtResource("fbx")
+ult_devour_debris = Array[Texture2D]([ExtResource("db0"), ExtResource("db1"), ExtResource("db2"), ExtResource("db3"), ExtResource("db4")])
+ult_mouth = Vector2(2, 25)
+ult_devour_charge = 1.8
+ult_devour_time = 3.6
+ult_devour_pull = 130.0
+ult_vortex_size = 780.0
+ult_fireball_size = 250.0
+ult_fireball_speed = 230.0
+ult_fireball_ring = 18
+ult_feather_texture = ExtResource("orb")
+death_blasts = Array[Texture2D]([ExtResource("bl0"), ExtResource("bl1")])
+death_blast_size = 700.0
+weak_color = Color(0.4, 1, 0.45, 1)
+max_hp = 1500
+hit_radius = 260.0
+weak_offset = Vector2(-3, 22)
+weak_radius = 58.0
+score = 55000
+explosion_scale = 5.5
+bullet_damage = 3
+contact_damage = 3

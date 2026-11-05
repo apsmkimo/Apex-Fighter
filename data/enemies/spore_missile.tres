@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/hazards/spore_missile.png" id="tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/spore_burst.png" id="fx"]
+
+[resource]
+script = ExtResource("scr")
+id = &"spore_missile"
+texture = ExtResource("tex")
+max_hp = 3
+hit_radius = 22.0
+score = 60
+explosion_scale = 0.9
+hazard_kind = &"missile"
+blast_radius = 95.0
+blast_damage = 2
+blast_enemy_damage = 10
+home_speed = 240.0
+home_turn = 1.9
+home_life = 6.0
+hazard_color = Color(0.4, 1, 0.45, 1)
+death_fx = ExtResource("fx")
+death_fx_size = 190.0
+bullet_damage = 0
+contact_damage = 0

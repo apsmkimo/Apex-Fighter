@@ -259,7 +259,7 @@ func _hazard_process(delta: float) -> void:
 			position += velocity * delta
 			rotation = cur
 			if NeonFx.instance and Engine.get_physics_frames() % 3 == 0:
-				NeonFx.instance.emit(global_position - velocity.normalized() * 40.0, -velocity * 0.2, 0.35, 5.0, Color(0.3, 0.8, 1.0))
+				NeonFx.instance.emit(global_position - velocity.normalized() * 40.0, -velocity * 0.2, 0.35, 5.0, data.hazard_color)
 			if p and p.alive and global_position.distance_to(p.global_position) < 34.0:
 				_explode(false)
 				return
@@ -280,8 +280,11 @@ func _explode(by_player: bool) -> void:
 	_hazard_done = true
 	var at := global_position
 	if NeonFx.instance:
-		NeonFx.instance.explode(at, data.explosion_scale)
-		NeonFx.instance.ring(at, 10.0, data.blast_radius, 0.35, Color(1.0, 0.45, 0.3), 5.0)
+		if data.death_fx:
+			NeonFx.instance.burst(at, data.death_fx, data.death_fx_size, 0.55)
+		else:
+			NeonFx.instance.explode(at, data.explosion_scale)
+		NeonFx.instance.ring(at, 10.0, data.blast_radius, 0.35, Color(1.0, 0.45, 0.3) if data.death_fx == null else data.hazard_color, 5.0)
 	Events.screen_shake.emit(6.0, 0.2)
 	var p := Player.instance
 	if p and p.alive and at.distance_to(p.global_position) < data.blast_radius:

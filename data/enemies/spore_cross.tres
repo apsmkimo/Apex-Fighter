@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/spore_cross.png" id="tex"]
+[ext_resource type="Resource" path="res://data/patterns/move_diagonal.tres" id="mv"]
+[ext_resource type="Resource" path="res://data/patterns/p5_green_fan3.tres" id="pat"]
+
+[resource]
+script = ExtResource("scr")
+id = &"spore_cross"
+texture = ExtResource("tex")
+max_hp = 7
+hit_radius = 40.0
+score = 220
+explosion_scale = 1.1
+movement = ExtResource("mv")
+bullet_pattern = ExtResource("pat")
+fire_interval = 2.0
+first_fire_delay = 0.7

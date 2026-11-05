@@ -55,6 +55,11 @@ extends Resource
 @export var home_speed := 280.0
 @export var home_turn := 2.0
 @export var home_life := 7.0
+## 飛彈尾焰顏色
+@export var hazard_color := Color(0.3, 0.8, 1.0)
+## 危險物爆炸時的圖片爆炸（例如孢子爆炸），沒有就用一般爆炸
+@export var death_fx: Texture2D
+@export var death_fx_size := 200.0
 
 @export_group("Hazard Drop")
 ## 會投放危險物的敵機（例如中兵投放水雷）

@@ -155,12 +155,16 @@ func _spawn_meteor() -> void:
 ## 底層：漸層、掃描光帶、遠景星點（一般混合）
 func _draw() -> void:
 	var s := _size
-	if _terrain:
+	if _terrain and _terrain_tint.a >= 0.99:
 		_draw_terrain()
 		return
 	draw_polygon(
 		PackedVector2Array([Vector2(-20, -20), Vector2(s.x + 20, -20), s + Vector2(20, 20), Vector2(-20, s.y + 20)]),
 		PackedColorArray([top_color, top_color, bottom_color, bottom_color]))
+	# 半透明地表（第 5 關 50%）：漸層上面疊地表
+	if _terrain:
+		_draw_terrain()
+		return
 	# 緩慢往下移動的科技掃描光帶
 	var band_y := fmod(_t * 40.0, s.y + 400.0) - 200.0
 	draw_rect(Rect2(-20, band_y, s.x + 40, 140), Color(0.3, 0.5, 1.0, 0.025))

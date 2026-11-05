@@ -220,6 +220,14 @@ func _emit_exhaust(delta: float) -> void:
 
 
 ## 被絲網黏住：護盾可以擋掉；否則 sec 秒內不能移動（仍會自動開火）
+## 外力推動（Boss 吸入等）：直接位移並限制在畫面內
+func nudge(offset: Vector2) -> void:
+	if not alive or _entering:
+		return
+	position += offset
+	_clamp()
+
+
 func apply_web(sec: float) -> void:
 	if not alive or _entering:
 		return

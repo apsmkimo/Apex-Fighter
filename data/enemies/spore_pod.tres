@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/entities/enemies/enemy_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/spore_pod.png" id="tex"]
+[ext_resource type="Resource" path="res://data/patterns/move_sine.tres" id="mv"]
+[ext_resource type="Resource" path="res://data/patterns/p5_spore_shot.tres" id="pat"]
+
+[resource]
+script = ExtResource("scr")
+id = &"spore_pod"
+texture = ExtResource("tex")
+max_hp = 3
+hit_radius = 30.0
+score = 130
+explosion_scale = 0.8
+movement = ExtResource("mv")
+spin = 1.0
+bullet_pattern = ExtResource("pat")
+fire_interval = 1.9
+first_fire_delay = 0.6

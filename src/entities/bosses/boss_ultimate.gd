@@ -11,6 +11,8 @@ extends Node2D
 ##   timebomb  丟出數顆計時炸彈，停在太空中倒數後爆炸
 ##   ram       本體加速自轉 → 高速旋轉在戰場上到處衝撞碾壓
 ##   debris    核心充能 → 大量報廢衛星從上方落下（可擊落）
+##   spore_ring 多座孢子砲台充能 → 同時朝各自的外側方向噴射大量光球
+##   devour    全場變暗、張開巨口 → 旋渦吸入場上的東西 → 吐出超巨型火球
 ## 雷射類打到玩家扣 BossData.ult_damage（滿血只擋得住一次），一次發射只扣一次。
 
 enum State { IDLE, CHARGE, FIRE }
@@ -50,6 +52,21 @@ var _debris_cd := 0.0
 var _debris_side := false
 # 出招前抖動：已觸發的抖動次數
 var _jolts_done := 0
+# 吞噬：0 = 吸入、1 = 壓縮、2 = 火球飛行
+var _dv_step := 0
+var _dv_t := 0.0
+var _dv_eaten := 0
+var _dv_hit_cd := 0.0
+var _dv_dark := 0.0
+var _dv_spin := 0.0
+var _dv_debris: Array = []    # [貼圖, 角度, 距離, 大小, 自轉]
+var _fb_pos := Vector2.ZERO
+var _fb_vel := Vector2.ZERO
+var _fb_size := 0.0
+var _fb_live := false
+var _normal_tex: Texture2D
+var _under: DevourLayer
+var _over: DevourLayer
 
 
 func setup(b: Boss) -> void:
@@ -63,6 +80,21 @@ func _ready() -> void:
 	var mat := CanvasItemMaterial.new()
 	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
 	material = mat
+	if &"devour" in bd.ult_kinds:
+		# 吞噬用的兩層（一般混合）：下層＝變暗＋旋渦（在子彈下面），上層＝殘骸＋火球
+		_under = DevourLayer.new()
+		_under.ult = self
+		_under.z_index = -1
+		_under.z_as_relative = false
+		_under.top_level = true
+		add_child(_under)
+		_over = DevourLayer.new()
+		_over.ult = self
+		_over.upper = true
+		_over.z_index = 4
+		_over.z_as_relative = false
+		_over.top_level = true
+		add_child(_over)
 
 
 ## 儲能與雷射發射期間 Boss 暫停一般彈幕；吐絲時彈幕照常（被黏住才危險）
@@ -79,6 +111,14 @@ func cancel() -> void:
 	state = State.IDLE
 	_webs.clear()
 	_rings.clear()
+	_dv_debris.clear()
+	_fb_live = false
+	_dv_dark = 0.0
+	if _normal_tex and boss:
+		boss.sprite.texture = _normal_tex
+	if _under:
+		_under.queue_redraw()
+		_over.queue_redraw()
 	queue_redraw()
 
 
@@ -93,6 +133,14 @@ func _physics_process(delta: float) -> void:
 			boss.sprite.rotation = 0.0
 			_spin_back = false
 	_timer -= delta
+	if _under:
+		var want_dark := 0.0
+		if kind == &"devour" and state != State.IDLE:
+			want_dark = 0.62 if (state == State.CHARGE or _dv_step < 2) else 0.0
+		_dv_dark = move_toward(_dv_dark, want_dark, delta * (0.6 if want_dark > _dv_dark else 0.9))
+		_dv_spin += delta * (1.2 + 2.5 * (1.0 if state == State.FIRE and _dv_step == 0 else 0.0))
+		_under.queue_redraw()
+		_over.queue_redraw()
 	match state:
 		State.IDLE:
 			if _timer <= 0.0:
@@ -106,6 +154,8 @@ func _physics_process(delta: float) -> void:
 				_spin_back = true
 			elif kind == &"debris":
 				_update_shake()
+			elif kind == &"devour":
+				_update_devour_charge()
 			if _timer <= 0.0:
 				_start_fire()
 		State.FIRE:
@@ -115,6 +165,8 @@ func _physics_process(delta: float) -> void:
 					Events.screen_shake.emit(5.0, 0.1)
 				&"eye_laser":
 					_check_eye_hit()
+					if bd.ult_eye_missiles > 0:
+						_update_missiles(delta)
 					Events.screen_shake.emit(4.0, 0.1)
 				&"web":
 					_update_webs(delta)
@@ -131,11 +183,17 @@ func _physics_process(delta: float) -> void:
 					_update_ram(delta)
 				&"debris":
 					_update_debris(delta)
+				&"spore_ring":
+					_update_spore_ring(delta)
+				&"devour":
+					_update_devour(delta)
 			var finished := _timer <= 0.0
 			if kind == &"web":
 				finished = _webs.is_empty() or _timer <= 0.0
 			elif kind == &"nova":
 				finished = (_rings.is_empty() and _rings_left <= 0) or _timer <= 0.0
+			elif kind == &"devour":
+				finished = _dv_step == 2 and not _fb_live
 			if finished:
 				_webs.clear()
 				_rings.clear()
@@ -160,7 +218,7 @@ func _start_charge() -> void:
 			_timer = bd.ult_pincer_charge
 		&"nova":
 			_timer = bd.ult_nova_charge
-		&"feather":
+		&"feather", &"spore_ring":
 			_timer = bd.ult_feather_charge
 		&"missile":
 			_timer = bd.ult_missile_charge
@@ -171,6 +229,8 @@ func _start_charge() -> void:
 		&"debris":
 			_timer = bd.ult_debris_charge
 			_jolts_done = 0
+		&"devour":
+			_timer = bd.ult_devour_charge
 		_:
 			_timer = bd.ult_charge_time
 	_charge_total = _timer
@@ -194,6 +254,9 @@ func _start_fire() -> void:
 			_eye_from = center - half * dir
 			_eye_to = center + half * dir
 			Events.screen_shake.emit(12.0, 0.3)
+			# 掃射同時發射追蹤飛彈
+			_missiles_left = bd.ult_eye_missiles if bd.ult_missile_data else 0
+			_missile_cd = 0.25
 		&"web":
 			_timer = WEB_MAX_TIME
 			_spawn_webs()
@@ -205,7 +268,7 @@ func _start_fire() -> void:
 			_rings.clear()
 			_rings_left = bd.ult_nova_rings
 			_ring_cd = 0.0
-		&"feather":
+		&"feather", &"spore_ring":
 			_timer = bd.ult_feather_time
 			_feather_cd = 0.0
 		&"missile":
@@ -221,6 +284,13 @@ func _start_fire() -> void:
 			_ram_vel = (_player_pos() - _ram_pos).normalized() * bd.ult_ram_speed
 			_ram_hit_cd = 0.0
 			Events.screen_shake.emit(8.0, 0.3)
+		&"devour":
+			_timer = 30.0
+			_dv_step = 0
+			_dv_t = 0.0
+			_dv_eaten = 0
+			_dv_hit_cd = 0.0
+			Events.screen_shake.emit(8.0, 0.4)
 		&"debris":
 			boss.sprite.position = Vector2.ZERO
 			_timer = bd.ult_debris_time + 0.4
@@ -264,6 +334,8 @@ func _update_particles(delta: float) -> void:
 
 func _charge_origin() -> Vector2:
 	match kind:
+		&"devour":
+			return bd.ult_mouth
 		&"eye_laser":
 			return bd.ult_eye_offset
 		&"web":
@@ -408,6 +480,186 @@ func _update_feather(delta: float) -> void:
 		NeonFx.instance.muzzle(from, bd.ult_color)
 
 
+# ---------- spore_ring ----------
+
+## 每座砲台朝自己所在的外側方向噴射，噴射角度左右擺動，形成六道光球洪流
+func _update_spore_ring(delta: float) -> void:
+	_feather_cd -= delta
+	if _feather_cd > 0.0 or BulletPool.instance == null or bd.ult_feather_points.is_empty():
+		return
+	_feather_cd = bd.ult_feather_rate
+	var sway := sin(_t * 2.6) * 0.42
+	for p in bd.ult_feather_points:
+		var from := global_position + p
+		var ang := p.angle() + sway + randf_range(-0.12, 0.12)
+		var spd := bd.ult_feather_speed * randf_range(0.85, 1.15)
+		BulletPool.instance.spawn(from, Vector2.RIGHT.rotated(ang) * spd, bd.ult_feather_texture, 8.0, bd.bullet_damage, false)
+	if NeonFx.instance and randf() < 0.4:
+		NeonFx.instance.muzzle(global_position + bd.ult_feather_points[randi() % bd.ult_feather_points.size()], bd.ult_color)
+
+
+# ---------- devour ----------
+
+func mouth_pos() -> Vector2:
+	return global_position + bd.ult_mouth
+
+
+func _update_devour_charge() -> void:
+	# 蓄力到一半時張開巨口
+	if _charge_ratio() > 0.45 and bd.ult_devour_texture and boss.sprite.texture != bd.ult_devour_texture:
+		_normal_tex = boss.sprite.texture
+		boss.sprite.texture = bd.ult_devour_texture
+		Events.screen_shake.emit(10.0, 0.35)
+		if NeonFx.instance:
+			NeonFx.instance.ring(mouth_pos(), 20.0, 160.0, 0.5, bd.weak_color, 5.0)
+
+
+func _update_devour(delta: float) -> void:
+	_dv_t += delta
+	var m := mouth_pos()
+	var pl := Player.instance
+	match _dv_step:
+		0:
+			# 吸入：殘骸旋轉飛進來、敵彈與小怪被拉進嘴裡、玩家被拉扯
+			if _dv_debris.size() < 26 and not bd.ult_devour_debris.is_empty():
+				_dv_debris.append([bd.ult_devour_debris.pick_random(), randf() * TAU, randf_range(380.0, 620.0), randf_range(30.0, 64.0), randf_range(-4.0, 4.0)])
+			for d in _dv_debris:
+				d[1] = float(d[1]) + delta * (2.6 + 320.0 / maxf(float(d[2]), 40.0))
+				d[2] = float(d[2]) - delta * (170.0 + 1400.0 / maxf(float(d[2]), 40.0))
+				d[4] = float(d[4]) + delta * 3.0
+			var before := _dv_debris.size()
+			_dv_debris = _dv_debris.filter(func(d: Array) -> bool: return float(d[2]) > 26.0)
+			_dv_eaten += before - _dv_debris.size()
+			if BulletPool.instance:
+				for b in BulletPool.instance.enemy_bullets():
+					var to := m - b.global_position
+					if to.length() < 46.0:
+						b.release()
+						_dv_eaten += 1
+						continue
+					var tang := to.orthogonal().normalized() * 0.55
+					b.velocity = b.velocity.lerp((to.normalized() + tang).normalized() * 520.0, minf(1.0, 3.0 * delta))
+			for node in get_tree().get_nodes_in_group(&"enemies"):
+				var e := node as Enemy
+				if e == null or e is Boss or e.health.dead or e.data.ground:
+					continue
+				var to := m - e.global_position
+				if to.length() < 60.0:
+					e.queue_free()
+					_dv_eaten += 3
+					continue
+				var step := to.normalized() * 360.0 * delta
+				if e.is_hazard():
+					e.position += step
+				else:
+					e.spawn_pos += step
+			if pl and pl.alive:
+				var to := m - pl.global_position
+				var dist := to.length()
+				var pull := bd.ult_devour_pull * (1.0 + 160.0 / maxf(dist, 160.0))
+				pl.nudge((to.normalized() + to.orthogonal().normalized() * 0.35).normalized() * pull * delta)
+				_dv_hit_cd -= delta
+				if dist < 90.0 + pl.ship.hitbox_radius and _dv_hit_cd <= 0.0:
+					_dv_hit_cd = 1.0
+					pl.take_hit(bd.ult_damage)
+					pl.nudge(-to.normalized() * 260.0)
+			if fmod(_t, 0.3) < delta:
+				Events.screen_shake.emit(3.0, 0.2)
+			if _dv_t >= bd.ult_devour_time:
+				_dv_step = 1
+				_dv_t = 0.0
+				_dv_debris.clear()
+		1:
+			# 壓縮：本體縮一下再鼓起來
+			var k := _dv_t / 0.7
+			boss.sprite.scale = Vector2.ONE * (1.0 - 0.08 * sin(minf(k, 1.0) * PI) * (1.0 if k < 0.6 else -1.0))
+			if fmod(_t, 0.05) < delta and NeonFx.instance:
+				NeonFx.instance.emit(m + Vector2.RIGHT.rotated(randf() * TAU) * 90.0, Vector2.ZERO, 0.3, 14.0, bd.weak_color)
+			if _dv_t >= 0.7:
+				boss.sprite.scale = Vector2.ONE
+				if _normal_tex:
+					boss.sprite.texture = _normal_tex
+				_dv_step = 2
+				_fb_live = true
+				_fb_pos = m
+				_fb_size = bd.ult_fireball_size * clampf(0.8 + _dv_eaten / 120.0, 0.8, 1.3)
+				var aim := (_player_pos() - m).normalized()
+				_fb_vel = aim * bd.ult_fireball_speed
+				Events.screen_shake.emit(16.0, 0.5)
+				if NeonFx.instance:
+					NeonFx.instance.ring(m, 30.0, 240.0, 0.5, Color(1.0, 0.5, 0.2), 8.0)
+		2:
+			if not _fb_live:
+				return
+			_fb_pos += _fb_vel * delta
+			if NeonFx.instance and fmod(_t, 0.04) < delta:
+				NeonFx.instance.emit(_fb_pos + Vector2.RIGHT.rotated(randf() * TAU) * _fb_size * 0.4, -_fb_vel * 0.3, 0.5, 16.0, Color(1.0, 0.45, 0.15, 0.8))
+			var size := get_viewport_rect().size
+			var hit := pl != null and pl.alive and pl.global_position.distance_to(_fb_pos) < _fb_size * 0.4 + pl.ship.hitbox_radius
+			if hit or _fb_pos.y > size.y * 0.82 or not get_viewport_rect().grow(_fb_size).has_point(_fb_pos):
+				_fireball_explode()
+
+
+func _fireball_explode() -> void:
+	_fb_live = false
+	var at := _fb_pos
+	var blast := _fb_size * 0.85
+	if NeonFx.instance:
+		if bd.ult_fireball_burst:
+			NeonFx.instance.burst(at, bd.ult_fireball_burst, _fb_size * 2.4, 0.8)
+		NeonFx.instance.explode(at, 3.0)
+		NeonFx.instance.ring(at, 30.0, blast, 0.45, Color(1.0, 0.5, 0.2), 8.0)
+	Events.screen_shake.emit(20.0, 0.6)
+	var pl := Player.instance
+	if pl and pl.alive and pl.global_position.distance_to(at) < blast + pl.ship.hitbox_radius:
+		pl.take_hit(bd.ult_damage)
+	# 炸開後往四周灑出孢子光球
+	if BulletPool.instance and bd.ult_fireball_ring > 0 and bd.ult_feather_texture:
+		for i in bd.ult_fireball_ring:
+			var dir := Vector2.RIGHT.rotated(TAU * i / bd.ult_fireball_ring + randf() * 0.2)
+			BulletPool.instance.spawn(at + dir * 30.0, dir * 230.0, bd.ult_feather_texture, 8.0, bd.bullet_damage, false)
+
+
+## 吞噬特效層：under = 變暗＋旋渦；upper = 被吸入的殘骸＋巨型火球
+class DevourLayer extends Node2D:
+	var ult: BossUltimate
+	var upper := false
+
+	func _draw() -> void:
+		if ult == null or ult.bd == null:
+			return
+		var bd := ult.bd
+		var m := ult.mouth_pos()
+		if not upper:
+			if ult._dv_dark <= 0.005:
+				return
+			draw_rect(Rect2(Vector2(-50, -50), get_viewport_rect().size + Vector2(100, 100)), Color(0.0, 0.01, 0.0, ult._dv_dark))
+			if bd.ult_vortex_texture:
+				var ts := bd.ult_vortex_texture.get_size()
+				var grow := 0.85 + 0.15 * sin(ult._t * 3.0)
+				var sc := bd.ult_vortex_size / maxf(ts.x, ts.y) * grow
+				draw_set_transform(m, -ult._dv_spin, Vector2(sc, sc))
+				draw_texture(bd.ult_vortex_texture, -ts * 0.5, Color(0.72, 0.66, 0.55, clampf(ult._dv_dark / 0.62, 0.0, 1.0) * 0.7))
+				draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+			return
+		for d in ult._dv_debris:
+			var tex: Texture2D = d[0]
+			var dist: float = d[2]
+			var p: Vector2 = m + Vector2.RIGHT.rotated(float(d[1])) * dist
+			var ts := tex.get_size()
+			var sc := float(d[3]) * clampf(dist / 300.0, 0.35, 1.0) / maxf(ts.x, ts.y)
+			draw_set_transform(p, float(d[4]), Vector2(sc, sc))
+			draw_texture(tex, -ts * 0.5)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		if ult._fb_live and bd.ult_fireball_texture:
+			var ts := bd.ult_fireball_texture.get_size()
+			var pulse := 1.0 + 0.05 * sin(ult._t * 18.0)
+			var sc := ult._fb_size * pulse / maxf(ts.x, ts.y)
+			draw_set_transform(ult._fb_pos, ult._t * 2.5, Vector2(sc, sc))
+			draw_texture(bd.ult_fireball_texture, -ts * 0.5)
+			draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+
+
 # ---------- missile / timebomb ----------
 
 func _update_missiles(delta: float) -> void:
@@ -415,7 +667,8 @@ func _update_missiles(delta: float) -> void:
 	if _missiles_left <= 0 or _missile_cd > 0.0 or bd.ult_missile_data == null:
 		return
 	_missile_cd = 0.35
-	var idx := bd.ult_missile_count - _missiles_left
+	var total := bd.ult_eye_missiles if kind == &"eye_laser" else bd.ult_missile_count
+	var idx := total - _missiles_left
 	_missiles_left -= 1
 	var off := bd.ult_missile_points[idx % bd.ult_missile_points.size()] if not bd.ult_missile_points.is_empty() else bd.ult_origin
 	var m := Enemy.spawn_enemy(bd.ult_missile_data, global_position + off, boss.get_parent())
@@ -616,7 +869,7 @@ func _draw_charge(c: Color) -> void:
 			for i in 3:
 				var rr := fmod(200.0 - _t * 220.0 + i * 70.0, 210.0) + 20.0
 				draw_arc(o, rr, 0, TAU, 48, Color(c.r, c.g, c.b, 0.25 + 0.4 * k), 3.0)
-		&"feather":
+		&"feather", &"spore_ring":
 			# 每個翼砲台閃爍
 			for p in bd.ult_feather_points:
 				draw_circle(p, 5.0 + 6.0 * k * blink, Color(c.r, c.g, c.b, 0.5 + 0.4 * blink))

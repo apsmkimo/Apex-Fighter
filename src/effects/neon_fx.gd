@@ -43,6 +43,10 @@ static var _tex_colors := {}
 
 ## 文字飛出用（一般混合，不能放在加亮層裡）
 var _text_layer: Node2D
+## 圖片爆炸層（一般混合：火焰、煙霧的暗部才不會被加亮吃掉）
+var _sprites: SpriteLayer
+## 通用爆炸三格（閃光 → 火球 → 消散），全遊戲所有爆炸共用
+static var explosion_frames: Array[Texture2D] = []
 var _was_busy := false
 
 
@@ -79,7 +83,14 @@ func _ready() -> void:
 	_text_layer.z_index = 11
 	_text_layer.z_as_relative = false
 	add_child.call_deferred(_text_layer)
+	_sprites = SpriteLayer.new()
+	_sprites.z_index = 9
+	_sprites.z_as_relative = false
+	add_child.call_deferred(_sprites)
 	get_glow_tex()
+	if explosion_frames.is_empty():
+		for i in 3:
+			explosion_frames.append(load("res://assets/sprites/fx/explosion_%d.png" % i) as Texture2D)
 
 
 ## 柔邊圓形光點（中心白、往外透明），全遊戲共用一張
@@ -179,6 +190,7 @@ const VIOLET := Color(0.6, 0.35, 1.0)
 ## 敵機爆炸：閃光核心 → 兩道衝擊波 → 火花 → 餘燼。scale 越大粒子越多（有上限）。
 func explode(at: Vector2, scale := 1.0) -> void:
 	var s := clampf(scale, 0.6, 5.0)
+	explosion_anim(at, 74.0 * s, 0.32 + 0.08 * minf(s, 3.0))
 	emit(at, Vector2.ZERO, 0.16, 70.0 * s, Color(1, 0.95, 0.85), Kind.DOT, 0.0)
 	emit(at, Vector2.ZERO, 0.3, 46.0 * s, AMBER, Kind.DOT, 0.0)
 	ring(at, 10.0 * s, 80.0 * s, 0.35, AMBER, 4.0)
@@ -340,3 +352,70 @@ func _draw() -> void:
 		else:
 			var s := _p_size[i] * (0.5 + 0.5 * k)
 			draw_texture_rect(tex, Rect2(p.x - s, p.y - s, s * 2.0, s * 2.0), false, c)
+
+
+# ======================================================================
+# 圖片爆炸
+# ======================================================================
+
+## 通用爆炸動畫：三格依序交叉淡入（size = 最大直徑）
+func explosion_anim(at: Vector2, size: float, life := 0.4, delay := 0.0) -> void:
+	if _sprites and explosion_frames.size() == 3:
+		_sprites.add(at, explosion_frames, size, life, delay)
+
+
+## 單張圖片爆炸：從 0.3 倍放大到 size、旋轉、淡出（孢子爆炸、Boss 爆炸用）
+func burst(at: Vector2, tex: Texture2D, size: float, life := 0.6, delay := 0.0) -> void:
+	if _sprites and tex:
+		var frames: Array[Texture2D] = [tex]
+		_sprites.add(at, frames, size, life, delay)
+
+
+class SpriteLayer extends Node2D:
+	const MAX := 48
+	# 每筆：[位置, 貼圖陣列, 尺寸, 剩餘時間, 總時間, 延遲, 旋轉]
+	var _items: Array = []
+
+	func add(at: Vector2, frames: Array[Texture2D], size: float, life: float, delay: float) -> void:
+		if _items.size() >= MAX:
+			_items.pop_front()
+		_items.append([at, frames, size, life, life, delay, randf() * TAU])
+
+	func _process(delta: float) -> void:
+		if _items.is_empty():
+			return
+		for it in _items:
+			if it[5] > 0.0:
+				it[5] -= delta
+			else:
+				it[3] -= delta
+		_items = _items.filter(func(it: Array) -> bool: return it[3] > 0.0)
+		queue_redraw()
+
+	func _draw() -> void:
+		for it in _items:
+			if it[5] > 0.0:
+				continue
+			var frames: Array[Texture2D] = it[1]
+			var k := 1.0 - float(it[3]) / float(it[4])   # 0 → 1
+			var size: float = it[2]
+			var at: Vector2 = it[0]
+			var rot: float = it[6] + k * 0.6
+			if frames.size() == 1:
+				_draw_tex(frames[0], at, size * (0.3 + 0.7 * ease(k, 0.4)), rot, 1.0 - ease(k, 3.0))
+				continue
+			# 三格：0–0.3 閃光放大，0.15–0.65 火球，0.45–1 消散
+			_draw_tex(frames[0], at, size * lerpf(0.25, 0.7, minf(k / 0.3, 1.0)), rot, 1.0 - clampf((k - 0.15) / 0.2, 0.0, 1.0))
+			var a1 := clampf((k - 0.1) / 0.1, 0.0, 1.0) * (1.0 - clampf((k - 0.5) / 0.2, 0.0, 1.0))
+			_draw_tex(frames[1], at, size * lerpf(0.6, 1.0, clampf((k - 0.1) / 0.5, 0.0, 1.0)), rot, a1)
+			var a2 := clampf((k - 0.4) / 0.15, 0.0, 1.0) * (1.0 - clampf((k - 0.7) / 0.3, 0.0, 1.0))
+			_draw_tex(frames[2], at, size * lerpf(0.9, 1.15, clampf((k - 0.4) / 0.6, 0.0, 1.0)), rot, a2)
+
+	func _draw_tex(tex: Texture2D, at: Vector2, size: float, rot: float, alpha: float) -> void:
+		if alpha <= 0.01:
+			return
+		var ts := tex.get_size()
+		var sc := size / maxf(ts.x, ts.y)
+		draw_set_transform(at, rot, Vector2(sc, sc))
+		draw_texture(tex, -ts * 0.5, Color(1, 1, 1, alpha))
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)

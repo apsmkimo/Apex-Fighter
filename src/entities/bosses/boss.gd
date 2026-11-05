@@ -116,6 +116,12 @@ func _on_died() -> void:
 		e.enabled = false
 	GameManager.add_score(data.score)
 	Events.enemy_killed.emit(data, global_position)
+	var blasts := boss_data().death_blasts
+	if NeonFx.instance and not blasts.is_empty():
+		var sz := boss_data().death_blast_size
+		for i in blasts.size():
+			NeonFx.instance.burst(global_position, blasts[i], sz * (0.75 + 0.35 * i), 0.9 + 0.3 * i, 0.35 * i)
+		Events.screen_shake.emit(18.0, 1.0)
 	Events.boss_defeated.emit()
 	queue_free()
 

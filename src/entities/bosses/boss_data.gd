@@ -97,7 +97,36 @@ extends EnemyData
 ## 從 Boss 身上掉落的外緣半徑
 @export var ult_debris_edge := 240.0
 
+@export_subgroup("Spore Ring")
+## spore_ring：從 ult_feather_points 各點朝外（以 Boss 中心為準）噴射，使用 feather 的速度、頻率、貼圖、時間、蓄力
+
+@export_subgroup("Sweep Missiles")
+## eye_laser 掃射時同時發射幾枚追蹤飛彈（用 ult_missile_data / ult_missile_points）
+@export var ult_eye_missiles := 0
+
+@export_subgroup("Devour")
+## devour：全場變暗 → 張開巨口（換圖）→ 旋渦吸入子彈、小怪、殘骸，拉扯玩家 → 吐出超巨型火球
+@export var ult_devour_texture: Texture2D
+@export var ult_vortex_texture: Texture2D
+@export var ult_fireball_texture: Texture2D
+@export var ult_fireball_burst: Texture2D
+## 被吸進去的殘骸外觀（純特效）
+@export var ult_devour_debris: Array[Texture2D] = []
+## 巨口位置（相對 Boss 中心）
+@export var ult_mouth := Vector2(0, 30)
+@export var ult_devour_charge := 1.6
+@export var ult_devour_time := 3.6
+## 拉扯玩家的速度（像素/秒，越靠近越強）
+@export var ult_devour_pull := 170.0
+@export var ult_vortex_size := 820.0
+@export var ult_fireball_size := 250.0
+@export var ult_fireball_speed := 230.0
+@export var ult_fireball_ring := 18
+
 @export_group("Look")
+## 被打倒時依序播放的大型爆炸圖（第一張先爆、第二張接著擴大）
+@export var death_blasts: Array[Texture2D] = []
+@export var death_blast_size := 640.0
 ## 弱點標記顏色（透明 = 用 ult_color）
 @export var weak_color := Color(0, 0, 0, 0)
 ## 在弱點位置畫發光能源爐

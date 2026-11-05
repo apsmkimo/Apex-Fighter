@@ -1,0 +1,72 @@
+[gd_resource type="Resource" script_class="BossData" load_steps=20 format=3]
+
+[ext_resource type="Script" path="res://src/entities/bosses/boss_data.gd" id="scr"]
+[ext_resource type="Texture2D" path="res://assets/sprites/enemies/boss_spore_hive.png" id="tex"]
+[ext_resource type="Script" path="res://src/entities/bosses/boss_phase.gd" id="ph"]
+[ext_resource type="Script" path="res://src/patterns/bullet/bullet_pattern.gd" id="bp"]
+[ext_resource type="Resource" path="res://data/patterns/move_hive_hover.tres" id="mv"]
+[ext_resource type="AudioStream" path="res://assets/audio/bgm/mid_boss.wav" id="bgm"]
+[ext_resource type="Texture2D" path="res://assets/sprites/bullets/fx_orb_spore.png" id="orb"]
+[ext_resource type="Resource" path="res://data/enemies/spore_missile.tres" id="dh"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/boss_blast_0.png" id="bl0"]
+[ext_resource type="Texture2D" path="res://assets/sprites/fx/boss_blast_1.png" id="bl1"]
+[ext_resource type="Resource" path="res://data/patterns/p5_green_fan3.tres" id="p_p5_green_fan3"]
+[ext_resource type="Resource" path="res://data/patterns/p5_spore_ring16.tres" id="p_p5_spore_ring16"]
+[ext_resource type="Resource" path="res://data/patterns/p5_spore_ring8.tres" id="p_p5_spore_ring8"]
+[ext_resource type="Resource" path="res://data/patterns/p5_spore_shot.tres" id="p_p5_spore_shot"]
+[ext_resource type="Resource" path="res://data/patterns/p5_spore_spiral.tres" id="p_p5_spore_spiral"]
+[ext_resource type="Resource" path="res://data/patterns/p5_violet_rain.tres" id="p_p5_violet_rain"]
+
+[sub_resource type="Resource" id="ph0"]
+script = ExtResource("ph")
+hp_ratio_end = 0.6
+patterns = Array[ExtResource("bp")]([ExtResource("p_p5_green_fan3"), ExtResource("p_p5_spore_ring8")])
+intervals = PackedFloat32Array(1.3, 1.6)
+
+[sub_resource type="Resource" id="ph1"]
+script = ExtResource("ph")
+hp_ratio_end = 0.25
+patterns = Array[ExtResource("bp")]([ExtResource("p_p5_spore_spiral"), ExtResource("p_p5_spore_shot")])
+intervals = PackedFloat32Array(0.9, 1.1)
+
+[sub_resource type="Resource" id="ph2"]
+script = ExtResource("ph")
+hp_ratio_end = 0.0
+patterns = Array[ExtResource("bp")]([ExtResource("p_p5_spore_ring16"), ExtResource("p_p5_green_fan3"), ExtResource("p_p5_violet_rain")])
+intervals = PackedFloat32Array(1.0, 1.2, 1.0)
+
+[resource]
+script = ExtResource("scr")
+boss_name = "SPORE HIVE"
+bgm = ExtResource("bgm")
+entry_time = 3.0
+phases = Array[ExtResource("ph")]([SubResource("ph0"), SubResource("ph1"), SubResource("ph2")])
+id = &"boss_spore_hive"
+texture = ExtResource("tex")
+movement = ExtResource("mv")
+ult_kinds = Array[StringName]([&"spore_ring"])
+ult_first_delay = 5.0
+ult_interval = 9.0
+ult_damage = 3
+ult_color = Color(0.4, 1, 0.45, 1)
+ult_origin = Vector2(0, 0)
+ult_feather_points = PackedVector2Array(-2, -132, 110, -75, 116, 62, 0, 126, -109, 61, -111, -69)
+ult_feather_time = 2.6
+ult_feather_rate = 0.09
+ult_feather_speed = 250.0
+ult_feather_charge = 1.6
+ult_feather_texture = ExtResource("orb")
+drop_hazard = ExtResource("dh")
+drop_hazard_interval = 4.5
+drop_hazard_first = 4.0
+death_blasts = Array[Texture2D]([ExtResource("bl0"), ExtResource("bl1")])
+death_blast_size = 420.0
+weak_color = Color(0.4, 1, 0.45, 1)
+max_hp = 900
+hit_radius = 170.0
+weak_offset = Vector2(0, 0)
+weak_radius = 44.0
+score = 32000
+explosion_scale = 3.8
+bullet_damage = 2
+contact_damage = 3

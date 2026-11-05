@@ -46,6 +46,15 @@ func clear_enemy_bullets() -> void:
 			b.release()
 
 
+## 場上的敵彈（Boss 吸入用）
+func enemy_bullets() -> Array[Bullet]:
+	var out: Array[Bullet] = []
+	for b in _active:
+		if not b.is_player_bullet:
+			out.append(b)
+	return out
+
+
 func active_count() -> int:
 	return _active.size()
 
