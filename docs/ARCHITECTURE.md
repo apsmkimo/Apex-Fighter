@@ -95,7 +95,7 @@ res://
 - HUD：`src/ui/hud/` 下的 `neon_draw.gd`（繪圖工具與圖示）、`status_panel.gd`（左下分段 HP 與圖示數字）、`bomb_button.gd`、`stage_banner.gd`（STAGE／WARNING／CLEAR 動畫）。
 - 截圖測試：`xvfb-run godot --rendering-method gl_compatibility --resolution 720x1280 --path . res://tests/screenshot.tscn`，圖存到 user://shots/。
 
-## 第 6 關 BLACK GOLD 新增的系統
+## 第 7 關 BLACK GOLD 新增的系統
 - `EnemyBehavior`（`src/entities/enemies/enemy_behavior.gd`）：`EnemyData.behavior` 不為空時掛在敵機底下，可接管移動。
   `kamikaze` 低血自爆衝鋒、`sword` 劍氣＋突刺殘影、`artillery` 拋物線重砲（落點預警圈、濺射、岩漿坑）、`gatling` 預判速射＋過熱連射、
   `focus_laser` 聚焦環蓄力＋旋轉雷射＋燒痕、`vlauncher` 紅光蒸氣＋垂直升空追蹤飛彈、`orbit` 繞場衛星＋脈衝環。

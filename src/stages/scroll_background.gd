@@ -167,7 +167,7 @@ func _draw() -> void:
 	draw_polygon(
 		PackedVector2Array([Vector2(-20, -20), Vector2(s.x + 20, -20), s + Vector2(20, 20), Vector2(-20, s.y + 20)]),
 		PackedColorArray([top_color, top_color, bottom_color, bottom_color]))
-	# 遠景視差層（第 6 關）：先畫遠景，再疊半透明的主背景
+	# 遠景視差層（第 7 關）：先畫遠景，再疊半透明的主背景
 	if _far:
 		_draw_loop(_far, _terrain_y * _far_speed, _far_tint)
 	# 半透明地表（第 5 關 50%）：漸層上面疊地表

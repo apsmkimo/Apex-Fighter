@@ -1,5 +1,5 @@
-# 產生第 6 關（BLACK GOLD 黑金機甲）的敵人、彈幕、Boss 與 StageData
-# 先跑 tools/cut_stage6.py 產生素材
+# 產生第 7 關（BLACK GOLD 黑金機甲）的敵人、彈幕、Boss 與 StageData
+# 先跑 tools/cut_stage7.py 產生素材
 ROOT='/workspace/work/raiden-godot/'
 S='res://assets/sprites/'
 
@@ -176,9 +176,9 @@ def mk(p,ws):
         subs+=f'[sub_resource type="Resource" id="{p}{i}"]\nscript = ExtResource("w_wave")\ntime = {t}\nenemy = ExtResource("e_{k}")\ncount = {n}\ninterval = {iv}\nstart_x = {x}\nstep_x = {st}\nmirror = {"true" if mir else "false"}\n'+('hold = true\n' if hold else '')+'\n'
     return ', '.join(f'SubResource("{i}")' for i in ids)
 wl=mk('W',W); al=mk('A',A)
-res('data/stages/stage_06.tres','StageData','res://src/stages/stage_data.gd',[('id','&"stage_06"'),('display_name','"STAGE 6"'),('sort_order',5),('scroll_speed',180.0),
+res('data/stages/stage_07.tres','StageData','res://src/stages/stage_data.gd',[('id','&"stage_07"'),('display_name','"STAGE 7"'),('sort_order',6),('scroll_speed',180.0),
     ('bg_top_color','Color(0.08, 0.01, 0.02, 1)'),('bg_bottom_color','Color(0.12, 0.02, 0.03, 1)'),('terrain',E('t_ter')),('terrain_tint','Color(0.8, 0.74, 0.72, 0.62)'),
     ('terrain_far',E('t_far')),('terrain_far_tint','Color(0.5, 0.46, 0.46, 1)'),('terrain_far_speed',0.4),
-    ('hp_mult',1.35),('waves',f'Array[ExtResource("w_wave")]([{wl}])'),('mid_boss',E('b_mid')),
+    ('hp_mult',1.45),('waves',f'Array[ExtResource("w_wave")]([{wl}])'),('mid_boss',E('b_mid')),
     ('waves_after_mid',f'Array[ExtResource("w_wave")]([{al}])'),('after_mid_hp_mult',1.0),('boss',E('b_final')),('boss_warning_time',2.5)],ext,subs)
-print('stage 6:',len(W),'main waves,',len(A),'after-mid waves')
+print('stage 7:',len(W),'main waves,',len(A),'after-mid waves')

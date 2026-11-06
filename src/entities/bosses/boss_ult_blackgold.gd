@@ -1,6 +1,6 @@
 class_name BlackGoldUlt
 extends Node
-## 第六關黑金機甲的三種絕招（由 BossUltimate 呼叫）：
+## 第七關黑金機甲的三種絕招（由 BossUltimate 呼叫）：
 ##   x_strike   全砲口聚能 → 十道紅光砲在地面交織成巨大 X（黑金裂紋＋岩漿）
 ##              X 留在地上：踩到每 0.2 秒扣血；出現 2 秒後引爆，之後淡出（共 3 秒）
 ##   focus_ring 浮游砲飛到空中圍成圓 → 六道雷射聚焦，紅光球膨脹 2 秒 → 炸開全場衝擊波＋多個岩漿坑

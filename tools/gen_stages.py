@@ -7,8 +7,9 @@ STAGES={
  3:dict(name='STAGE 3',small=['beetle'],med=['rhino'],big=['spider'],mid='boss_scythe_mantis',fin='boss_ember_citadel',hp=1.0,terrain='moss',tint=(0.85,0.9,0.85),top=(0.02,0.08,0.06),bot=(0.05,0.17,0.12),speed=190),
 
  # 第 5 關改由 repo tools/gen_stage5.py 產生
-# 6:dict(name='STAGE 6',small=['dart','beetle'],med=['raptor','rhino'],big=['jugg'],mid='boss_scythe_mantis',fin='boss_crimson_widow',hp=1.35,terrain='ice',tint=(0.78,0.82,0.9),top=(0.02,0.06,0.12),bot=(0.05,0.12,0.22),speed=190),
- 7:dict(name='STAGE 7',small=['shade'],med=['rhino'],big=['spider','jugg'],mid='boss_violet_fortress',fin='boss_ember_citadel',hp=1.45,top=(0.12,0.02,0.03),bot=(0.22,0.05,0.06),speed=195),
+# 舊第 6 關（已停用）：dict(name='STAGE 6',small=['dart','beetle'],med=['raptor','rhino'],big=['jugg'],mid='boss_scythe_mantis',fin='boss_crimson_widow',hp=1.35,terrain='ice',tint=(0.78,0.82,0.9),top=(0.02,0.06,0.12),bot=(0.05,0.12,0.22),speed=190),
+ # 原第 7 關移到第 6 關（第 7 關改由 gen_stage7.py 產生黑金關）
+ 6:dict(name='STAGE 6',small=['shade'],med=['rhino'],big=['spider','jugg'],mid='boss_violet_fortress',fin='boss_ember_citadel',hp=1.35,top=(0.12,0.02,0.03),bot=(0.22,0.05,0.06),speed=195),
  8:dict(name='STAGE 8',small=['dart','beetle'],med=['raptor','rhino'],big=['carrier','spider'],mid='boss_abyss_crab',fin='boss_inferno_seraph',hp=1.55,top=(0.02,0.05,0.14),bot=(0.04,0.1,0.26),speed=200),
  9:dict(name='STAGE 9',small=['beetle','shade','dart'],med=['rhino','raptor'],big=['spider','jugg','carrier'],mid='boss_scythe_mantis',fin='boss_ember_citadel',hp=1.7,terrain='lava',tint=(0.85,0.8,0.78),top=(0.1,0.03,0.02),bot=(0.2,0.06,0.03),speed=195),
 }

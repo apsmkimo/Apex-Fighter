@@ -67,7 +67,7 @@ var _fb_live := false
 var _normal_tex: Texture2D
 var _under: DevourLayer
 var _over: DevourLayer
-## 第六關黑金絕招（x_strike / focus_ring / annihilate）
+## 第七關黑金絕招（x_strike / focus_ring / annihilate）
 var bg: BlackGoldUlt
 
 

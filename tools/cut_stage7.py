@@ -1,4 +1,4 @@
-# 第六關（BLACK GOLD 黑金機甲）素材去背與切割
+# 第七關（BLACK GOLD 黑金機甲）素材去背與切割
 import sys, numpy as np
 from PIL import Image
 from scipy import ndimage
