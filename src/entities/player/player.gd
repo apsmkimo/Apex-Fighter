@@ -8,7 +8,8 @@ static var instance: Player
 const INVINCIBLE_TIME := 2.5
 ## 被打中但沒死時的短暫無敵，避免同一波子彈連續扣血
 const HIT_INVINCIBLE := 1.0
-const SHIELD_TIME := 20.0
+## 護盾光點：每吃一個加一顆，一顆擋一次攻擊，不限時，死亡清空
+const SHIELD_MAX := 6
 const EDGE := Vector2(24, 40)
 
 var ship: ShipData
@@ -17,8 +18,8 @@ var invincible := 0.0
 var hp := 6
 var max_hp := 6
 ## 護盾剩餘秒數，> 0 時可抵銷一次攻擊
-var shield := 0.0
-var _shield_fx: Node2D
+var shield := 0
+var _shield_fx: ShieldFx
 var _aura: PowerAura
 ## 被 Boss 絲網黏住的剩餘秒數（> 0 時不能移動，左右滑動可以加速掙脫）
 var webbed := 0.0
@@ -115,18 +116,13 @@ func _physics_process(delta: float) -> void:
 		if dir != Vector2.ZERO:
 			position += dir * ship.speed * delta
 			_clamp()
-	if shield > 0.0:
-		var before := int(ceil(shield))
-		shield = maxf(shield - delta, 0.0)
-		if int(ceil(shield)) != before:
-			Events.shield_changed.emit(shield)
 	if webbed > 0.0:
 		webbed = maxf(webbed - delta, 0.0)
 	_web_fx.left = webbed if alive else 0.0
-	_shield_fx.visible = shield > 0.0 and alive
+	_shield_fx.visible = shield > 0 and alive
 	_aura.visible = alive and sprite.visible and _aura.level > 0
 	_emit_exhaust(delta)
-	_shield_fx.set_meta(&"left", shield)
+	_shield_fx.count = shield
 	if invincible > 0.0:
 		invincible -= delta
 		sprite.visible = int(invincible * 20.0) % 2 == 0
@@ -178,11 +174,9 @@ func take_hit(amount: int) -> void:
 	if GameManager.test_mode:
 		invincible = 0.15
 		return
-	if shield > 0.0:
-		shield = 0.0
+	if shield > 0:
+		_pop_shield()
 		invincible = 0.6
-		Events.shield_changed.emit(0.0)
-		Events.shield_blocked.emit(global_position)
 		Events.screen_shake.emit(6.0, 0.2)
 		return
 	hp = maxi(hp - maxi(amount, 1), 0)
@@ -231,10 +225,8 @@ func nudge(offset: Vector2) -> void:
 func apply_web(sec: float) -> void:
 	if not alive or _entering:
 		return
-	if shield > 0.0:
-		shield = 0.0
-		Events.shield_changed.emit(0.0)
-		Events.shield_blocked.emit(global_position)
+	if shield > 0:
+		_pop_shield()
 		return
 	webbed = maxf(webbed, sec)
 	Events.screen_shake.emit(5.0, 0.2)
@@ -248,8 +240,16 @@ func _struggle(amount: float) -> void:
 
 
 func add_shield() -> void:
-	shield = SHIELD_TIME
-	Events.shield_changed.emit(shield)
+	shield = mini(shield + 1, SHIELD_MAX)
+	Events.shield_changed.emit(float(shield))
+
+
+## 消耗一顆光點擋下攻擊：光點從環上的位置爆開
+func _pop_shield() -> void:
+	var at: Vector2 = global_position + _shield_fx.orb_pos(shield - 1)
+	shield -= 1
+	Events.shield_changed.emit(float(shield))
+	Events.shield_blocked.emit(at)
 
 
 func _on_pickup(area: Area2D) -> void:
@@ -260,7 +260,7 @@ func _on_pickup(area: Area2D) -> void:
 func _die() -> void:
 	alive = false
 	webbed = 0.0
-	shield = 0.0
+	shield = 0
 	Events.shield_changed.emit(0.0)
 	weapon.firing = false
 	missiles.firing = false
@@ -297,8 +297,10 @@ func _spawn_in() -> void:
 	Events.player_respawned.emit()
 
 
-## 護盾外觀：藍色六角能量罩，最後 3 秒閃爍
+## 護盾外觀：青藍色小光點繞著機身轉，一顆光點＝一次防護
 class ShieldFx extends Node2D:
+	const RADIUS := 56.0
+	var count := 0
 	var _t := 0.0
 
 	func _ready() -> void:
@@ -313,19 +315,26 @@ class ShieldFx extends Node2D:
 		if visible:
 			queue_redraw()
 
+	## 第 i 顆光點目前的位置（相對機身）
+	func orb_pos(i: int) -> Vector2:
+		var n := maxi(count, 1)
+		var ang := _t * 2.2 + TAU * float(i) / float(n)
+		return Vector2(cos(ang), sin(ang) * 0.9) * RADIUS
+
 	func _draw() -> void:
-		var left: float = get_meta(&"left", 0.0)
-		var a := 1.0
-		if left < 3.0:
-			a = 0.35 + 0.65 * float(int(_t * 10.0) % 2)
-		var r := 58.0 + 3.0 * sin(_t * 6.0)
-		draw_circle(Vector2.ZERO, r, Color(0.2, 0.6, 1.0, 0.12 * a))
-		var pts := PackedVector2Array()
-		for i in 7:
-			var ang := _t * 0.8 + i * TAU / 6.0
-			pts.append(Vector2(cos(ang), sin(ang)) * r)
-		draw_polyline(pts, Color(0.4, 0.85, 1.0, 0.8 * a), 3.0, true)
-		draw_arc(Vector2.ZERO, r - 6.0, 0, TAU, 40, Color(0.5, 0.9, 1.0, 0.35 * a), 2.0, true)
+		for i in count:
+			var c := orb_pos(i)
+			var pulse := 0.85 + 0.15 * sin(_t * 7.0 + float(i) * 1.3)
+			# 拖尾
+			for k in range(1, 5):
+				var n := maxi(count, 1)
+				var ang := (_t - 0.035 * k) * 2.2 + TAU * float(i) / float(n)
+				var tp := Vector2(cos(ang), sin(ang) * 0.9) * RADIUS
+				draw_circle(tp, 5.0 - k, Color(0.2, 0.85, 1.0, 0.22 - 0.045 * k))
+			draw_circle(c, 13.0 * pulse, Color(0.1, 0.6, 1.0, 0.14))
+			draw_circle(c, 8.0 * pulse, Color(0.2, 0.85, 1.0, 0.35))
+			draw_circle(c, 4.5, Color(0.6, 0.97, 1.0, 0.9))
+			draw_circle(c, 2.2, Color(1, 1, 1, 1))
 
 
 ## 絲網外觀：黏在機身上的白色蛛網，快掙脫時變淡

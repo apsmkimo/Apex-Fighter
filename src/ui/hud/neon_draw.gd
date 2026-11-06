@@ -87,10 +87,11 @@ static func icon_missile(ci: CanvasItem, c: Vector2, s: float, col: Color) -> vo
 			c + Vector2(-s * 0.28, s * 0.5), c + Vector2(-s * 0.28, -s * 0.5)]), col)
 
 
-## 護盾
+## 護盾光點：中心一顆亮點＋外圈環
 static func icon_shield(ci: CanvasItem, c: Vector2, s: float, col: Color) -> void:
-	_glow_poly(ci, PackedVector2Array([c + Vector2(-s * 0.75, -s * 0.8), c + Vector2(s * 0.75, -s * 0.8),
-			c + Vector2(s * 0.75, s * 0.05), c + Vector2(0, s), c + Vector2(-s * 0.75, s * 0.05)]), col)
+	ci.draw_arc(c, s * 0.85, 0, TAU, 24, Color(col, col.a * 0.6), 2.0, true)
+	ci.draw_circle(c, s * 0.5, Color(col, col.a * 0.5))
+	ci.draw_circle(c, s * 0.3, Color(0.85, 1.0, 1.0, col.a))
 
 
 ## 愛心（HP）

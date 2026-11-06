@@ -47,7 +47,8 @@ func _process(delta: float) -> void:
 			for i in 6:
 				GameManager.add_power()
 			GameManager.add_missile()
-			p.add_shield()
+			for k in 4:
+				p.add_shield()
 		if t > 8.0 and not _hit:
 			_hit = true
 			p.invincible = 0.0

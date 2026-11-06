@@ -232,13 +232,13 @@ func pickup(at: Vector2, col: Color, text: String) -> void:
 		float_text(at + Vector2(0, -20), text, col)
 
 
-## 護盾擋下攻擊
+## 護盾光點擋下攻擊：光點在原位爆開
 func shield_burst(at: Vector2) -> void:
-	ring(at, 40.0, 110.0, 0.4, CYAN, 4.0)
-	ring(at, 50.0, 80.0, 0.25, Color(0.8, 0.95, 1.0), 2.0)
-	for i in 16:
-		var dir := Vector2.RIGHT.rotated(TAU * i / 16.0)
-		emit(at + dir * 55.0, dir * 260.0, 0.3, 3.0, CYAN, Kind.SPARK, 3.0)
+	ring(at, 6.0, 70.0, 0.35, CYAN, 3.0)
+	ring(at, 4.0, 40.0, 0.22, Color(0.8, 0.95, 1.0), 2.0)
+	for i in 12:
+		var dir := Vector2.RIGHT.rotated(TAU * i / 12.0)
+		emit(at, dir * 240.0, 0.3, 3.0, CYAN, Kind.SPARK, 3.0)
 
 
 ## 玩家受擊的紅色火花

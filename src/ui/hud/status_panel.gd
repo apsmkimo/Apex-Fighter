@@ -39,7 +39,7 @@ func set_hp(v: int, m: int) -> void:
 
 func _process(delta: float) -> void:
 	_t += delta
-	var animating := _hp_flash > 0.0 or hp * 3 <= max_hp or shield > 0.0
+	var animating := _hp_flash > 0.0 or hp * 3 <= max_hp
 	if _hp_flash > 0.0:
 		_hp_flash = maxf(_hp_flash - delta * 2.5, 0.0)
 	if animating:
@@ -71,10 +71,9 @@ func _draw() -> void:
 		NeonDraw.text(self, Vector2(x + 26, y + 8), "x%d" % missile, 22, Color(0.85, 0.7, 1.0))
 		x += 110.0
 	if shield > 0.0:
-		var blink := 1.0 if shield > 3.0 else 0.4 + 0.6 * float(int(_t * 8.0) % 2)
-		var sc := Color(0.35, 0.85, 1.0, blink)
+		var sc := Color(0.35, 0.85, 1.0)
 		NeonDraw.icon_shield(self, Vector2(x + 8, y), 11, sc)
-		NeonDraw.text(self, Vector2(x + 26, y + 8), "%ds" % int(ceil(shield)), 22, sc)
+		NeonDraw.text(self, Vector2(x + 26, y + 8), "x%d" % int(shield), 22, sc)
 
 
 ## 分段 HP 條：每格一點血，斜切平行四邊形，依剩餘比例變色，低血量閃爍

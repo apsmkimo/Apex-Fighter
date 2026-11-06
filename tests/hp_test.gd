@@ -68,10 +68,15 @@ func _run() -> void:
 	_check(p.alive and p.hp == 2, "ultimate from full -> survive with 2")
 	# 護盾抵銷一次
 	p.add_shield()
-	_check(p.shield == 20.0, "shield 20s")
+	p.add_shield()
+	_check(p.shield == 2, "shield orbs stack (2)")
 	p.invincible = 0.0
 	p.take_hit(4)
-	_check(p.alive and p.hp == 2 and p.shield == 0.0, "shield absorbs one hit")
+	_check(p.alive and p.hp == 2 and p.shield == 1, "one orb absorbs one hit")
+	for i in 10:
+		p.add_shield()
+	_check(p.shield == Player.SHIELD_MAX, "shield orbs capped at %d" % Player.SHIELD_MAX)
+	p.shield = 0
 	# 無上限
 	for i in 12:
 		GameManager.add_power()
