@@ -49,7 +49,7 @@ POOL='Array[ExtResource("itm")]([ExtResource("i_mis"), ExtResource("i_sh"), ExtR
 RED='Color(1, 0.18, 0.15, 1)'
 SHIELD=[('Texture2D',S+'fx/bg_shield.png','shd')]
 PIT=[('Texture2D',S+'terrain/bg_lava_pit.png','pit')]
-def enemy(name,tex,props,ext=(),items=False,shield=0.5):
+def enemy(name,tex,props,ext=(),items=False,shield=0.0):  # 第 7 關一般敵人不掛護盾（只有浮游砲保留）
     ext=[('Texture2D',S+tex,'tex'),*ext]+(ITEMS if items else [])+(SHIELD if shield else [])
     p=[('id',f'&"{name}"'),('texture',E('tex')),*props]
     if shield: p+=[('shield_texture',E('shd')),('shield_ratio',shield)]
